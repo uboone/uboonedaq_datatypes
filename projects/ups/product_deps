@@ -1,14 +1,35 @@
 # The parent line must be the first non-comment line in the file
 # This line defines the product name and version
 
-parent uboonedaq-datatypes   v0_01_00
+parent uboonedaq_datatypes   v0_01_00
 defaultqual     e2
-# These optional lines define the installed directories where headers,                                                                                                                                  # libraries, and executables will be found.                                                                                                                                                             #                                                                                                                                                                                                       # Format: directory_type directory_path directory_name                                                                                                                                                  #                                                                                                                                                                                                       # The only recognized values of the first field are incdir, libdir, and bindir                                                                                                                          # The only recognized values of the second field are product_dir and fq_dir                                                                                                                             # The third field is not constrained.                                                                                                                                                                   #                                                                                                                                                                                                       # If a particular directory_type is not specified that item will not be                                                                                                                                 # set up in the UPS table file.                                                                                                                                                                         incdir      product_dir include                                                                                                                                                                         libdir      fq_dir      lib                                                                                                                                                                             bindir      fq_dir      bin                                                                                                                                                                             #
+# These optional lines define the installed directories where headers,                                                                                                                                                                       
+# libraries, and executables will be found.                                                                                                                                                                                                  
+#                                                                                                                                                                                                                                            
+# Format: directory_type directory_path directory_name                                                                                                                                                                                       
+#                                                                                                                                                                                                                                            
+# The only recognized values of the first field are incdir, libdir, and bindir                                                                                                                                                               
+# The only recognized values of the second field are product_dir and fq_dir                                                                                                                                                                  
+# The third field is not constrained.                                                                                                                                                                                                        
+#                                                                                                                                                                                                                                            
+# If a particular directory_type is not specified that item will not be                                                                                                                                                                      
+# set up in the UPS table file.                                                                                                                                                                                                              
+incdir      product_dir include                                                                                                                                                                                                              
+libdir      fq_dir      lib                                                                                                                                                                                                                  
+bindir      fq_dir      bin                                                                                                                                                                                                                  
+
+#
 product              version
 gcc                  v4_7_1
+artdaq               v1_00_00
+novadaqmonitorclient v3_00_00
+novadaqutilities     v3_00_00
 windriver            v11_00_00
+runcontrolclient     v3_00_00
+cstxsd               v3_3_0_p02
+xerces_c             v3_1_1
 symmetricom	     v2_00_00
-boost		     v1_53_0
+postgres	     v9_1_3
 
 # list products required ONLY for the build
 # any products here must NOT have qualifiers
@@ -20,9 +41,9 @@ only_for_build  smc_compiler    v6_1_0
 # -nq- here means there is no qualifier
 # a - here means the dependent product is not required by the parent and will not be setup
 
-qualifier   gcc    windriver  symmetricom  boost     notes
-e2:debug    -nq-   debug      e2:prof      e2:debug  -std=c++11;-Wno-deprecated-declarations
-e2:prof     -nq-   debug      e2:prof      e2:prof   -std=c++11;-Wno-deprecated-declarations
+qualifier   artdaq         gcc    windriver  novadaqmonitorclient novadaqutilities runcontrolclient cstxsd        xerces_c symmetricom  postgres notes
+e2:debug    e2:eth:debug   -nq-   debug      e2:debug             e2:debug         e2:debug         gcc47         e2:debug e2:prof  NOvA   -std=c++11;-Wno-deprecated-declarations
+e2:prof     e2:eth:prof    -nq-   debug      e2:prof              e2:prof          e2:prof          gcc47         e2:prof  e2:prof  e2:prof   -std=c++11;-Wno-deprecated-declarations
 
 # Preserve tabs and formatting in emacs and vi / vim:
 

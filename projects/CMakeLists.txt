@@ -44,8 +44,8 @@ cet_report_compiler_flags()
 
 # these are minimum required versions, not the actual product versions
 find_ups_product( cetbuildtools v3_04_04 )
-#find_ups_product( artdaq v1_00_00 )
-#find_ups_product( messagefacility v1_10_16 )
+find_ups_product( artdaq v1_00_00 )
+find_ups_product( messagefacility v1_10_16 )
 #find_ups_product( xmlrpc_c v1_25_18 )
 
 find_ups_boost( v1_53_0 system
@@ -58,38 +58,38 @@ find_ups_boost( v1_53_0 system
                         serialization
  )
 
-#find_ups_product( ganglia              v3_2_0 )
-#find_ups_product( novadaqmonitorclient v3_00_00 )
-#find_ups_product( novadaqutilities     v3_00_00 )
+find_ups_product( ganglia              v3_2_0 )
+find_ups_product( novadaqmonitorclient v3_00_00 )
+find_ups_product( novadaqutilities     v3_00_00 )
 
 cet_check_gcc()
 
 
 # define MESSAGEFACILITY
-#find_library( MF_MESSAGELOGGER NAMES MF_MessageLogger
-#                              PATHS $ENV{MESSAGEFACILITY_LIB} )
-#find_library( MF_MESSAGESERVICE NAMES MF_MessageService
-#                              PATHS $ENV{MESSAGEFACILITY_LIB} )
-#find_library( MF_UTILITIES NAMES MF_Utilities
-#                              PATHS $ENV{MESSAGEFACILITY_LIB} )
-#find_library( MF_EXTENSIONS NAMES MF_ExtModules
+find_library( MF_MESSAGELOGGER NAMES MF_MessageLogger
+                              PATHS $ENV{MESSAGEFACILITY_LIB} )
+find_library( MF_MESSAGESERVICE NAMES MF_MessageService
+                              PATHS $ENV{MESSAGEFACILITY_LIB} )
+find_library( MF_UTILITIES NAMES MF_Utilities
+                              PATHS $ENV{MESSAGEFACILITY_LIB} )
+find_library( MF_EXTENSIONS NAMES MF_ExtModules
                               PATHS $ENV{MESSAGEFACILITY_LIB} )
 
 #define ARTDAQ LIBRARIES
-#find_library( ART_DAQ_RATE NAMES artdaq_DAQrate PATHS $ENV{ARTDAQ_LIB} )
-#find_library( ART_DAQ_DATA NAMES artdaq_DAQdata PATHS $ENV{ARTDAQ_LIB} )
+find_library( ART_DAQ_RATE NAMES artdaq_DAQrate PATHS $ENV{ARTDAQ_LIB} )
+find_library( ART_DAQ_DATA NAMES artdaq_DAQdata PATHS $ENV{ARTDAQ_LIB} )
 
 
-#include_directories ( $ENV{GANGLIA_INC})
-#include_directories ( $ENV{XERCES_C_INC})
-#include_directories ( $ENV{MESSAGEFACILITY_INC})
+include_directories ( $ENV{GANGLIA_INC})
+include_directories ( $ENV{XERCES_C_INC})
+include_directories ( $ENV{MESSAGEFACILITY_INC})
 
 #find_library( SIGC    NAMES sigc-2.0  PATHS $ENV{LIBSIGCPP_LIB} NO_DEFAULT_PATH )
 
-#set( GANGLIALIB -L$ENV{GANGLIA_LIB} -lganglia)
-#find_library( MONITORCLIENTLIB NAMES novadaqmonitorclient PATHS $ENV{NOVADAQMONITORCLIENT_LIB} )
-#find_library( DAQUTILITIESLIB NAMES novadaqutilities PATHS $ENV{NOVADAQUTILITIES_LIB} )
-#find_library(XERCESCLIB NAMES xerces-c PATHS $ENV{XERCESCROOT}/lib)
+set( GANGLIALIB -L$ENV{GANGLIA_LIB} -lganglia)
+find_library( MONITORCLIENTLIB NAMES novadaqmonitorclient PATHS $ENV{NOVADAQMONITORCLIENT_LIB} )
+find_library( DAQUTILITIESLIB NAMES novadaqutilities PATHS $ENV{NOVADAQUTILITIES_LIB} )
+find_library(XERCESCLIB NAMES xerces-c PATHS $ENV{XERCESCROOT}/lib)
 
 
 
@@ -115,39 +115,62 @@ endif()
 message(STATUS "Project is ${product} ${version} ${qualifier}")
 
 # macros for art_dictionary and simple_plugin
-#include(ArtDictionary)
-#include(ArtMake)
-#include(BuildPlugins)
+include(ArtDictionary)
+include(ArtMake)
+include(BuildPlugins)
 
 set (COMMON_PROJECT_LIBS
   ${CETLIB}
-#  ${ARTDAQ_DAQDATA}
-#  ${ARTDAQ_DAQRATE}
+  ${ARTDAQ_DAQDATA}
+  ${ARTDAQ_DAQRATE}
   ${Boost_SYSTEM_LIBRARY}
   ${Boost_PROGRAM_OPTIONS_LIBRARY}
   ${Boost_DATE_TIME_LIBRARY}
   ${Boost_THREAD_LIBRARY}
   ${Boost_SERIALIZATION_LIBRARY}
-#  ${MF_MESSAGELOGGER}
-#  ${MF_UTILITIES}
+  ${MF_MESSAGELOGGER}
+  ${MF_UTILITIES}
 #  ${MF_MESSAGESERVICE}
-#  ${MF_EXTENSIONS}
-#  ${GANGLIALIB}
-#  ${MONITORCLIENTLIB}
-#  ${DAQUTILITIESLIB}
-#  ${XERCESCLIB}
-#  ${FHICLCPP}
+  ${MF_EXTENSIONS}
+  ${GANGLIALIB}
+  ${MONITORCLIENTLIB}
+  ${DAQUTILITIESLIB}
+  ${XERCESCLIB}
+  ${FHICLCPP}
   -lpthread
  )
 
-#set_source_files_properties( $ENV{NOVADAQUTILITIES_INC}/NovaDAQUtilities/Runnable.h PROPERTIES COMPILE_FLAGS "-Wno-error=pedantic -Wno-pedantic" )
+set_source_files_properties( $ENV{NOVADAQUTILITIES_INC}/NovaDAQUtilities/Runnable.h PROPERTIES COMPILE_FLAGS "-Wno-error=pedantic -Wno-pedantic" )
 
 
 # source
-#add_subdirectory(datatypes)
+add_subdirectory(share)
+#add_subdirectory(hwutils)
+#add_subdirectory(hwremote)
+add_subdirectory(datatypes)
+#add_subdirectory(sebs)
+#add_subdirectory(host)
+
+
+#add_subdirectory(pabwork)
+#add_subdirectory(dabwork)
+#add_subdirectory(daq_analysis)
+#add_subdirectory(gps)
+
+#add_subdirectory(beamdaq)
+#add_subdirectory(dispatcher)
+#add_subdirectory(online_monitor)
+
+# testing
+#add_subdirectory(test)
+
+# testing
+#add_subdirectory(tools)
 
 # ups - table and config files
 add_subdirectory(ups)
+#add_subdirectory(config)
+#add_subdirectory(scripts)
 
 # packaging utility
 include(UseCPack)
