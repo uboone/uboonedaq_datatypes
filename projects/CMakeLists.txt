@@ -145,32 +145,11 @@ set_source_files_properties( $ENV{NOVADAQUTILITIES_INC}/NovaDAQUtilities/Runnabl
 
 # source
 add_subdirectory(share)
-#add_subdirectory(hwutils)
-#add_subdirectory(hwremote)
 add_subdirectory(datatypes)
-#add_subdirectory(sebs)
-#add_subdirectory(host)
-
-
-#add_subdirectory(pabwork)
-#add_subdirectory(dabwork)
-#add_subdirectory(daq_analysis)
-#add_subdirectory(gps)
-
-#add_subdirectory(beamdaq)
-#add_subdirectory(dispatcher)
-#add_subdirectory(online_monitor)
-
-# testing
-#add_subdirectory(test)
-
-# testing
-#add_subdirectory(tools)
+add_subdirectory(gps)
 
 # ups - table and config files
 add_subdirectory(ups)
-#add_subdirectory(config)
-#add_subdirectory(scripts)
 
 # packaging utility
 include(UseCPack)
