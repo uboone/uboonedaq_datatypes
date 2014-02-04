@@ -10,36 +10,36 @@ cardHeader::cardHeader(){
   bt_card_header.checksum = 0;
 }
 
-uint32_t cardHeader::getID(){
+uint32_t cardHeader::getID() const{
   uint32_t Crate_ID = (((bt_card_header.id_and_module>>16) & 0xfff)>>5) & 0x7f;  //was called mod_id before
   return Crate_ID;
 }
 
-uint32_t cardHeader::getModule(){
+uint32_t cardHeader::getModule() const{
   uint32_t Module = (bt_card_header.id_and_module>>16) & 0x1f;  //was called mod_id before
   return Module;
 }
 
-uint32_t cardHeader::getEvent(){
+uint32_t cardHeader::getEvent() const{
   uint32_t Event = ((bt_card_header.event_number>>16) & 0xfff) + ((bt_card_header.event_number& 0xfff) <<12);
   return Event;
 }
 
-uint32_t cardHeader::getFrame(){
+uint32_t cardHeader::getFrame() const{
   uint32_t Frame = ((bt_card_header.frame_number>>16) & 0xfff) + ((bt_card_header.frame_number & 0xfff) <<12);
   return Frame;
 }
 
-uint32_t cardHeader::getWordCount(){
+uint32_t cardHeader::getWordCount() const{
   uint32_t wc = (  ((bt_card_header.word_count>>16) & 0xfff)+((bt_card_header.word_count & 0xfff)<<12) );
   return wc;
 }
 
-size_t cardHeader::getCardDataSize(){
+size_t cardHeader::getCardDataSize() const{
   size_t DataSize = (getWordCount()+1) * sizeof(uint16_t);
   return DataSize;
 }
 
-uint32_t cardHeader::getChecksum(){
+uint32_t cardHeader::getChecksum() const{
   return bt_card_header.checksum;
 }

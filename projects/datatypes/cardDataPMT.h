@@ -50,8 +50,10 @@ class cardDataPMT {
   void updateIOMode(uint8_t);
   uint8_t getIOMode() { return cardData_IO_mode; }
 
-  std::map<int,channelDataPMT> getChannelMap() { return channel_map; }
-  int getNumberOfChannels() { return channel_map.size(); }
+  typedef std::map<int,channelDataPMT> channelMap_t;
+
+  const channelMap_t& getChannelMap() const { return channel_map; }
+  int getNumberOfChannels() const { return channel_map.size(); }
   void insertChannel(int,channelDataPMT);
   void insertWindow(windowHeaderPMT,windowDataPMT);
 

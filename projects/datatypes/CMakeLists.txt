@@ -55,13 +55,13 @@ art_make_library(LIBRARY_NAME ${LIB_NAME} SOURCE ${LIB_SOURCES}
 LIBRARIES daq_share ${CMAKE_DL_LIBS})
 
 
-add_executable(write_read write_read.cc)
+#add_executable(write_read write_read.cpp)
 
-target_link_libraries(write_read
-    daq_share 
-    ${LIB_NAME}
-    ${COMMON_PROJECT_LIBS}
-    ${CMAKE_DL_LIBS} )
+#target_link_libraries(write_read
+#    daq_share 
+#    ${LIB_NAME}
+#    ${COMMON_PROJECT_LIBS}
+#    ${CMAKE_DL_LIBS} )
 
 # ----------------------------------------------------------------------
 # Install this project's headers, sources, library, and executables:

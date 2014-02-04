@@ -50,8 +50,10 @@ class channelDataPMT {
 
   void clearWindows(){ window_map.clear(); }
 
-  int getNumberOfWindows() { return window_map.size(); }
-  std::map<windowHeaderPMT,windowDataPMT, compareWindowHeaderPMT> getWindowMap() { return window_map; }
+  int getNumberOfWindows() const { return window_map.size(); }
+  
+  typedef std::map<windowHeaderPMT,windowDataPMT, compareWindowHeaderPMT> windowMap_t;
+  const windowMap_t& getWindowMap() const { return window_map; }
 
  private:
   std::map<windowHeaderPMT,windowDataPMT,compareWindowHeaderPMT> window_map;

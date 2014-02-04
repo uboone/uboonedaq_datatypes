@@ -57,7 +57,8 @@ class crateDataPMT {
 
   void insertCard(cardHeaderPMT,cardDataPMT);
 
-  std::map<cardHeaderPMT,cardDataPMT,compareCardHeaderPMT> getCardMap() { return card_map;}
+  typedef std::map<cardHeaderPMT,cardDataPMT,compareCardHeaderPMT> cardMap_t;
+  const cardMap_t& getCardMap() const { return card_map; }
 
  private:
   uint8_t crateData_IO_mode;
@@ -65,8 +66,8 @@ class crateDataPMT {
   std::shared_ptr<char> crate_data_ptr;
   size_t crate_data_size;
   
-  eventHeader event_header;
-  std::map<cardHeaderPMT,cardDataPMT,compareCardHeaderPMT> card_map;
+  eventHeader  event_header;
+  cardMap_t    card_map;
   eventTrailer event_trailer;
 
   friend class boost::serialization::access;

@@ -46,8 +46,10 @@ class cardData {
   void updateIOMode(uint8_t,int);
   uint8_t getIOMode() { return cardData_IO_mode; }
 
-  std::map<int,channelData> getChannelMap() { return channel_map; }
-  int getNumberOfChannels() { return channel_map.size(); }
+  typedef std::map<int,channelData> channelMap_t;
+  const channelMap_t& getChannelMap() const { return channel_map; }
+  
+  int getNumberOfChannels() const { return channel_map.size(); }
   void insertChannel(int,channelData);
 
   void decompress();
@@ -58,7 +60,7 @@ class cardData {
 
   uint8_t cardData_IO_mode;
 
-  std::map<int,channelData> channel_map;
+  channelMap_t channel_map;
 
   friend class boost::serialization::access;
   

@@ -33,20 +33,20 @@ class windowHeaderPMT {
   windowHeaderPMT();
   windowHeaderPMT(pmt_window_header_t wH) { bt_pmt_window_header = wH; }
 
-  uint16_t getChannelAndDiscWord() { return bt_pmt_window_header.ch_and_disc; }
-  uint16_t getFrameAndSample1Word() { return bt_pmt_window_header.frame_and_sample1; }
-  uint16_t getSample2Word() { return bt_pmt_window_header.sample2; }
+  uint16_t getChannelAndDiscWord() const { return bt_pmt_window_header.ch_and_disc; }
+  uint16_t getFrameAndSample1Word() const { return bt_pmt_window_header.frame_and_sample1; }
+  uint16_t getSample2Word() const { return bt_pmt_window_header.sample2; }
 
-  void setChannelAndDiscWord(uint16_t word) { bt_pmt_window_header.ch_and_disc = word; }
+  void setChannelAndDiscWord(uint16_t word)  { bt_pmt_window_header.ch_and_disc = word; }
   void setFrameAndSample1Word(uint16_t word) { bt_pmt_window_header.frame_and_sample1 = word; }
-  void setSample2Word(uint16_t word) { bt_pmt_window_header.sample2 = word; }
+  void setSample2Word(uint16_t word)         { bt_pmt_window_header.sample2 = word; }
   
-  uint8_t getChannelNumber();
-  uint8_t getDiscriminant();
-  uint32_t getSample();
-  uint16_t getFrame();
+  uint8_t getChannelNumber() const;
+  uint8_t getDiscriminant() const;
+  uint32_t getSample() const;
+  uint16_t getFrame() const;
 
-  pmt_window_header_t getWindowHeader() { return bt_pmt_window_header; }
+  pmt_window_header_t getWindowHeader() const { return bt_pmt_window_header; }
   void setWindowHeader(pmt_window_header_t wH) { bt_pmt_window_header = wH; }
  
 

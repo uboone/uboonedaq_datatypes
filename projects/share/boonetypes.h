@@ -3,7 +3,7 @@
 #include <sys/types.h>
 #include <inttypes.h>
 #include "event_types.h"
-#include "trigBoardClock.h"
+#include "gps/trigBoardClock.h"
 
 /**
    Note: these are hardcoded structs that are used by the sebs for processing.
@@ -131,7 +131,7 @@ typedef struct gps_time
  **/
 typedef struct crate_header
 {
-  bool complete; //bit for knowing if sub-event is guaranteed complete
+  bool     complete; // 1 if sub-event is guaranteed complete, 0 otherwise.
   uint16_t crateBits; // word=fedcba9876543210 ... bits [0-3] = 4 bits for crate 0 through 9
                       //                           bits [4-7] = 4 bits for crate type (PMT/TPC)
                       //                           bits [8-f] = 8 bits currently open

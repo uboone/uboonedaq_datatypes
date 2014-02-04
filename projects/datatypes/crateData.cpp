@@ -1,4 +1,5 @@
 #include "crateData.h"
+#include <stdexcept>
 
 using namespace gov::fnal::uboone::datatypes;
 
@@ -44,11 +45,12 @@ void crateData::updateIOMode(uint8_t new_mode){
 	      (char*)memblkEH.get());
     event_header.setEventHeader(*memblkEH);
     data_read += sizeof(event_header_t);
+    if(event_header.getHeader() != 0xffffffff) throw std::runtime_error("Bad crate event_header word.");
     // std::cout << "crateData.cpp read event_header: 0x" << std::hex << memblkEH->header << std::endl;
     
     int cards_read = 0;
     while(1){
-            // std::cout << "crateData.cpp Reading card header at position " << data_read << std::endl;
+      // std::cout << "crateData.cpp Reading card header at position " << data_read << std::endl;
       std::unique_ptr<card_header_t> memblkCardH(new card_header_t);
       std::copy(getCrateDataPtr() + data_read,
 		getCrateDataPtr() + data_read + sizeof(card_header_t),
@@ -58,9 +60,10 @@ void crateData::updateIOMode(uint8_t new_mode){
       cardHeader cardH(*memblkCardH);
       size_t cardDataSize = cardH.getCardDataSize();
 
-        // std::cout << "Card header ...\n"
-  // << std::hex << memblkCardH->id_and_module << " " << memblkCardH->word_count << " " 
-  // << memblkCardH->event_number << " " << memblkCardH->frame_number<< " " << memblkCardH->checksum << std::dec << std::endl;
+       // std::cout << "Card header ...\n"
+         //       << std::hex << "id 0x"<< memblkCardH->id_and_module << "  word_count 0x" << memblkCardH->word_count 
+         //       << " event: 0x" << memblkCardH->event_number << " frame: 0x" << memblkCardH->frame_number<< " checksum: 0x" << memblkCardH->checksum 
+         //               << "  getWordCount(): 0x" << cardH.getWordCount() << " cardDataSize: 0x" << cardDataSize << std::dec << std::endl;
 
 
       std::shared_ptr<char> card_data(new char[cardDataSize]);
@@ -84,7 +87,7 @@ void crateData::updateIOMode(uint8_t new_mode){
 	  channel_data_size = cardDataSize/64; //64 channels in each FEM
 	
 
-  // std::cout << "Channel data size is " << channel_data_size << std::endl;        
+        // std::cout << "Channel data size is " << channel_data_size << std::endl;        
 	cardD.updateIOMode(new_mode,channel_data_size);
       }
 
@@ -100,6 +103,8 @@ void crateData::updateIOMode(uint8_t new_mode){
     }
     event_trailer.setEventTrailer(*memblkET);
     data_read += sizeof(event_trailer_t);
+    if(event_header.getHeader() != 0xe0000000) throw std::runtime_error("Bad crate event_trailer word.");
+    
     // std::cout << "crateData.cpp read " << std::dec << cards_read << " cards with " << data_read << " bytes." << std::endl;    
     crate_data_ptr.reset();
 

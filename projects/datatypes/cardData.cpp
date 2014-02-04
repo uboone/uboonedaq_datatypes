@@ -45,7 +45,7 @@ void cardData::updateIOMode(uint8_t new_mode, int total_size=0){
 		(char*)channel_header.get());
       total_data_read += size16;
       
-      // std::cout << "Channel header " << std::hex << *channel_header << std::endl;
+      // std::cout << "Channel header " << std::hex << *channel_header << "  preset channel size = " << (total_size)<< std::endl;
 
       if(total_size > 0){
 
@@ -66,10 +66,10 @@ void cardData::updateIOMode(uint8_t new_mode, int total_size=0){
 
         // std::cout << " unpacking cardData with " << std::dec << channel_data_size 
         //           << " first words: " << std::hex 
-        //         << (unsigned int)(unsigned char)channel_data_ptr[0] << " "
-        //         << (unsigned int)(unsigned char)channel_data_ptr[1] << " "
-        //         << (unsigned int)(unsigned char)channel_data_ptr[2] << " "
-        //         << (unsigned int)(unsigned char)channel_data_ptr[3] << " "                                  
+        //         << (unsigned int)(*channel_data_ptr+0) << " "
+        //         << (unsigned int)(*channel_data_ptr+1) << " "
+        //         << (unsigned int)(*channel_data_ptr+2) << " "
+        //         << (unsigned int)(*channel_data_ptr+3) << " "                                  
         //                           << std::endl;
 
 	//now initialise channelData object, and store in map
@@ -94,6 +94,7 @@ void cardData::updateIOMode(uint8_t new_mode, int total_size=0){
 	    channel_data_size += size16;
 	}//end while over channel data
 	
+        // std::cout << "read channel with channel_data_size = " << channel_data_size << std::endl;
 	//pointer to the channel data
 	std::shared_ptr<char> channel_data_ptr(new char[channel_data_size]);
 	std::copy(getCardDataPtr() + total_data_read - channel_data_size - size16,

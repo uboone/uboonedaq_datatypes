@@ -45,7 +45,7 @@ class crateData {
   crateData(std::shared_ptr<char> data_ptr, size_t size)
     { crate_data_ptr.swap(data_ptr); crate_data_size=size; crateData_IO_mode = IO_GRANULARITY_CRATE; }
 
-  size_t getCrateDataSize() {return crate_data_size;}
+  size_t getCrateDataSize() const {return crate_data_size;}
   void setCrateDataSize(size_t size) { crate_data_size = size; }
 
   char* getCrateDataPtr();// { return crate_data_ptr.get(); }
@@ -58,7 +58,9 @@ class crateData {
   
   void decompress();
 
-  std::map<cardHeader,cardData,compareCardHeader> getCardMap() { return card_map;}
+  typedef std::map<cardHeader,cardData,compareCardHeader> cardMap_t;
+  cardMap_t getCardMap() { return card_map;}
+  const cardMap_t& getCardMap() const { return card_map;}
 
  private:
   uint8_t crateData_IO_mode;
@@ -67,7 +69,7 @@ class crateData {
   size_t crate_data_size;
   
   eventHeader event_header;
-  std::map<cardHeader,cardData,compareCardHeader> card_map;
+  cardMap_t   card_map;
   eventTrailer event_trailer;
 
   friend class boost::serialization::access;

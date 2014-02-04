@@ -34,15 +34,15 @@ class crateHeader {
   crateHeader();
   crateHeader(crate_header_t cH) {  bt_crate_header = cH; }
   
-  bool getCrateComplete() { return bt_crate_header.complete; }
-  uint32_t getCrateSize() { return bt_crate_header.size; }
-  uint8_t getCrateNumber() { return bt_crate_header.crate_number; }
-  uint8_t getCardCount() { return bt_crate_header.card_count; }
-  uint32_t getCrateEventNumber() { return bt_crate_header.event_number; }
-  uint32_t getCrateFrameNumber() { return bt_crate_header.frame_number; }
-  uint8_t getCrateType() { return (uint8_t)((bt_crate_header.crateBits >> 4) & 0xf ); }
+  bool getCrateComplete() const { return bt_crate_header.complete; }
+  uint32_t getCrateSize() const { return bt_crate_header.size; }
+  uint8_t getCrateNumber() const { return bt_crate_header.crate_number; }
+  uint8_t getCardCount() const { return bt_crate_header.card_count; }
+  uint32_t getCrateEventNumber() const { return bt_crate_header.event_number; }
+  uint32_t getCrateFrameNumber() const { return bt_crate_header.frame_number; }
+  uint8_t getCrateType() const { return (uint8_t)((bt_crate_header.crateBits >> 4) & 0xf ); }
 
-  void setCrateComplete(bool value) { bt_crate_header.complete = value; }
+  void setCrateComplete(bool value)  { bt_crate_header.complete = value; }
   void setCrateSize(uint32_t size) { bt_crate_header.size = size; }
   void setCrateNumber(uint8_t cnum) { bt_crate_header.crate_number = cnum; }
   void setCardCount(uint8_t ccnt) { bt_crate_header.card_count = ccnt; }
@@ -50,10 +50,10 @@ class crateHeader {
   void setCrateFrameNumber(uint32_t frame) { bt_crate_header.frame_number = frame; }
   void setCrateType(uint8_t type) { bt_crate_header.crateBits = (bt_crate_header.crateBits & 0xf) + (type << 4); }
 
-  crate_header_t getCrateHeader() { return bt_crate_header; }
+  crate_header_t getCrateHeader() const { return bt_crate_header; }
   void setCrateHeader(crate_header_t cH) { bt_crate_header = cH; }
 
- private:
+ // private:
   crate_header_t bt_crate_header;
 
   friend class boost::serialization::access;

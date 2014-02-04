@@ -42,10 +42,11 @@ class windowDataPMT {
       std::copy(wd_ptr,wd_ptr+wd_size,data_ptr.get());
       window_data_ptr.swap(data_ptr); }
 
-  char* getWindowDataPtr() { return window_data_ptr.get(); }
+  char*       getWindowDataPtr()       { return window_data_ptr.get(); }
+  const char* getWindowDataPtr() const { return window_data_ptr.get(); }
   void setWindowDataPtr(char* ptr) {window_data_ptr.reset(ptr);}
 
-  size_t getWindowDataSize() {return window_data_size;}
+  size_t getWindowDataSize() const {return window_data_size;}
   void setWindowDataSize(size_t size) { window_data_size = size; }
 
  private:

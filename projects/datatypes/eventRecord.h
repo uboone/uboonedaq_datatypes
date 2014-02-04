@@ -60,6 +60,9 @@ class eventRecord {
   void insertSEB(crateHeader,crateDataPMT); //in .cpp file
   //void insertSEB_PMT(crateHeader,crateDataPMT); //in .cpp file
   //void insertSEB_TPC(crateHeader,crateData); //in .cpp file
+
+  typedef std::map<crateHeader,crateData,compareCrateHeader> sebMap_t;
+  typedef std::map<crateHeader,crateDataPMT,compareCrateHeader> sebMapPMT_t;
   
   globalHeader getGlobalHeader() { return global_header; }
   triggerData getTriggerData() { return trigger_data; }
@@ -67,8 +70,8 @@ class eventRecord {
   beamHeader getBeamHeader() { return beam_header; }
 
   std::vector<beamData> getBeamDataVector() { return beam_data_vector; }
-  std::map<crateHeader,crateData,compareCrateHeader> getSEBMap() { return seb_map; }
-  std::map<crateHeader,crateDataPMT,compareCrateHeader> getSEBPMTMap() { return seb_pmt_map; }
+  const sebMap_t&    getSEBMap()    const { return seb_map; }
+  const sebMapPMT_t& getSEBPMTMap() const { return seb_pmt_map; }
 
   globalHeader* getGlobalHeaderPtr() { return &global_header; }
   triggerData* getTriggerDataPtr() { return &trigger_data; }
@@ -94,8 +97,8 @@ class eventRecord {
   globalHeader global_header;
   triggerData trigger_data;
   gps gps_data;
-  std::map<crateHeader,crateData,compareCrateHeader> seb_map;
-  std::map<crateHeader,crateDataPMT,compareCrateHeader> seb_pmt_map;
+  sebMap_t    seb_map;
+  sebMapPMT_t seb_pmt_map;
   beamHeader beam_header;
   std::vector<beamData> beam_data_vector;
   

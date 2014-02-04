@@ -48,14 +48,14 @@ class cardHeader {
   card_header_t getCardHeader() { return bt_card_header; }
   void setCardHeader(card_header_t cardH) { bt_card_header = cardH; }
 
-  uint32_t getID();
-  uint32_t getModule();
-  uint32_t getEvent();
-  uint32_t getFrame();
-  uint32_t getChecksum();
-  uint32_t getWordCount();
+  uint32_t getID() const;
+  uint32_t getModule() const;
+  uint32_t getEvent() const;
+  uint32_t getFrame() const;
+  uint32_t getChecksum() const;
+  uint32_t getWordCount() const;
  
-  size_t getCardDataSize();
+  size_t getCardDataSize() const;
 
  private:
   card_header_t bt_card_header;
