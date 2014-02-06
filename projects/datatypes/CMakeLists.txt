@@ -4,7 +4,7 @@ project(datatypes)
 # ----------------------------------------------------------------------
 # Build this project's library:
 
-set( LIB_NAME daq_datatypes)
+set( LIB_NAME udata_types)
 
 
 set(LIB_SOURCES
@@ -52,13 +52,13 @@ set_source_files_properties(triggerData.cpp PROPERTIES COMPILE_FLAGS "-Wno-unuse
 set_source_files_properties(eventRecord.cpp PROPERTIES COMPILE_FLAGS "-Wno-unused-variable -Wno-deprecated-declarations -Wno-unused-function -Wno-sign-compare -Wno-unused-parameter -Wno-format -Wno-unused-but-set-variable -Wno-return-type")
 
 art_make_library(LIBRARY_NAME ${LIB_NAME} SOURCE ${LIB_SOURCES}
-LIBRARIES daq_share ${CMAKE_DL_LIBS})
+LIBRARIES udata_share ${CMAKE_DL_LIBS})
 
 
 #add_executable(write_read write_read.cpp)
 
 #target_link_libraries(write_read
-#    daq_share 
+#    udata_share 
 #    ${LIB_NAME}
 #    ${COMMON_PROJECT_LIBS}
 #    ${CMAKE_DL_LIBS} )

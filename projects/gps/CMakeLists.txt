@@ -1,10 +1,10 @@
 # project name
-project(daq_gps)
+project(udata_gps)
 
 # ----------------------------------------------------------------------
 # Build this project's library:
 
-set( LIB_NAME daq_gps)
+set( LIB_NAME udata_gps)
 
 find_ups_product( windriver        v11_00_00 )
 include_directories ( $ENV{WINDRIVER_INC} )

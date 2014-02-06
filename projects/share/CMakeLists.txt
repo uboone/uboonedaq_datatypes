@@ -1,10 +1,10 @@
 # project name
-project(daq_share)
+project(udata_share)
 
 # ----------------------------------------------------------------------
 # Build this project's library:
 
-set( LIB_NAME daq_share)
+set( LIB_NAME udata_share)
 
 include_directories ( $ENV{WINDRIVER_INC} )
 set( WINDRIVERLIB "-L$ENV{WINDRIVER_LIB} -lwdapi1100 -lnevispcie")
@@ -14,7 +14,7 @@ event_types.cpp
 )
 
 
-art_make_library(LIBRARY_NAME daq_share SOURCE ${LIB_SOURCES} LIBRARIES ${COMMON_PROJECT_LIBS})
+art_make_library(LIBRARY_NAME udata_share SOURCE ${LIB_SOURCES} LIBRARIES ${COMMON_PROJECT_LIBS})
 
 
 # ----------------------------------------------------------------------
