@@ -103,7 +103,7 @@ void crateData::updateIOMode(uint8_t new_mode){
     }
     event_trailer.setEventTrailer(*memblkET);
     data_read += sizeof(event_trailer_t);
-    if(event_header.getHeader() != 0xe0000000) throw std::runtime_error("Bad crate event_trailer word.");
+    if(event_trailer.getTrailer() != 0xe0000000) throw std::runtime_error("Bad crate event_trailer word.");
     
     // std::cout << "crateData.cpp read " << std::dec << cards_read << " cards with " << data_read << " bytes." << std::endl;    
     crate_data_ptr.reset();
