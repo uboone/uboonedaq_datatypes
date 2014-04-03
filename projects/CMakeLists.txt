@@ -146,6 +146,7 @@ set_source_files_properties( $ENV{NOVADAQUTILITIES_INC}/NovaDAQUtilities/Runnabl
 # source
 add_subdirectory(share)
 add_subdirectory(datatypes)
+add_subdirectory(datatypes_utilities)
 add_subdirectory(gps)
 
 # ups - table and config files
