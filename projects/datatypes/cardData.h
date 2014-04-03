@@ -37,14 +37,15 @@ class cardData {
   cardData(std::shared_ptr<char> data_ptr, size_t size)
     { card_data_ptr.swap(data_ptr); card_data_size=size; cardData_IO_mode = IO_GRANULARITY_CARD;}
 
-  char* getCardDataPtr();
+  char* getCardDataPtr() const;
   void setCardDataPtr(char*);
 
-  size_t getCardDataSize() {return card_data_size;}
+  size_t getCardDataSize() const {return card_data_size;}
   void setCardDataSize(size_t size) { card_data_size = size; }
 
   void updateIOMode(uint8_t,int);
-  uint8_t getIOMode() { return cardData_IO_mode; }
+  //uint8_t getIOMode() { return cardData_IO_mode; }
+  uint8_t getIOMode() const { return cardData_IO_mode; }
 
   typedef std::map<int,channelData> channelMap_t;
   const channelMap_t& getChannelMap() const { return channel_map; }
