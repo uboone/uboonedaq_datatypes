@@ -35,7 +35,7 @@ void cardData::updateIOMode(uint8_t new_mode, int total_size=0){
   if(new_mode >= IO_GRANULARITY_CHANNEL && cardData_IO_mode < IO_GRANULARITY_CHANNEL){
     size_t total_data_read = 0;
     const size_t size16 = sizeof(uint16_t);
-    std::cout << "Start card." << std::endl;
+    // std::cout << "Start card." << std::endl;
 
     while(total_data_read < card_data_size){
       
