@@ -7,7 +7,7 @@ char* crateData::getCrateDataPtr(){
   
   if(crateData_IO_mode >= IO_GRANULARITY_CARD){
     std::cout << "ERROR! Granularity is above crate level." 
-	      << "Cannot return pointer to crate data!" << std::endl;
+              << "Cannot return pointer to crate data!" << std::endl;
     return nullptr;
   }
   else {
@@ -19,7 +19,7 @@ void crateData::setCrateDataPtr(char* ptr){
 
   if(crateData_IO_mode >= IO_GRANULARITY_CARD){
     std::cout << "ERROR! Granularity is above crate level." 
-	      << "Cannot set pointer to crate data!" << std::endl;
+              << "Cannot set pointer to crate data!" << std::endl;
   }
   else {
     crate_data_ptr.reset(ptr);
@@ -35,14 +35,15 @@ void crateData::updateIOMode(uint8_t new_mode){
   const size_t size16 = sizeof(uint16_t);
 
   if(new_mode >= IO_GRANULARITY_CARD && crateData_IO_mode < IO_GRANULARITY_CARD){
-
+    // Current granularity is crate, wanted is card or channel.
+    
     size_t data_read = 0;
     std::unique_ptr<event_header_t> memblkEH(new event_header_t);
     std::unique_ptr<event_trailer_t> memblkET(new event_trailer_t);
 
     std::copy(getCrateDataPtr() + data_read,
-	      getCrateDataPtr() + data_read + sizeof(event_header_t),
-	      (char*)memblkEH.get());
+              getCrateDataPtr() + data_read + sizeof(event_header_t),
+              (char*)memblkEH.get());
     event_header.setEventHeader(*memblkEH);
     data_read += sizeof(event_header_t);
     if(event_header.getHeader() != 0xffffffff) throw std::runtime_error("Bad crate event_header word.");
@@ -53,8 +54,8 @@ void crateData::updateIOMode(uint8_t new_mode){
       // std::cout << "crateData.cpp Reading card header at position " << data_read << std::endl;
       std::unique_ptr<card_header_t> memblkCardH(new card_header_t);
       std::copy(getCrateDataPtr() + data_read,
-		getCrateDataPtr() + data_read + sizeof(card_header_t),
-		(char*)memblkCardH.get());
+                getCrateDataPtr() + data_read + sizeof(card_header_t),
+                (char*)memblkCardH.get());
       data_read += sizeof(card_header_t);
       
       cardHeader cardH(*memblkCardH);
@@ -68,27 +69,34 @@ void crateData::updateIOMode(uint8_t new_mode){
 
       std::shared_ptr<char> card_data(new char[cardDataSize]);
       std::copy(getCrateDataPtr() + data_read,
-		getCrateDataPtr() + data_read + cardDataSize,
-		(char*)card_data.get());
+                getCrateDataPtr() + data_read + cardDataSize,
+                (char*)card_data.get());
       //wait to increment data_read until after updating channel granularity
 
       cardData cardD(card_data,cardDataSize);
       if(new_mode == IO_GRANULARITY_CHANNEL) {
-     
-	std::unique_ptr<uint16_t> data_word(new uint16_t);
-	std::copy(getCrateDataPtr() + data_read + size16*3, //we want the 3rd word in channel
-		  getCrateDataPtr() + data_read + size16*4,
-		  (char*)data_word.get());
-	
-	//for non-Huffman coded data, we can directly get the channel data size
+        // We've unpacked the card, now unpack the channel.
+        
+        int channel_data_size = -1; // By default, assume variable-length channel records, i.e. huffman-encoded.
+
+        // Check to see if data is huffman or flat.
+        // NJT - Alas, this check doesn't work. It's entirely possible the huffman bit isn't in that word,
+        // and in fact it's even LIKELY for noisy data. We could go through all the words looking for the huffman
+        // bit, but without a clue from the electronics the safest thing is to put everything through
+ 
+        //for non-Huffman coded data, we can directly get the channel data size
         // std::cout << "Data word is " << std::hex << *data_word << std::dec << std::endl;
-	int channel_data_size = -1;
-	if( !(*data_word & 0x8000) )
-	  channel_data_size = cardDataSize/64; //64 channels in each FEM
-	
+
+        // std::unique_ptr<uint16_t> data_word(new uint16_t);
+        //  std::copy(getCrateDataPtr() + data_read + size16*3, //we want the 3rd word in channel
+        //            getCrateDataPtr() + data_read + size16*4,
+        //            (char*)data_word.get());
+        //  if( !(*data_word & 0x8000) )
+        //    channel_data_size = cardDataSize/64; //64 channels in each FEM
+        
 
         // std::cout << "Channel data size is " << channel_data_size << std::endl;        
-	cardD.updateIOMode(new_mode,channel_data_size);
+        cardD.updateIOMode(new_mode,channel_data_size);
       }
 
       //now increment the data_read variable
@@ -97,8 +105,8 @@ void crateData::updateIOMode(uint8_t new_mode){
       insertCard(cardH,cardD);
       cards_read++;
       std::copy(getCrateDataPtr() + data_read,
-		getCrateDataPtr() + data_read + sizeof(event_trailer_t),
-		(char*)memblkET.get());
+                getCrateDataPtr() + data_read + sizeof(event_trailer_t),
+                (char*)memblkET.get());
       if(memblkET->trailer == 0xe0000000) break;
     }
     event_trailer.setEventTrailer(*memblkET);
@@ -118,16 +126,21 @@ void crateData::updateIOMode(uint8_t new_mode){
 
       size_t cardDataSize = (card_it->second).getCardDataSize();
 
-      //check for Huffman coding
-      std::unique_ptr<uint16_t> data_word(new uint16_t);
-      std::copy((card_it->second).getCardDataPtr() + size16*2, //we want the 3rd word in channel
-		(card_it->second).getCardDataPtr() + size16*3,
-		(char*)data_word.get());
-      
-      //for non-Huffman coded data, we can directly get the channel data size
-      int channel_data_size = -1;
-      if( !(*data_word & 0x8000) )
-	channel_data_size = cardDataSize/64; //64 channels in each FEM
+      int channel_data_size = -1; // Assume variable-length / huffman-compressed
+
+      // check for Huffman coding
+      // NJT - Alas, this check doesn't work. It's entirely possible the huffman bit isn't in that word,
+      // and in fact it's even LIKELY for noisy data. We could go through all the words looking for the huffman
+      // bit, but without a clue from the electronics the safest thing is to put everything through
+      //
+      // std::unique_ptr<uint16_t> data_word(new uint16_t);
+      // std::copy((card_it->second).getCardDataPtr() + size16*2, //we want the 3rd word in channel
+      //           (card_it->second).getCardDataPtr() + size16*3,
+      //           (char*)data_word.get());
+      // 
+      // //for non-Huffman coded data, we can directly get the channel data size      
+      // if( !(*data_word & 0x8000) )
+      //   channel_data_size = cardDataSize/64; //64 channels in each FEM
               
       (card_it->second).updateIOMode(new_mode,channel_data_size);
       

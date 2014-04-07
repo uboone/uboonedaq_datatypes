@@ -46,8 +46,12 @@ void cardData::updateIOMode(uint8_t new_mode, int total_size=0){
                 (char*)channel_header.get());
       total_data_read += size16;
       
-      if(((*channel_header)&0xF000)!=0x4000) throw std::runtime_error("Bad channel_header word.");
-      // std::cout << "Channel header " << std::hex << *channel_header << "  preset channel size = " << (total_size)<< std::endl;
+      // std::cout << "Channel header " << std::hex << *channel_header << "  preset channel size = " << std::dec << (total_size)
+      //  << " 0x" << std::hex << ((*channel_header)&0xF000) << std::dec << std::endl;
+      if(((*channel_header)&0xF000)!=0x4000) {
+        throw std::runtime_error("Bad channel_header word.");
+          
+      }
 
       if(total_size > 0){
 

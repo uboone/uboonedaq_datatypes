@@ -23,12 +23,26 @@ eventRecord::eventRecord() {
 void eventRecord::updateIOMode(uint8_t mode) {
 
   std::map<crateHeader,crateData>::iterator seb_it;
-  for( seb_it = seb_map.begin(); seb_it != seb_map.end(); seb_it++)
-    (seb_it->second).updateIOMode(mode);
+  for( seb_it = seb_map.begin(); seb_it != seb_map.end(); seb_it++){
+    try {
+      (seb_it->second).updateIOMode(mode);
+    } catch (std::runtime_error& e) {
+      int crate = (seb_it->first).getCrateNumber();
+      std::string err = "Error unpacking TPC crate " + std::to_string(crate) + std::string(": ")+  e.what();
+      throw std::runtime_error(err);
+    }
+  }
 
   std::map<crateHeader,crateDataPMT>::iterator seb_pmt_it;
-  for( seb_pmt_it = seb_pmt_map.begin(); seb_pmt_it != seb_pmt_map.end(); seb_pmt_it++)
-    (seb_pmt_it->second).updateIOMode(mode);
+  for( seb_pmt_it = seb_pmt_map.begin(); seb_pmt_it != seb_pmt_map.end(); seb_pmt_it++) {
+    try {
+      (seb_pmt_it->second).updateIOMode(mode);
+    } catch (std::runtime_error& e) {
+      int crate = (seb_it->first).getCrateNumber();
+      std::string err = "Error unpacking PMT crate " + std::to_string(crate) + std::string(": ")+  e.what();
+      throw std::runtime_error(err);
+    }
+  }
 
   er_IO_mode = mode; //eventRecords io_mode
 }
