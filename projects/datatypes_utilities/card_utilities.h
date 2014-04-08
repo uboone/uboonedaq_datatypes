@@ -11,6 +11,9 @@
 #include "datatypes/cardHeader.h"
 #include "datatypes/cardData.h"
 #include "datatypes/channelData.h"
+#include "datatypes/cardHeaderPMT.h"
+#include "datatypes/cardDataPMT.h"
+#include "datatypes/channelDataPMT.h"
 
 namespace gov {
 namespace fnal {
@@ -21,9 +24,12 @@ namespace utilities {
   using namespace gov::fnal::uboone::datatypes;
 
   //gives difference between header and sum of card data
-  long compareCheckSum(cardHeader const& cH, cardData const& cD);
+  long compareCheckSum(cardHeader    const& cH, cardData    const& cD);
+  long compareCheckSum(cardHeaderPMT const& cH, cardDataPMT const& cD);
+  
   uint32_t getCheckSumFromDataBlock(const char* data_ptr,size_t data_size);
   uint32_t getCheckSumFromChannel(channelData const& chD);
+  uint32_t getCheckSumFromChannel(channelDataPMT const& chD); // FIXME doesn't work
 
 }
 }

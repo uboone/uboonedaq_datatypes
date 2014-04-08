@@ -42,7 +42,7 @@ size_t cardHeaderPMT::getCardDataSize() const{
 }
 
 uint32_t cardHeaderPMT::getChecksum() const{
-  return bt_pmt_card_header.checksum;
+  return ((bt_pmt_card_header.checksum &0xFFF) << 12) + ((bt_pmt_card_header.checksum >> 16)&0xFFF);
 }
 
 uint32_t cardHeaderPMT::getTrigFrame() const{

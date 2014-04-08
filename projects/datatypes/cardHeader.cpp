@@ -41,5 +41,5 @@ size_t cardHeader::getCardDataSize() const{
 }
 
 uint32_t cardHeader::getChecksum() const{
-  return bt_card_header.checksum;
+  return ((bt_card_header.checksum &0xFFF) << 12) + ((bt_card_header.checksum >> 16)&0xFFF);
 }

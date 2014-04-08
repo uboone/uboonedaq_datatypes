@@ -3,7 +3,7 @@
 using namespace gov::fnal::uboone::datatypes;
 
 
-char* cardDataPMT::getCardDataPtr(){
+char* cardDataPMT::getCardDataPtr() const{
   
   if(cardData_IO_mode >= IO_GRANULARITY_CHANNEL){
     std::cout << "ERROR! Granularity is above card level." 
