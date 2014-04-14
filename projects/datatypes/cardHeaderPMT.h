@@ -57,6 +57,7 @@ class cardHeaderPMT {
   uint32_t getChecksum() const;
   uint32_t getWordCount() const;
   uint32_t getTrigFrame() const;
+  uint8_t  getTrigFrameMod16() const;
   uint32_t getTrigSample() const;
  
   size_t getCardDataSize() const;

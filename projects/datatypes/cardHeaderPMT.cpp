@@ -45,13 +45,23 @@ uint32_t cardHeaderPMT::getChecksum() const{
   return ((bt_pmt_card_header.checksum &0xFFF) << 12) + ((bt_pmt_card_header.checksum >> 16)&0xFFF);
 }
 
+uint8_t cardHeaderPMT::getTrigFrameMod16() const{
+  return ((bt_pmt_card_header.trig_frame_and_sample>>4) & 0xF);
+}
+
 uint32_t cardHeaderPMT::getTrigFrame() const{
-  uint32_t Trig_Frame = (((bt_pmt_card_header.trig_frame_and_sample>>16) & 0xfff)>>4 & 0xf) + (((getFrame())>>4)<<4);
-  return Trig_Frame;
+  // Attempt to resolve the rollover situation: the lower 4 bits are given by the trigger frame, which should crudely match the upper bits from the course frame. 
+  // Here is how I resolved it --- Nathaniel
+  uint32_t frameCourse = getFrame();
+  uint32_t option1 = (getFrame()&0xFFFFFFF0) | (getTrigFrameMod16());
+  if(abs(option1-frameCourse) < 8) return option1; // if within 8 ticks, this solution is fine.
+  int32_t diff = option1 - frameCourse;
+  if(diff>0) return option1 - 0x10; // Option 2: trig is very low, so make more significant digit roll up one
+  return option1 + 0x10; // The other option.
 }
 
 uint32_t cardHeaderPMT::getTrigSample() const{
-  uint32_t Trig_Sample = (((bt_pmt_card_header.trig_frame_and_sample>>16) & 0xf)<<8) + (bt_pmt_card_header.trig_frame_and_sample & 0xff);
+  uint32_t Trig_Sample = ((bt_pmt_card_header.trig_frame_and_sample >> 16) & 0xFF) + ((bt_pmt_card_header.trig_frame_and_sample & 0xF)<<8);
   return Trig_Sample;
 }
 
