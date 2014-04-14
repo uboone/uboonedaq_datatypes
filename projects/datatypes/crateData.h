@@ -49,6 +49,7 @@ class crateData {
   void setCrateDataSize(size_t size) { crate_data_size = size; }
 
   char* getCrateDataPtr();// { return crate_data_ptr.get(); }
+  const char* getCrateDataPtr() const;// { return crate_data_ptr.get(); }
   void setCrateDataPtr(char*);// {crate_data_ptr.reset(ptr);}
 
   void updateIOMode(uint8_t);
