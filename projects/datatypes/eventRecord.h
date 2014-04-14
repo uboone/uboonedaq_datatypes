@@ -72,6 +72,8 @@ class eventRecord {
   std::vector<beamData> getBeamDataVector() { return beam_data_vector; }
   const sebMap_t&    getSEBMap()    const { return seb_map; }
   const sebMapPMT_t& getSEBPMTMap() const { return seb_pmt_map; }
+  sebMap_t&    getSEBMap()    { return seb_map; }
+  sebMapPMT_t& getSEBPMTMap() { return seb_pmt_map; }
 
   globalHeader* getGlobalHeaderPtr() { return &global_header; }
   triggerData* getTriggerDataPtr() { return &trigger_data; }

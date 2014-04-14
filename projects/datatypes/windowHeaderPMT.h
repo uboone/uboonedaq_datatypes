@@ -23,7 +23,7 @@ using namespace gov::fnal::uboone;
 /***
    Note: this is the serialization class for the hardcoded pmt_window_header_t struct.
    If there is a change there, it needs to be made here too. If there is a 
-   change made here, it may do no good without a change there.
+   change made there, it may do no good without a change there.
 ***/
 
 
