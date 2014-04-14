@@ -14,6 +14,18 @@ char* crateDataPMT::getCrateDataPtr(){
   }
 }
 
+const char* crateDataPMT::getCrateDataPtr() const{
+  
+  if(crateData_IO_mode >= IO_GRANULARITY_CARD){
+    std::cout << "ERROR! Granularity is above crate level." 
+	      << "Cannot return pointer to crate data!" << std::endl;
+    return nullptr;
+  }
+  else {
+    return crate_data_ptr.get();
+  }
+}
+
 void crateDataPMT::setCrateDataPtr(char* ptr){
 
   if(crateData_IO_mode >= IO_GRANULARITY_CARD){

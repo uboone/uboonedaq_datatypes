@@ -46,10 +46,11 @@ class crateDataPMT {
   crateDataPMT(std::shared_ptr<char> data_ptr, size_t size)
     { crate_data_ptr.swap(data_ptr); crate_data_size=size; crateData_IO_mode = IO_GRANULARITY_CRATE; }
 
-  size_t getCrateDataSize() {return crate_data_size;}
+  size_t getCrateDataSize() const {return crate_data_size;}
   void setCrateDataSize(size_t size) { crate_data_size = size; }
 
   char* getCrateDataPtr();// { return crate_data_ptr.get(); }
+  const char* getCrateDataPtr() const;// { return crate_data_ptr.get(); }
   void setCrateDataPtr(char*);// {crate_data_ptr.reset(ptr);}
 
   void updateIOMode(uint8_t);
