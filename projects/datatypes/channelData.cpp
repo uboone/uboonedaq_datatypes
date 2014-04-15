@@ -72,7 +72,7 @@ void channelData::decompress(){
             }
             // std::cout << "huff out @ " << std::dec << uncompressed_vector.size() << "  0x" << std::hex << outword << std::endl;
             uncompressed_vector.push_back(outword);
-            // last_uncompressed_word = outword;   // Activite this line is delta is from last word, instead of last EXPLICIT
+            last_uncompressed_word = outword;   // Activite this line is delta is from last word. Comment out this line if diff is from the last EXPLICIT word, instead of the last huffman-compressed word.
             zero_count=0;
           }
         }
