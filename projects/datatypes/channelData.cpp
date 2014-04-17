@@ -1,8 +1,9 @@
+#include "channelData.h"
+
 #include <vector>
 #include <bitset>
 #include <fstream>
-
-#include "channelData.h"
+#include <stdexcept>
 
 using namespace gov::fnal::uboone::datatypes;
 

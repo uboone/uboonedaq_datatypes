@@ -1,4 +1,5 @@
 #include "cardData.h"
+#include <stdexcept>
 
 using namespace gov::fnal::uboone::datatypes;
 
