@@ -2,7 +2,10 @@
 #include "datatypes/constants.h"
 #include <stdexcept>
 
-using namespace gov::fnal::uboone::datatypes;
+namespace gov {
+namespace fnal {
+namespace uboone {
+namespace datatypes {
 
 long utilities::compareCheckSum(cardHeader const& cH, cardData const& cD){
 
@@ -128,3 +131,5 @@ uint32_t utilities::getCheckSumFromChannel(channelDataPMT const& chD)
 //   return checksum_value;
 // 
 }
+
+}}}} // namespaceage
