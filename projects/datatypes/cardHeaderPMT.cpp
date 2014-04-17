@@ -54,10 +54,10 @@ uint32_t cardHeaderPMT::getTrigFrame() const{
   // Here is how I resolved it --- Nathaniel
   uint32_t frameCourse = getFrame();
   uint32_t option1 = (getFrame()&0xFFFFFFF0) | (getTrigFrameMod16());
-  if(abs(option1-frameCourse) < 8) return option1; // if within 8 ticks, this solution is fine.
-  int32_t diff = option1 - frameCourse;
-  if(diff>0) return option1 - 0x10; // Option 2: trig is very low, so make more significant digit roll up one
-  return option1 + 0x10; // The other option.
+  int32_t diff = option1-frameCourse;
+  if(diff > 8) return option1 - 0x10; // Solution is too high; rollover down
+  if(diff < 8) return option1 + 0x10; // Solution is too low; rollover up.
+  return option1; // if within 8 ticks, this solution is fine.
 }
 
 uint32_t cardHeaderPMT::getTrigSample() const{
