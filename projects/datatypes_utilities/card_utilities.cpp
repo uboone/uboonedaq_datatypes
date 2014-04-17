@@ -1,5 +1,6 @@
 #include "card_utilities.h"
 #include "datatypes/constants.h"
+#include <stdexcept>
 
 using namespace gov::fnal::uboone::datatypes;
 
@@ -29,7 +30,7 @@ long utilities::compareCheckSum(cardHeader const& cH, cardData const& cD){
   }
 
   else{
-    std::cout << "ERROR! Unworkable IO mode." << std::endl;
+    throw std::runtime_error("gov::fnal::uboone::datatypes::compareCheckSum ERROR! Unworkable IO mode.");
     return -9999;
   }
 
@@ -67,7 +68,7 @@ long utilities::compareCheckSum(cardHeaderPMT const& cH, cardDataPMT const& cD){
   }
 
   else{
-    std::cout << "ERROR! Unworkable IO mode." << std::endl;
+    throw std::runtime_error("gov::fnal::uboone::datatypes::compareCheckSum ERROR! Unworkable IO mode.");
     return -9999;
   }
 

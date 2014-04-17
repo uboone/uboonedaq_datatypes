@@ -1,12 +1,13 @@
 #include "crateDataPMT.h"
+#include <iostream> // for debugging
+#include <stdexcept>
 
 using namespace gov::fnal::uboone::datatypes;
 
 char* crateDataPMT::getCrateDataPtr(){
   
   if(crateData_IO_mode >= IO_GRANULARITY_CARD){
-    std::cout << "ERROR! Granularity is above crate level." 
-	      << "Cannot return pointer to crate data!" << std::endl;
+    throw std::runtime_error("crateDataPMT::getCardDataPtr() ERROR! Granularity is above crate level.");
     return nullptr;
   }
   else {
@@ -17,8 +18,7 @@ char* crateDataPMT::getCrateDataPtr(){
 const char* crateDataPMT::getCrateDataPtr() const{
   
   if(crateData_IO_mode >= IO_GRANULARITY_CARD){
-    std::cout << "ERROR! Granularity is above crate level." 
-	      << "Cannot return pointer to crate data!" << std::endl;
+    throw std::runtime_error("crateDataPMT::getCardDataPtr() ERROR! Granularity is above crate level.");
     return nullptr;
   }
   else {
@@ -29,8 +29,7 @@ const char* crateDataPMT::getCrateDataPtr() const{
 void crateDataPMT::setCrateDataPtr(char* ptr){
 
   if(crateData_IO_mode >= IO_GRANULARITY_CARD){
-    std::cout << "ERROR! Granularity is above crate level." 
-	      << "Cannot set pointer to crate data!" << std::endl;
+    throw std::runtime_error("crateDataPMT::setCardDataPtr() ERROR! Granularity is above crate level.");
   }
   else {
     crate_data_ptr.reset(ptr);
