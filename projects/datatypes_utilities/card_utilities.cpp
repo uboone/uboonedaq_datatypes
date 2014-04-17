@@ -18,14 +18,14 @@ long utilities::compareCheckSum(cardHeader const& cH, cardData const& cD){
 
   long data_value = 0;
   if(io_mode == IO_GRANULARITY_CARD)
-    data_value = (long)(getCheckSumFromDataBlock(cD.getCardDataPtr(),cD.getCardDataSize()));
+    data_value = (long)(utilities::getCheckSumFromDataBlock(cD.getCardDataPtr(),cD.getCardDataSize()));
   
 
   else if(io_mode == IO_GRANULARITY_CHANNEL){
 
     uint32_t data_sum = 0;
     for(auto channel : cD.getChannelMap())
-      data_sum += getCheckSumFromChannel(channel.second);
+      data_sum += utilities::getCheckSumFromChannel(channel.second);
     data_sum = data_sum & 0x00ffffff;
     
     data_value = (long)(data_sum);
@@ -53,7 +53,7 @@ long utilities::compareCheckSum(cardHeaderPMT const& cH, cardDataPMT const& cD){
 
   long data_value = 0;
   if(io_mode == IO_GRANULARITY_CARD)
-    data_value = (long)(getCheckSumFromDataBlock(
+    data_value = (long)(utilities::getCheckSumFromDataBlock(
         cD.getCardDataPtr(),
         cD.getCardDataSize() -2 // Via Kazu: Ignore the last word of data; the trailer word doesn't count.
           ));
@@ -63,7 +63,7 @@ long utilities::compareCheckSum(cardHeaderPMT const& cH, cardDataPMT const& cD){
 
     uint32_t data_sum = 0;
     for(auto channel : cD.getChannelMap())
-      data_sum += getCheckSumFromChannel(channel.second);
+      data_sum += utilities::getCheckSumFromChannel(channel.second);
     data_sum = data_sum & 0x00ffffff;
     
     data_value = (long)(data_sum);
