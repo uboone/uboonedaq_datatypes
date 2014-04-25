@@ -21,7 +21,7 @@ namespace datatypes {
 
 namespace constants
 {
-  const int VERSION = 3; // A dB query eventually.
+  const int VERSION = 4; // A dB query eventually. // NJT: shouldn't this match major version number for datatypes package?
     // ... other related constants
 
 } // namespace constants
