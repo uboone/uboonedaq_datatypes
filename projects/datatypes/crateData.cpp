@@ -7,7 +7,7 @@ char* crateData::getCrateDataPtr(){
   
   if(crateData_IO_mode >= IO_GRANULARITY_CARD){
     std::cout << "ERROR! Granularity is above crate level." 
-              << "Cannot return pointer to crate data!" << std::endl;
+              << "Cannot return pointer to TPC crate data!" << std::endl;
     return nullptr;
   }
   else {
@@ -18,7 +18,7 @@ char* crateData::getCrateDataPtr(){
 const char* crateData::getCrateDataPtr() const{
   if(crateData_IO_mode >= IO_GRANULARITY_CARD){
     std::cout << "ERROR! Granularity is above crate level." 
-              << "Cannot return pointer to crate data!" << std::endl;
+              << "Cannot return pointer to TPC crate data!" << std::endl;
     return nullptr;
   }
   else {
@@ -30,7 +30,7 @@ void crateData::setCrateDataPtr(char* ptr){
 
   if(crateData_IO_mode >= IO_GRANULARITY_CARD){
     std::cout << "ERROR! Granularity is above crate level." 
-              << "Cannot set pointer to crate data!" << std::endl;
+              << "Cannot set pointer to TPC crate data!" << std::endl;
   }
   else {
     crate_data_ptr.reset(ptr);
@@ -49,34 +49,30 @@ void crateData::updateIOMode(uint8_t new_mode){
     // Current granularity is crate, wanted is card or channel.
     
     size_t data_read = 0;
-    std::unique_ptr<event_header_t> memblkEH(new event_header_t);
-    std::unique_ptr<event_trailer_t> memblkET(new event_trailer_t);
+    const char* ptr = getCrateDataPtr();
 
-    std::copy(getCrateDataPtr() + data_read,
-              getCrateDataPtr() + data_read + sizeof(event_header_t),
-              (char*)memblkEH.get());
-    event_header.setEventHeader(*memblkEH);
+    // Read the crate header, make sure it looks right.
+    event_header_t* header = (event_header_t*)ptr;
+    event_header.setEventHeader(*header);
     data_read += sizeof(event_header_t);
-    if(event_header.getHeader() != 0xffffffff) throw std::runtime_error("Bad crate event_header word.");
-    // std::cout << "crateData.cpp read event_header: 0x" << std::hex << memblkEH->header << std::endl;
+    if(event_header.getHeader() != 0xffffffff) throw std::runtime_error("Bad tpc crate event_header word.");
     
     int cards_read = 0;
-    while(1){
-      // std::cout << "crateData.cpp Reading card header at position " << data_read << std::endl;
-      std::unique_ptr<card_header_t> memblkCardH(new card_header_t);
-      std::copy(getCrateDataPtr() + data_read,
-                getCrateDataPtr() + data_read + sizeof(card_header_t),
-                (char*)memblkCardH.get());
+    bool done = false;    
+    while(!done){
+      // Sanity check: is there enough data left in the buffer to read a single card_header?
+      if(crate_data_size - data_read < sizeof(card_header_t))  throw std::runtime_error("TPC data error - not enough data to form a card header.");
+      
+
+      // Copy the card header into a datatypes class:
+      card_header_t* my_card_header = (card_header_t*)(ptr+data_read);
       data_read += sizeof(card_header_t);
       
-      cardHeader cardH(*memblkCardH);
+      cardHeader cardH(*my_card_header);
       size_t cardDataSize = cardH.getCardDataSize();
-
-       // std::cout << "Card header ...\n"
-         //       << std::hex << "id 0x"<< memblkCardH->id_and_module << "  word_count 0x" << memblkCardH->word_count 
-         //       << " event: 0x" << memblkCardH->event_number << " frame: 0x" << memblkCardH->frame_number<< " checksum: 0x" << memblkCardH->checksum 
-         //               << "  getWordCount(): 0x" << cardH.getWordCount() << " cardDataSize: 0x" << cardDataSize << std::dec << std::endl;
-
+      
+      // Sanity check. 
+      if(data_read + cardDataSize > crate_data_size) throw std::runtime_error("TPC cardDataSize error - card data bigger than remaining crate data.");
 
       std::shared_ptr<char> card_data(new char[cardDataSize]);
       std::copy(getCrateDataPtr() + data_read,
@@ -113,16 +109,32 @@ void crateData::updateIOMode(uint8_t new_mode){
       //now increment the data_read variable
       data_read += cardDataSize;
 
+      // Got a header and data object for this card. Put it in the map.
       insertCard(cardH,cardD);
       cards_read++;
-      std::copy(getCrateDataPtr() + data_read,
-                getCrateDataPtr() + data_read + sizeof(event_trailer_t),
-                (char*)memblkET.get());
-      if(memblkET->trailer == 0xe0000000) break;
+
+
+      // Do we have enough space left to see another card header?
+      if(data_read + sizeof(card_header_t) > crate_data_size) {
+
+        // No. Let's see if there's an end-of-event record in here.
+        // std::cout << "Check for end. crate_data_size: " << crate_data_size << " data_read: " << data_read << std::endl;
+        for( size_t offset = 0; offset < (crate_data_size-data_read); offset+= size16){
+          event_trailer_t* trailer = ((event_trailer_t*)(ptr + data_read+ offset));
+          // std::cout << "trailer: " << trailer->trailer << std::endl;
+          if(trailer->trailer==0xe0000000){
+            event_trailer.setEventTrailer(*trailer);
+            data_read += offset + sizeof(event_trailer_t);
+            done = true;
+            break;
+          }
+        }
+        if(!done)     // Hmm. There's not enough room for another card header, but we didn't find a trailer. Problem!  
+          throw std::runtime_error("Could not find event_trailer word.");
+      }
     }
-    event_trailer.setEventTrailer(*memblkET);
-    data_read += sizeof(event_trailer_t);
-    if(event_trailer.getTrailer() != 0xe0000000) throw std::runtime_error("Bad crate event_trailer word.");
+
+    if(event_trailer.getTrailer() != 0xe0000000) throw std::runtime_error("Bad event_trailer word."); // shouldn't ever happen.
     
     // std::cout << "crateData.cpp read " << std::dec << cards_read << " cards with " << data_read << " bytes." << std::endl;    
     crate_data_ptr.reset();
