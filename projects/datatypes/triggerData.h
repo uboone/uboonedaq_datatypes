@@ -38,7 +38,7 @@ class triggerData {
   uint16_t getSampleRemainder() const { return ((bt_trigger_data.word1 >> 1)&0x7); }
   bool     getBusy()            const { return (bt_trigger_data.word1 &0x1); }
   uint32_t getFrame()           const { return (bt_trigger_data.word2 + ((bt_trigger_data.word3&0xFF)<<16)); }
-  uint32_t getTriggerNumber()   const { return ((bt_trigger_data.word3>>8) + ((bt_trigger_data.word4<<8))); }
+  uint32_t getTrigEventNum()   const { return ((bt_trigger_data.word3>>8) + ((bt_trigger_data.word4<<8))); }
   uint16_t  getTriggerBits()    const { return (bt_trigger_data.word5 & 0x7FFF);}
   bool     getPhase64Mhz_1()    const { return (bt_trigger_data.word5>>15);}
   bool     getPhase64Mhz_2()    const { return (bt_trigger_data.word6 & 0x1);}
