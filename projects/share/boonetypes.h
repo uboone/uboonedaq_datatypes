@@ -144,31 +144,8 @@ typedef struct crate_header
   uint32_t frame_number; // Frame #
   gps_time_t gps_time; // Inserted for SEB-10 only in rawFragmentDMASource.cpp: PPS time
   tbclkub_t daqClock_time; // Inserted for SEB-10 only in rawFragmentDMASource.cpp: PPS frame/sample/div  
-  
-  // Version 4 additions:
- 
-  uint32_t seb_time_sec;  // Read time on SEB. Seconds since the epoch
-  uint32_t seb_time_usec; //                   Microseconds since the second
-  uint32_t reserved01;
-  uint32_t reserved02;
-  uint32_t reserved03;
-  uint32_t reserved04;
-  uint32_t reserved05;
-  uint32_t reserved06;
-  uint32_t reserved07;
-  uint32_t reserved08;
-  uint32_t reserved09;
-  uint32_t reserved10;
-  uint32_t reserved11;
-  uint32_t reserved12;
-  uint32_t reserved13;
-  uint32_t reserved14;
-  uint32_t reserved15;
-  uint32_t reserved16;
-  uint32_t reserved17;
-  uint32_t reserved18;
-  uint32_t reserved19;
-  uint32_t reserved20;
+  uint32_t seb_time_sec;  // Read time on SEB. Added v4. Seconds since the epoch.
+  uint32_t seb_time_usec; //                             Microseconds since the second
   
 } crate_header_t;
 

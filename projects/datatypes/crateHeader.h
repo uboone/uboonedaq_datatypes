@@ -86,26 +86,7 @@ class crateHeader {
        	   & bt_crate_header.frame_number
            & bt_crate_header.seb_time_sec
            & bt_crate_header.seb_time_usec
-           & bt_crate_header.reserved01
-           & bt_crate_header.reserved02
-           & bt_crate_header.reserved03
-           & bt_crate_header.reserved04
-           & bt_crate_header.reserved05
-           & bt_crate_header.reserved06
-           & bt_crate_header.reserved07
-           & bt_crate_header.reserved08
-           & bt_crate_header.reserved09
-           & bt_crate_header.reserved10
-           & bt_crate_header.reserved11
-           & bt_crate_header.reserved12
-           & bt_crate_header.reserved13
-           & bt_crate_header.reserved14
-           & bt_crate_header.reserved15
-           & bt_crate_header.reserved16
-           & bt_crate_header.reserved17
-           & bt_crate_header.reserved18
-           & bt_crate_header.reserved19
-           & bt_crate_header.reserved20
+          
            ;
     }
 
