@@ -6,8 +6,7 @@ using namespace gov::fnal::uboone::datatypes;
 char* crateData::getCrateDataPtr(){
   
   if(crateData_IO_mode >= IO_GRANULARITY_CARD){
-    std::cout << "ERROR! Granularity is above crate level." 
-              << "Cannot return pointer to TPC crate data!" << std::endl;
+    throw std::runtime_error("crateData::getCardDataPtr() ERROR! Granularity is above crate level.");
     return nullptr;
   }
   else {
@@ -17,8 +16,7 @@ char* crateData::getCrateDataPtr(){
 
 const char* crateData::getCrateDataPtr() const{
   if(crateData_IO_mode >= IO_GRANULARITY_CARD){
-    std::cout << "ERROR! Granularity is above crate level." 
-              << "Cannot return pointer to TPC crate data!" << std::endl;
+    throw std::runtime_error("crateData::getCrateDataPtr() ERROR! Granularity is above crate level.");
     return nullptr;
   }
   else {
@@ -29,8 +27,7 @@ const char* crateData::getCrateDataPtr() const{
 void crateData::setCrateDataPtr(char* ptr){
 
   if(crateData_IO_mode >= IO_GRANULARITY_CARD){
-    std::cout << "ERROR! Granularity is above crate level." 
-              << "Cannot set pointer to TPC crate data!" << std::endl;
+    throw std::runtime_error("crateData::setCrateDataPtr() ERROR! Granularity is above crate level.");
   }
   else {
     crate_data_ptr.reset(ptr);

@@ -1,5 +1,6 @@
 #include "cardData.h"
 #include <stdexcept>
+#include <iostream> // For debugging
 
 using namespace gov::fnal::uboone::datatypes;
 
@@ -7,8 +8,7 @@ using namespace gov::fnal::uboone::datatypes;
 char* cardData::getCardDataPtr() const{
   
   if(cardData_IO_mode >= IO_GRANULARITY_CHANNEL){
-    std::cout << "ERROR! Granularity is above card level." 
-              << "Cannot return pointer to card data!" << std::endl;
+    throw std::runtime_error("cardData::getCardDataPtr() ERROR! Granularity is above card level.");
     return nullptr;
   }
   else{
@@ -19,8 +19,7 @@ char* cardData::getCardDataPtr() const{
 void cardData::setCardDataPtr(char* ptr){
 
   if(cardData_IO_mode >= IO_GRANULARITY_CHANNEL){
-    std::cout << "ERROR! Granularity is above card level." 
-              << "Cannot set pointer to card data!" << std::endl;
+    throw std::runtime_error("cardData::setCardDataPtr() ERROR! Granularity is above card level.");
   }
   else{
     card_data_ptr.reset(ptr);
