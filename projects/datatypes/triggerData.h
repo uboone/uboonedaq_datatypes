@@ -34,15 +34,23 @@ class triggerData {
   triggerData();
   triggerData(trigger_data_t bt) { bt_trigger_data = bt; }
 
-  uint32_t getTrigEventNum() { return bt_trigger_data.trig_event_num; }
-  uint16_t getTrigEventType() { return bt_trigger_data.trig_event_type; }
-  uint16_t getFrame() { return bt_trigger_data.frame; }
-  uint64_t getClock() { return bt_trigger_data.clock; }
+  uint16_t getSampleNumber()    const { return (bt_trigger_data.word1>>4); }
+  uint16_t getSampleRemainder() const { return ((bt_trigger_data.word1 >> 1)&0x7); }
+  bool     getBusy()            const { return (bt_trigger_data.word1 &0x1); }
+  uint32_t getFrame()           const { return (bt_trigger_data.word2 + ((bt_trigger_data.word3&0xFF)<<16)); }
+  uint32_t getTriggerNumber()   const { return ((bt_trigger_data.word3>>8) + ((bt_trigger_data.word4<<8))); }
+  uint16_t  getTriggerBits()    const { return (bt_trigger_data.word5 & 0x7FFF);}
+  bool     getPhase64Mhz_1()    const { return (bt_trigger_data.word5>>15);}
+  bool     getPhase64Mhz_2()    const { return (bt_trigger_data.word6 & 0x1);}
 
-  void setTrigEventNum(uint32_t event) {bt_trigger_data.trig_event_num = event;}
-  void setTrigEventType(uint16_t type) {bt_trigger_data.trig_event_type = type;}
-  void setFrame(uint16_t frame) {bt_trigger_data.frame = frame;}
-  void setClock(uint64_t clock) {bt_trigger_data.clock = clock;}
+  // Synonyms for back-compatability.
+  uint16_t getTrigEventType()   const { return (bt_trigger_data.word5 & 0x7FFF);}
+  uint64_t getClock()           const { return (bt_trigger_data.word1>>4); }
+
+  // void setTrigEventNum(uint32_t event) {bt_trigger_data.trig_event_num = event;}
+  // void setTrigEventType(uint16_t type) {bt_trigger_data.trig_event_type = type;}
+  // void setFrame(uint16_t frame) {bt_trigger_data.frame = frame;}
+  // void setClock(uint64_t clock) {bt_trigger_data.clock = clock;}
 
  private:
   trigger_data_t bt_trigger_data;
@@ -52,10 +60,14 @@ class triggerData {
     void serialize(Archive & ar, const unsigned int version)
     {
       if( version >0 )
-	ar & bt_trigger_data.trig_event_num
-	   & bt_trigger_data.trig_event_type
-	   & bt_trigger_data.frame
-	   & bt_trigger_data.clock;
+	ar & bt_trigger_data.word1
+	   & bt_trigger_data.word2
+	   & bt_trigger_data.word3
+	   & bt_trigger_data.word4
+ 	   & bt_trigger_data.word5
+	   & bt_trigger_data.word6
+	   & bt_trigger_data.word7
+	   & bt_trigger_data.word8;
     }
 };
 

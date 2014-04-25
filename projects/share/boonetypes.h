@@ -39,18 +39,20 @@ typedef struct gps {
 } gps_t;  /* 8 bytes */
 
 
-/* the trigger_data structure includes everything the
- * trigger is going to send to assembler. Will come faithfully
- * from trigger card. Hence, below is only a guess. Need to
- * get this from Chi/Bill.
+/* Not very well-structured, but the bits are all scrambled so this is actually easiest to manipulate.
+ * See the datatypes code for unpacking. --NJT
  */
 #define N_ACTIVITY_HIST 4
 typedef struct trigger_data {
-  uint32_t     trig_event_num;  /* trigger_event_number */
-  uint16_t     trig_event_type; /* trigger event type e.g. beam, calib */
-  uint16_t frame;  /* frame # where trigger happened*/
-  uint64_t clock;  /* Master Crate Clock value where trigger happened*/
-} trigger_data_t;  /* xyz bytes */
+  uint16_t    word1; /* holds sample number, reminder, busy flag      */
+  uint16_t    word2; /* holds frame number (low bits)                 */
+  uint16_t    word3; /* hold trigger number, frame number (high bits) */
+  uint16_t    word4; /* holds trigger number (high bits)              */
+  uint16_t    word5; /* holds trigger bits                            */
+  uint16_t    word6; /* bit0 is phase[1], rest is unusued             */
+  uint16_t    word7; /* unused, should be 0xffff                      */
+  uint16_t    word8; /* unused, should be 0xfff                       */
+} trigger_data_t;  /* total 16 bytes */
 
 
 /** EVENT Control Words. These should be at begin and end of each crate.
