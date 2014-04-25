@@ -41,6 +41,8 @@ class crateHeader {
   uint32_t getCrateEventNumber() const { return bt_crate_header.event_number; }
   uint32_t getCrateFrameNumber() const { return bt_crate_header.frame_number; }
   uint8_t getCrateType() const { return (uint8_t)((bt_crate_header.crateBits >> 4) & 0xf ); }
+  uint32_t getSebTimeSec() const { return bt_crate_header.seb_time_sec; }
+  uint32_t getSebTimeUsec() const { return bt_crate_header.seb_time_usec; }
 
   void setCrateComplete(bool value)  { bt_crate_header.complete = value; }
   void setCrateSize(uint32_t size) { bt_crate_header.size = size; }
@@ -49,6 +51,8 @@ class crateHeader {
   void setCrateEventNumber(uint32_t event) { bt_crate_header.event_number = event; }
   void setCrateFrameNumber(uint32_t frame) { bt_crate_header.frame_number = frame; }
   void setCrateType(uint8_t type) { bt_crate_header.crateBits = (bt_crate_header.crateBits & 0xf) + (type << 4); }
+  void setSebTimeSec(uint32_t sec) { bt_crate_header.seb_time_sec = sec; }
+  void setSebTimeUec(uint32_t usec) { bt_crate_header.seb_time_usec = usec; }
 
   crate_header_t getCrateHeader() const { return bt_crate_header; }
   void setCrateHeader(crate_header_t cH) { bt_crate_header = cH; }
