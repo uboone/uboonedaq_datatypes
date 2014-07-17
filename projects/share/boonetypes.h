@@ -83,6 +83,7 @@ typedef struct card_header
   uint32_t event_number;  
   uint32_t frame_number;  
   uint32_t checksum;
+  uint32_t trig_frame_and_sample;  
 }card_header_t;
 
 
