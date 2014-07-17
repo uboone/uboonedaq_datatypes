@@ -46,7 +46,7 @@ uint32_t cardHeader::getChecksum() const{
 }
 
 uint8_t cardHeader::getTrigFrameMod16() const{
-  return ((bt_pmt_card_header.trig_frame_and_sample>>4) & 0xF);
+  return ((bt_card_header.trig_frame_and_sample>>4) & 0xF);
 }
 
 uint32_t cardHeader::getTrigFrame() const{
@@ -61,6 +61,6 @@ uint32_t cardHeader::getTrigFrame() const{
 }
 
 uint32_t cardHeader::getTrigSample() const{
-  uint32_t Trig_Sample = ((bt_pmt_card_header.trig_frame_and_sample >> 16) & 0xFF) + ((bt_pmt_card_header.trig_frame_and_sample & 0xF)<<8);
+  uint32_t Trig_Sample = ((bt_card_header.trig_frame_and_sample >> 16) & 0xFF) + ((bt_card_header.trig_frame_and_sample & 0xF)<<8);
   return Trig_Sample;
 }
