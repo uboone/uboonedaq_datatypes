@@ -8,6 +8,7 @@ cardHeader::cardHeader(){
   bt_card_header.event_number = 0;
   bt_card_header.frame_number = 0;
   bt_card_header.checksum = 0;
+  bt_card_header.trig_frame_and_sample = 0;
 }
 
 uint32_t cardHeader::getID() const{
@@ -42,4 +43,24 @@ size_t cardHeader::getCardDataSize() const{
 
 uint32_t cardHeader::getChecksum() const{
   return ((bt_card_header.checksum &0xFFF) << 12) + ((bt_card_header.checksum >> 16)&0xFFF);
+}
+
+uint8_t cardHeader::getTrigFrameMod16() const{
+  return ((bt_card_header.trig_frame_and_sample>>4) & 0xF);
+}
+
+uint32_t cardHeader::getTrigFrame() const{
+  // Attempt to resolve the rollover situation: the lower 4 bits are given by the trigger frame, which should crudely match the upper bits from the course frame. 
+  // Here is how I resolved it --- Nathaniel
+  uint32_t frameCourse = getFrame();
+  uint32_t option1 = (getFrame()&0xFFFFFFF0) | (getTrigFrameMod16());
+  int32_t diff = option1-frameCourse;
+  if(diff > 8) return option1 - 0x10; // Solution is too high; rollover down
+  if(diff < 8) return option1 + 0x10; // Solution is too low; rollover up.
+  return option1; // if within 8 ticks, this solution is fine.
+}
+
+uint32_t cardHeader::getTrigSample() const{
+  uint32_t Trig_Sample = ((bt_card_header.trig_frame_and_sample >> 16) & 0xFF) + ((bt_card_header.trig_frame_and_sample & 0xF)<<8);
+  return Trig_Sample;
 }

@@ -38,12 +38,14 @@ class cardHeader {
   uint32_t getEventWord() { return bt_card_header.event_number; }
   uint32_t getFrameWord() { return bt_card_header.frame_number; }  
   uint32_t getChecksumWord() { return bt_card_header.checksum; }
+  uint32_t getTrigFrameAndSampleWord() { return bt_card_header.trig_frame_and_sample; }
   
   void setIDAndModuleWord(uint32_t word) { bt_card_header.id_and_module = word; }
   void setWordCountWord(uint32_t word) { bt_card_header.word_count = word; }
   void setEventNumberWord(uint32_t word) { bt_card_header.event_number = word; }
   void setFrameNumberWord(uint32_t word) { bt_card_header.frame_number = word; }  
   void setChecksumWord(uint32_t word) { bt_card_header.checksum = word; }
+  void setTrigFrameAndSampleWord(uint32_t word) { bt_card_header.trig_frame_and_sample = word; }
 
   card_header_t getCardHeader() { return bt_card_header; }
   void setCardHeader(card_header_t cardH) { bt_card_header = cardH; }
@@ -54,6 +56,9 @@ class cardHeader {
   uint32_t getFrame() const;
   uint32_t getChecksum() const;
   uint32_t getWordCount() const;
+  uint32_t getTrigFrame() const;
+  uint8_t  getTrigFrameMod16() const;
+  uint32_t getTrigSample() const;
  
   size_t getCardDataSize() const;
 
@@ -65,7 +70,14 @@ class cardHeader {
   template<class Archive>
     void serialize(Archive & ar, const unsigned int version)
     {
-      if(version>0)
+      if(version>=5)
+	ar & bt_card_header.id_and_module
+	   & bt_card_header.word_count
+	   & bt_card_header.event_number
+ 	   & bt_card_header.frame_number
+	   & bt_card_header.checksum
+	   & bt_card_header.trig_frame_and_sample;
+      else if(version>0)
 	ar & bt_card_header.id_and_module
 	   & bt_card_header.word_count
 	   & bt_card_header.event_number
