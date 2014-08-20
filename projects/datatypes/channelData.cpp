@@ -1,7 +1,22 @@
-#include <vector>
 #include "channelData.h"
 
+#include <vector>
+#include <bitset>
+#include <fstream>
+#include <stdexcept>
+
 using namespace gov::fnal::uboone::datatypes;
+
+// The Huffman tree used here assigns the following values:
+//
+// Value   Code
+//  +3     0000001
+//  +2     00001
+//  +1     001
+//  +0     1
+//  -1     01
+//  -2     0001
+//  -3     000001
 
 void channelData::decompress(){
 
@@ -10,84 +25,73 @@ void channelData::decompress(){
   const size_t size16 = sizeof(uint16_t);
   std::unique_ptr<uint16_t> word(new uint16_t);
   std::vector<uint16_t> uncompressed_vector;
+  uncompressed_vector.reserve(9600);
+  
+  uint16_t* words = (uint16_t*)getChannelDataPtr();
+  size_t    nwords = channel_data_size/size16;
+  uint16_t last_uncompressed_word = 0;
 
-  for(uint iword = 0; iword < channel_data_size; iword++){
+  // Dump check for debugging.
+  // std::ofstream of("hufform.dump");
 
-    std::copy(getChannelDataPtr() + iword*size16,
-	      getChannelDataPtr() + (iword+1)*size16,
-	      (char*)word.get());
+  for(size_t iword = 0; iword < nwords; iword++){
+
+    uint16_t word = words[iword];
+    // of << iword << "\t" << word << std::endl; // Dump for debugging.
 
     //if it's not a compressed word, just put it on the uncompressed vector
-    if( (*word & 0xf000)==0x0000 )
-      uncompressed_vector.push_back(*word);
+    if( (word & 0x8000)==0 ) {
+      // std::cout << "uncompressed word " << std::hex << word << std::endl;
+      last_uncompressed_word = word&0x7ff;
+      //std::cout << "huff out @ " << std::dec << uncompressed_vector.size() << "  0x" << std::hex << last_uncompressed_word << std::endl;
+      uncompressed_vector.push_back( last_uncompressed_word );
     
-    else if( (*word & 0x8000)==0x8000 ){
+    } else {  // huffman bit on.
+       // std::cout << "compressed word 0x" << std::hex << word << " b" << (std::bitset<16>) word << std::endl;
 
-      i_bit=0; //initialize bit counter
 
-      // now it's time to go look for the codes
-      while(i_bit<15){
-
-	if( (((*word)>>i_bit)&0x1) == 0x1 ){ //here is our code
-
-	  i_zero = 0; //initialize zero counter
-	  while(i_bit<15){
-
-	    if( (( (*word)>>(i_bit+1) ) & 0x1) == 0x0 ){
-	      i_zero++;
-	    }
-	    else if( (( (*word)>>(i_bit+1) ) & 0x1) == 0x1 ){
-
-	      if (i_zero==0){//difference: current-previous= 0
-		uncompressed_vector.push_back( (*word)&0x7ff );
-	      }
-	      else if (i_zero==1){//difference: current-previous= -1
-		uncompressed_vector.push_back( ((*word)&0x7ff) - 1 );
-	      }
-	      else if (i_zero==2){//difference +1
-		uncompressed_vector.push_back( ((*word)&0x7ff) + 1 );
-	      }
-	      else if (i_zero==3){//difference -2
-		uncompressed_vector.push_back( ((*word)&0x7ff) - 2 );
-	      }
-	      else if (i_zero==4){//difference +2
-		uncompressed_vector.push_back( ((*word)&0x7ff) + 2 );
-	      }
-	      else if (i_zero==5){//difference -3
-		uncompressed_vector.push_back( ((*word)&0x7ff) - 3 );
-	      }
-	      else if (i_zero==6){//difference +3
-		uncompressed_vector.push_back( ((*word)&0x7ff) + 3 );
-	      }
-	      else {
-		std::cout << "Something went wrong?" << std::endl;
-		return;
-	      }
-
-	      i_zero=0;
-	    }//end else if 0x1
-
-	    i_bit++;
-	  }//end inside while over bit counter
-	}//end if we have a code
-
-	else{
-	  i_bit++;
-	}
-
-      }//end outside while
-
-    }//end if huffman compressed word
-
-    else{
-      std::cout << "ERROR!!!!!" << std::endl;
-      return;
-    }
-
+      uint16_t outword;
+      size_t zero_count = 0;
+      bool   non_zero_found = false;
+      for(size_t index=0; index<16; ++index){
+        if( !((word >> index) & 0x1) ) {
+          if(non_zero_found) zero_count ++; // Count zeros IF we're past the padding in the right-hand bits.
+        }else{
+          if(!non_zero_found) non_zero_found= true;
+          else {
+            switch(zero_count) { // subst 
+              case 0: outword = last_uncompressed_word;    break;
+              case 1: outword = last_uncompressed_word -1; break;
+              case 2: outword = last_uncompressed_word +1; break;
+              case 3: outword = last_uncompressed_word -2; break;
+              case 4: outword = last_uncompressed_word +2; break;
+              case 5: outword = last_uncompressed_word -3; break;
+              case 6: outword = last_uncompressed_word +3; break;
+              default:
+              // std::cout << "Huffman decompress unrecoginized bit pattern " << (std::bitset<16>) word << std::endl;
+                throw std::runtime_error("Huffman decompress unrecoginized bit pattern");                
+            }
+            // std::cout << "huff out @ " << std::dec << uncompressed_vector.size() << "  0x" << std::hex << outword << std::endl;
+            uncompressed_vector.push_back(outword);
+            last_uncompressed_word = outword;   // Activite this line is delta is from last word. Comment out this line if diff is from the last EXPLICIT word, instead of the last huffman-compressed word.
+            zero_count=0;
+          }
+        }
+      }
+      
+    } //end else huffman bit on
   }//end for loop over data words
+  // std::cout << "Decompress from " << std::dec << channel_data_size/size16 << " to " << uncompressed_vector.size() << std::endl;
 
+  // Dump check for debugging.
+  // std::ofstream of2("waveform.dump");
+  // for(size_t i=0;i<uncompressed_vector.size();i++) {
+  //   of2 << i << "\t" << uncompressed_vector[i] << std::endl;
+  // }
 
+  std::shared_ptr<char> newData(new char[uncompressed_vector.size()*size16]);
+  std::copy(uncompressed_vector.begin(), uncompressed_vector.end(), (uint16_t*) (newData.get()) );
+  channel_data_ptr.swap(newData);
   channel_data_size = uncompressed_vector.size()*size16;
-  setChannelDataPtr((char*)(uncompressed_vector.data()));
 
 }

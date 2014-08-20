@@ -33,12 +33,12 @@ class cardHeaderPMT {
   cardHeaderPMT();
   cardHeaderPMT(pmt_card_header_t cardH) { bt_pmt_card_header = cardH; }
 
-  uint32_t getIDAndModuleWord() { return bt_pmt_card_header.id_and_module; }
-  uint32_t getWordCountWord() { return bt_pmt_card_header.word_count; }
-  uint32_t getEventWord() { return bt_pmt_card_header.event_number; }
-  uint32_t getFrameWord() { return bt_pmt_card_header.frame_number; }  
-  uint32_t getChecksumWord() { return bt_pmt_card_header.checksum; }
-  uint32_t getTrigFrameAndSampleWord() { return bt_pmt_card_header.trig_frame_and_sample; }
+  uint32_t getIDAndModuleWord() const { return bt_pmt_card_header.id_and_module; }
+  uint32_t getWordCountWord()  const { return bt_pmt_card_header.word_count; }
+  uint32_t getEventWord()  const { return bt_pmt_card_header.event_number; }
+  uint32_t getFrameWord()  const { return bt_pmt_card_header.frame_number; }  
+  uint32_t getChecksumWord()  const { return bt_pmt_card_header.checksum; }
+  uint32_t getTrigFrameAndSampleWord()  const { return bt_pmt_card_header.trig_frame_and_sample; }
   
   void setIDAndModuleWord(uint32_t word) { bt_pmt_card_header.id_and_module = word; }
   void setWordCountWord(uint32_t word) { bt_pmt_card_header.word_count = word; }
@@ -47,7 +47,7 @@ class cardHeaderPMT {
   void setChecksumWord(uint32_t word) { bt_pmt_card_header.checksum = word; }
   void setTrigFramAndSampleWord(uint32_t word) { bt_pmt_card_header.trig_frame_and_sample = word; }
 
-  pmt_card_header_t getCardHeader() { return bt_pmt_card_header; }
+  pmt_card_header_t getCardHeader()  const { return bt_pmt_card_header; }
   void setCardHeader(pmt_card_header_t cardH) { bt_pmt_card_header = cardH; }
 
   uint32_t getID() const;
@@ -57,6 +57,7 @@ class cardHeaderPMT {
   uint32_t getChecksum() const;
   uint32_t getWordCount() const;
   uint32_t getTrigFrame() const;
+  uint8_t  getTrigFrameMod16() const;
   uint32_t getTrigSample() const;
  
   size_t getCardDataSize() const;
