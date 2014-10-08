@@ -3,6 +3,8 @@
 #include <memory>
 #include <algorithm>
 #include <sys/types.h>
+#include <stdexcept>
+#include <iostream> // For debugging
 #include <inttypes.h>
 #include "evttypes.h"
 #include "share/boonetypes.h"
@@ -70,19 +72,26 @@ class cardHeader {
   template<class Archive>
     void serialize(Archive & ar, const unsigned int version)
     {
-      if(version>=5)
+      if(version==VERSION::v6_00_00){
 	ar & bt_card_header.id_and_module
 	   & bt_card_header.word_count
 	   & bt_card_header.event_number
  	   & bt_card_header.frame_number
 	   & bt_card_header.checksum
 	   & bt_card_header.trig_frame_and_sample;
-      else if(version>0)
-	ar & bt_card_header.id_and_module
-	   & bt_card_header.word_count
-	   & bt_card_header.event_number
- 	   & bt_card_header.frame_number
-	   & bt_card_header.checksum;
+      }
+      else if(version<VERSION::v6_00_00) {
+	std::cout << "==========================================================================" << std::endl;
+	std::cout << "ERROR: YOU ARE READING TRYING TO READ DATA INCOMPATIBLE WITH NEW VERSIONS." << std::endl;
+	std::cout << "       version read in = " << version << std::endl;
+	std::cout << "       YOU SHOULD USE AN OLDER VERSION OF UBOONEDAQ_DATATYPES TO READ." << std::endl;
+	std::cout << "==========================================================================" << std::endl;
+	throw std::runtime_error("Incompatible data.");
+      }
+      else{
+	throw std::runtime_error("Invalid version number.");
+      }
+
     }
 
 };

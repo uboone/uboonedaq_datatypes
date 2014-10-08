@@ -3,6 +3,8 @@
 #include <memory>
 #include <map>
 #include <algorithm>
+#include <stdexcept>
+#include <iostream> // For debugging
 #include <sys/types.h>
 #include <inttypes.h>
 #include "evttypes.h"
@@ -13,7 +15,6 @@
 #include <boost/serialization/binary_object.hpp>
 
 #include "constants.h"
-#include "channelData.h"
 
 namespace gov {
 namespace fnal {
@@ -29,81 +30,83 @@ using namespace gov::fnal::uboone;
 class cardData {
 
  public:
-  static const uint8_t DAQ_version_number = gov::fnal::uboone::datatypes::constants::VERSION;
+  static const uint8_t DAQ_version_number = gov::fnal::uboone::datatypes::constants::VERSION::v6_00_00;
   
-  cardData()
-    { card_data_ptr.reset(); card_data_size=0; cardData_IO_mode = IO_GRANULARITY_CARD;}
+  cardData(){}
 
-  cardData(std::shared_ptr<char> data_ptr, size_t size)
-    { card_data_ptr.swap(data_ptr); card_data_size=size; cardData_IO_mode = IO_GRANULARITY_CARD;}
-
-  char* getCardDataPtr() const;
-  void setCardDataPtr(char*);
-
-  size_t getCardDataSize() const {return card_data_size;}
-  void setCardDataSize(size_t size) { card_data_size = size; }
-
-  void updateIOMode(uint8_t,int);
-  //uint8_t getIOMode() { return cardData_IO_mode; }
-  uint8_t getIOMode() const { return cardData_IO_mode; }
-
-  typedef std::map<int,channelData> channelMap_t;
-  const channelMap_t& getChannelMap() const { return channel_map; }
+  //accessors for the raw data
+  ub_VersionWord_t const& getRawDataVersionWord() { return _version; }
   
-  int getNumberOfChannels() const { return channel_map.size(); }
-  void insertChannel(int,channelData);
+  //accesors for the card-level data
+  uint32_t const& getCardIDAndModuleWord();
+  uint32_t const& getCardWordCountWord();
+  uint32_t const& getCardEventWord();
+  uint32_t const& getCardFrameWord();
+  uint32_t const& getCardChecksumWord();
+  uint32_t const& getCardTrigFrameAndSampleWord();
+  uint32_t getID() const;
+  uint32_t getModule() const;
+  uint32_t getEvent() const;
+  uint32_t getFrame() const;
+  uint32_t getChecksum() const;
+  uint32_t getWordCount() const;
+  uint32_t getTrigFrame() const;
+  uint8_t  getTrigFrameMod16() const;
+  uint32_t getTrigSample() const;
+  std::vector<ub_RawDataWord_t> const& getDataVector();
 
-  void decompress();
+  //accessors for the channel-level data
+  size_t getNChannels() const { FillChannelDataVector(); return _channelDataVector.size(); }
+  std::vector<channelData> const& getChannelDataVector() { FillChannelDataVector(); return _channelDataVector; }
+  channelData const& getChannelData(unsigned int i) { FillChannelDataVector(); return _channelDataVector.at(i); }
+
+  uint16_t const& getChannelHeaderWord(unsigned int i)
+  { return getChannelData(i).getChannelHeaderWord(); }
+  uint16_t const& getChannelTrailerWord(unsigned int i)
+  { return getChannelData(i).getChannelTrailerWord(); }
+
+  uint16_t getChannelNumber(unsigned int i) const { return getChannelData(j).getChannelNumber(); }
+
+  std::vector<ub_RawDataWord_t> const& getChannelDataVector(unsigned int i);
+  { return getChannelData(i).getDataVector(); }
+  std::vector<ub_RawDataWord_t> const& getUncompressedChannelDataVector(unsigned int i);
+  { return getChannelData(i).getUncompressedDataVector(); }
+
 
  private:
-  std::shared_ptr<char> card_data_ptr;
-  size_t card_data_size;
+  //this is the raw data coming from the card
+  const ub_VersionWord_t      _version;
+  const ub_RawData_t          _rawCardData;
+  std::unique_ptr<ub_MarkedRawCardData> _markedRawCardData;
 
-  uint8_t cardData_IO_mode;
+  void CreateMarkedRawCardData();
 
-  channelMap_t channel_map;
+  std::vector<channelData> _channelDataVector;
+  void FillChannelDataVector();
 
   friend class boost::serialization::access;
   
-  /***
-      Use different save and load techniques here so that on the load, 
-      we first read the data size, and then we declare space large 
-      enough to hold it. After that we copy the data into our buffer, 
-      and then swap the pointer to that buffer with out cardData member.
-   ***/
-
-  template<class Archive> void save(Archive & ar, const unsigned int version) const
+  template<class Archive> 
+    void serialize(Archive & ar, const unsigned int version)
     {
-      if(version>0) {
-	ar & card_data_size;
-	ar & cardData_IO_mode;
-
-	if(cardData_IO_mode==IO_GRANULARITY_CARD)
-	  ar & boost::serialization::make_binary_object(card_data_ptr.get(),card_data_size);
-
-	else if(cardData_IO_mode >=IO_GRANULARITY_CHANNEL)
-	  ar & channel_map;
+      if(version==VERSION::v6_00_00){
+	ar & data_vector
+	   & channel_locations_vector;
       }
-    }
+      else if(version<VERSION::v6_00_00) {
+	std::cout << "==========================================================================" << std::endl;
+	std::cout << "ERROR: YOU ARE READING TRYING TO READ DATA INCOMPATIBLE WITH NEW VERSIONS." << std::endl;
+	std::cout << "       version read in = " << version << std::endl;
+	std::cout << "       YOU SHOULD USE AN OLDER VERSION OF UBOONEDAQ_DATATYPES TO READ." << std::endl;
+	std::cout << "==========================================================================" << std::endl;
+	throw std::runtime_error("Incompatible data.");
+      }
+      else{
+	throw std::runtime_error("Invalid version number.");
+      }
 
-  template<class Archive> void load(Archive & ar, const unsigned int version) 
-    {
-      if(version>0) { 
-	ar & card_data_size;
-	ar & cardData_IO_mode;
-	
-	if(cardData_IO_mode==IO_GRANULARITY_CARD){
-	  std::shared_ptr<char> data_ptr(new char[card_data_size]);
-	  ar & boost::serialization::make_binary_object(data_ptr.get(),card_data_size);
-	  card_data_ptr.swap(data_ptr);
-	}
-	else if(cardData_IO_mode>=IO_GRANULARITY_CHANNEL)
-	  ar & channel_map;
+    }//end serialize
 
-      }//endif version 0
-    }
-  BOOST_SERIALIZATION_SPLIT_MEMBER()
-   
 };
 
 
@@ -113,7 +116,7 @@ class cardData {
 }  // end of namespace gov
 
 // This MACRO must be outside any namespaces.
-BOOST_CLASS_VERSION(gov::fnal::uboone::datatypes::cardData, gov::fnal::uboone::datatypes::constants::VERSION)    
+BOOST_CLASS_VERSION(gov::fnal::uboone::datatypes::cardData, gov::fnal::uboone::datatypes::constants::VERSION::v6_00_00)    
 
 #endif /* #ifndef BOONETYPES_H */
 

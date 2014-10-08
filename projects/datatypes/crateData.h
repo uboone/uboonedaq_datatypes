@@ -4,6 +4,7 @@
 #include <map>
 #include <algorithm>
 #include <sys/types.h>
+#include <stdexcept>
 #include <inttypes.h>
 #include "evttypes.h"
 
@@ -13,10 +14,9 @@
 #include <boost/serialization/binary_object.hpp>
 
 #include "constants.h"
-#include "share/boonetypes.h"
-#include "eventHeaderTrailer.h"
-#include "cardHeader.h"
+#include "uboonetypes_Crate.h"
 #include "cardData.h"
+#include "channelData.h"
 
 namespace gov {
 namespace fnal {
@@ -28,108 +28,106 @@ using namespace gov::fnal::uboone;
 /***
  *  Note: this is the serialization class that handles the data.
  ***/
-
-struct compareCardHeader {
-  bool operator() ( cardHeader lhs, cardHeader rhs) const
-  { return lhs.getModule() < rhs.getModule(); }
-};
-
+ 
 class crateData {
 
  public:
-  static const uint8_t DAQ_version_number = gov::fnal::uboone::datatypes::constants::VERSION;
+  static const uint8_t DAQ_version_number = gov::fnal::uboone::datatypes::constants::VERSION::v6_00_00;
+
+ crateData(ub_VersionWord_t const& version, 
+	   ub_RawData_t const& rd ):
+  _version(version), _rawCrateData(rd){}
   
-  crateData()
-    { crate_data_ptr.reset(); crate_data_size=0; crateData_IO_mode = IO_GRANULARITY_CRATE;}
-
-  crateData(std::shared_ptr<char> data_ptr, size_t size)
-    { crate_data_ptr.swap(data_ptr); crate_data_size=size; crateData_IO_mode = IO_GRANULARITY_CRATE; }
-
-  size_t getCrateDataSize() const {return crate_data_size;}
-  void setCrateDataSize(size_t size) { crate_data_size = size; }
-
-  char* getCrateDataPtr();// { return crate_data_ptr.get(); }
-  const char* getCrateDataPtr() const;// { return crate_data_ptr.get(); }
-  void setCrateDataPtr(char*);// {crate_data_ptr.reset(ptr);}
-
-  void updateIOMode(uint8_t);
-  uint8_t getIOMode() { return crateData_IO_mode; }
-
-  void insertCard(cardHeader,cardData);
+  //accessors for the raw data
+  ub_VersionWord_t const& getRawDataVersionWord() { return _version; }
   
-  void decompress();
+  //accesors for the crate-level data
+  uint32_t const& getHeaderWord();
+  uint32_t const& getTrailerWord();
+  std::vector<ub_RawDataWord_t> const& getDataVector();
+  
+ //accessors for the card-level data
+  size_t getNCards() const { FillCardDataVector(); return _cardDataVector.size(); }
+  std::vector<cardData> const& getCardDataVector() { FillCardDataVector(); return _cardDataVector; }
+  cardData const& getCardData(unsigned int i) { FillCardDataVector(); return _cardDataVector.at(i); }
 
-  typedef std::map<cardHeader,cardData,compareCardHeader> cardMap_t;
-  cardMap_t getCardMap() { return card_map;}
-  const cardMap_t& getCardMap() const { return card_map;}
+  uint32_t const& getCardIDAndModuleWord(unsigned int i) { return getCardData(i).getCardIDAndModuleWord(); }
+  uint32_t const& getCardWordCountWord(unsigned int i) { return getCardData(i).getCardWordCountWord(); }
+  uint32_t const& getCardEventWord(unsigned int i) { return getCardData(i).getCardEventWord(); }
+  uint32_t const& getCardFrameWord(unsigned int i) { return getCardData(i).getCardFrameWord(); }
+  uint32_t const& getCardChecksumWord(unsigned int i) { return getCardData(i).getCardChecksumWord(); }
+  uint32_t const& getCardTrigFrameAndSampleWord(unsigned int i) { return getCardData(i).getCardTrigFrameAndSampleWord(); }
+  uint32_t getID(unsigned int i) const { return getCardData(i).getID(); }
+  uint32_t getModule(unsigned int i) const {return getCardData(i).getModule(); }
+  uint32_t getEvent(unsigned int i) const {return getCardData(i).getEvent(); }
+  uint32_t getFrame(unsigned int i) const {return getCardData(i).getFrame(); }
+  uint32_t getChecksum(unsigned int i) const {return getCardData(i).getChecksum(); }
+  uint32_t getWordCount(unsigned int i) const {return getCardData(i).getWordCount(); }
+  uint32_t getTrigFrame(unsigned int i) const {return getCardData(i).getTrigFrame(); }
+  uint8_t  getTrigFrameMod16(unsigned int i) const {return getCardData(i).getTrigFrameMod16(); }
+  uint32_t getTrigSample(unsigned int i) const {return getCardData(i).getTrigSample(); }
+  std::vector<ub_RawDataWord_t> const& getCardDataVector(unsigned int i) {return getCardData(i).getDataVector(); }
+  
+  //accessors for the channel-level data
+  size_t getNChannels(unsigned int) const { return getCardData(i).getChannelDataVector().size(); }
+  std::vector<channelData> const& getChannelDataVector() { return getCardData(i).getChannelDataVector(); }
+  channelData const& getChannelData(unsigned int i_card, unsigned int i_ch) 
+  { return  getCardData(i_card).getChannelDataVector().at(i_ch); }
 
+  uint16_t const& getChannelHeaderWord(unsigned int i,unsigned int j)
+  { return getCardData(i).getChannelData(j).getChannelHeaderWord(); }
+  uint16_t const& getChannelTrailerWord(unsigned int i,unsigned int j)
+  { return getCardData(i).getChannelData(j).getChannelTrailerWord(); }
+
+  uint16_t getChannelNumber(unsigned int i, unsigned int j) const 
+  { return getCardData(i).getChannelData(j).getChannelNumber(); }
+
+  std::vector<ub_RawDataWord_t> const& getChannelDataVector(unsigned int i, unsigned int j);
+  { return getCardData(i).getChannelData(j).getDataVector(); }
+  std::vector<ub_RawDataWord_t> const& getUncompressedChannelDataVector(unsigned int i, unsigned int j);
+  { return getCardData(i).getChannelData(j).getUncompressedDataVector(); }
+  
+  
  private:
-  uint8_t crateData_IO_mode;
   
-  std::shared_ptr<char> crate_data_ptr;
-  size_t crate_data_size;
-  
-  eventHeader event_header;
-  cardMap_t   card_map;
-  eventTrailer event_trailer;
+  //this is the raw data coming from the crate
+  const ub_VersionWord_t      _version;
+  const ub_RawData_t          _rawCrateData;
+  std::unique_ptr<ub_MarkedRawCrateData> _markedRawCrateData;
+
+  void CreateMarkedRawCrateData();
+
+  std::vector<cardData> _cardDataVector;
+  void FillCardDataVector();
 
   friend class boost::serialization::access;
   
-  /***
-      Use different save and load techniques here so that on the load, 
-      we first read the data size, and then we declare space large 
-      enough to hold it. After that we copy the data into our buffer, 
-      and then swap the pointer to that buffer with out crateData member.
-   ***/
-
-  template<class Archive>
-    void save(Archive & ar, const unsigned int version) const
+  template<class Archive> 
+    void serialize(Archive & ar, const unsigned int version)
     {
-      
-      if(version>0) {
-	ar & crate_data_size;
-	ar & crateData_IO_mode;
-	if(crateData_IO_mode == IO_GRANULARITY_CRATE){
-	  ar & boost::serialization::make_binary_object(crate_data_ptr.get(),crate_data_size);
-	}        
-	else if(crateData_IO_mode >= IO_GRANULARITY_CARD){
-	  ar & event_header;
-	  ar & card_map;
-	  ar & event_trailer;
-	}
-	
-      }//endif version
-      
-    }
-  
-  template<class Archive>
-    void load(Archive & ar, const unsigned int version)
-    {
-      
-      if(version>0) { 
-	ar & crate_data_size;
-	ar & crateData_IO_mode;
-
-	if(crateData_IO_mode==IO_GRANULARITY_CRATE){
-	  std::shared_ptr<char> data_ptr(new char[crate_data_size]);
-	  ar & boost::serialization::make_binary_object(data_ptr.get(),crate_data_size);
-	  crate_data_ptr.swap(data_ptr);
-	}
-	else if(crateData_IO_mode>=IO_GRANULARITY_CARD){
-	  ar & event_header;
-	  ar & card_map;
-	  ar & event_trailer;
-	}
-
+      if(version>=VERSION::v6_00_00){
+	ar & _version
+	   & _rawCrateData
+ 	   & _markedRawCrateData
+	   & _cardDataVector;
+      }
+      else if(version<VERSION::v6_00_00) {
+	std::cout << "==========================================================================" << std::endl;
+	std::cout << "ERROR: YOU ARE TRYING TO WRITE DATA INCOMPATIBLE WITH NEW VERSIONS." << std::endl;
+	std::cout << "       version read in = " << version << std::endl;
+	std::cout << "       YOU SHOULD USE AN OLDER VERSION OF UBOONEDAQ_DATATYPES TO READ." << std::endl;
+	std::cout << "==========================================================================" << std::endl;
+	throw std::runtime_error("Incompatible data.");
+      }
+      else{
+	throw std::runtime_error("Invalid version number.");
       }
       
-    }
+    }//end serialize
   
-  BOOST_SERIALIZATION_SPLIT_MEMBER()
-    
 };
-
-
+ 
+ 
 }  // end of namespace datatypes
 }  // end of namespace uboone
 }  // end of namespace fnal

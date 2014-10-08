@@ -21,7 +21,13 @@ namespace datatypes {
 
 namespace constants
 {
-  const int VERSION = 5; // A dB query eventually. // NJT: shouldn't this match major version number for datatypes package?
+
+  enum VERSION{
+    v6_00_00 = 6;
+    v5_00_00 = 5;
+  };
+
+  //const int VERSION = 5; // A dB query eventually. // NJT: shouldn't this match major version number for datatypes package?
     // ... other related constants
 
 } // namespace constants

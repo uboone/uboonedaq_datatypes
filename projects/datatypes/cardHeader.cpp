@@ -33,11 +33,11 @@ uint32_t cardHeader::getFrame() const{
 
 uint32_t cardHeader::getWordCount() const{
   uint32_t wc = (  ((bt_card_header.word_count>>16) & 0xfff)+((bt_card_header.word_count & 0xfff)<<12) );
-  return wc;
+  return wc+1;
 }
 
 size_t cardHeader::getCardDataSize() const{
-  size_t DataSize = (getWordCount()+1) * sizeof(uint16_t);
+  size_t DataSize = (getWordCount()) * sizeof(uint16_t);
   return DataSize;
 }
 
