@@ -14,9 +14,13 @@ namespace datatypes {
   };
   
   //Crate types.
-  enum {
-    TPC_CRATE,
-    PMT_CRATE
+  enum ub_SEBFragmentType{
+    TPC_TRIGGERED,
+    TPC_CONTINUOUS,
+    PMT_TRIGGERED,
+    PMT_CONTINUOUS,
+    TRIGGER,
+    LASER   
   };
 
 namespace constants

@@ -29,13 +29,13 @@ using namespace gov::fnal::uboone;
  *  Note: this is the serialization class that handles the data.
  ***/
  
-class ub_CrateData {
+class ub_CrateData{
 
  public:
   static const uint8_t DAQ_version_number = gov::fnal::uboone::datatypes::constants::VERSION::v6_00_00;
 
  ub_CrateData(ub_VersionWord_t const version, 
-	   ub_RawData_t const rd ):
+	      ub_RawData_t const rd ):
   _version(version), _rawCrateData(rd){}
   
   //accessors for the raw data

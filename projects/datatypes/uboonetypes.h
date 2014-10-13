@@ -98,33 +98,6 @@ typedef struct empty_header
 typedef struct empty_trailer
 {} empty_trailer_t;
 
-/** CHANNEL Control Words.
-    First 4 bits are 0100 (0101) for first (last) word of channel.
-    Remaining 12 bits are the channel #.
-    Use this for degugging on seb side.
-**/
-typedef struct channel_header
-{
-    uint16_t channel_begin; /* OR'd channel|"first"*/
-} channel_header_t;
-
-typedef struct channel_trailer
-{
-    uint16_t channel_end; /* OR'd channel|"first"*/
-} channel_trailer_t;
-
-
-/**
-ADC 16 bit data format: (each daq channel has a first and last word)
-bit 15  14  13  12   11 to 0
-first         1   1   0   0   channel[5:0]
-last          1   1   0   1   adc[11:0]
-not compressed    1   0   0   0   adc[11:0]
-compressed    0  (code,code,             )
-**/
-
-
-
 /**
    This replaces tmub ../gps/symm.h
  **/
@@ -171,12 +144,6 @@ typedef struct pmt_window_header
   uint16_t frame_and_sample1; //bits 6-8: last 3 readout frame bits; bits 1-5: upper 5 bits of readout sample
   uint16_t sample2; //lower 12 bits of readout sample
 } pmt_window_header_t;
-
-
-typedef ub_MarkedRawDataBlock<channel_header_t,channel_trailer_t> ub_MarkedRawChannelData;
-typedef ub_RawDataBlock<ub_RawDataContainer_t,ub_MarkedRawChannelData_t> ub_RawCardData;
-typedef ub_MarkedRawDataBlock<card_header_t,card_trailer_t> ub_MarkedRawCardData;
-typedef ub_RawDataBlock<ub_RawDataContainer_t,ub_MarkedRawCardData_t> ub_RawCrateData;
 
 }
 }
