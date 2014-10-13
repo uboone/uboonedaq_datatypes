@@ -14,9 +14,9 @@
 #include <boost/serialization/binary_object.hpp>
 
 #include "constants.h"
-#include "uboonetypes_Crate.h"
-#include "cardData.h"
-#include "channelData.h"
+#include "ub_MarkedRawCrateData.h"
+#include "ub_CardData.h"
+#include "ub_ChannelData.h"
 
 namespace gov {
 namespace fnal {
@@ -29,27 +29,27 @@ using namespace gov::fnal::uboone;
  *  Note: this is the serialization class that handles the data.
  ***/
  
-class crateData {
+class ub_CrateData {
 
  public:
   static const uint8_t DAQ_version_number = gov::fnal::uboone::datatypes::constants::VERSION::v6_00_00;
 
- crateData(ub_VersionWord_t const& version, 
-	   ub_RawData_t const& rd ):
+ ub_CrateData(ub_VersionWord_t const version, 
+	   ub_RawData_t const rd ):
   _version(version), _rawCrateData(rd){}
   
   //accessors for the raw data
   ub_VersionWord_t const& getRawDataVersionWord() { return _version; }
   
   //accesors for the crate-level data
-  uint32_t const& getHeaderWord();
-  uint32_t const& getTrailerWord();
+  uint32_t const& getHeaderWord() { CreateMarkedRawCrateData(); return _markedRawCrateData->getHeaderWord(); }
+  uint32_t const& getTrailerWord() { CreateMarkedRawCrateData(); return _markedRawCrateData->getTrailerWord(); }
   std::vector<ub_RawDataWord_t> const& getDataVector();
   
  //accessors for the card-level data
   size_t getNCards() const { FillCardDataVector(); return _cardDataVector.size(); }
-  std::vector<cardData> const& getCardDataVector() { FillCardDataVector(); return _cardDataVector; }
-  cardData const& getCardData(unsigned int i) { FillCardDataVector(); return _cardDataVector.at(i); }
+  std::vector<ub_CardData> const& getCardDataVector() { FillCardDataVector(); return _cardDataVector; }
+  ub_CardData const& getCardData(unsigned int i) { FillCardDataVector(); return _cardDataVector.at(i); }
 
   uint32_t const& getCardIDAndModuleWord(unsigned int i) { return getCardData(i).getCardIDAndModuleWord(); }
   uint32_t const& getCardWordCountWord(unsigned int i) { return getCardData(i).getCardWordCountWord(); }
@@ -70,8 +70,8 @@ class crateData {
   
   //accessors for the channel-level data
   size_t getNChannels(unsigned int) const { return getCardData(i).getChannelDataVector().size(); }
-  std::vector<channelData> const& getChannelDataVector() { return getCardData(i).getChannelDataVector(); }
-  channelData const& getChannelData(unsigned int i_card, unsigned int i_ch) 
+  std::vector<ub_ChannelData> const& getChannelDataVector() { return getCardData(i).getChannelDataVector(); }
+  ub_ChannelData const& getChannelData(unsigned int i_card, unsigned int i_ch) 
   { return  getCardData(i_card).getChannelDataVector().at(i_ch); }
 
   uint16_t const& getChannelHeaderWord(unsigned int i,unsigned int j)
@@ -93,11 +93,11 @@ class crateData {
   //this is the raw data coming from the crate
   const ub_VersionWord_t      _version;
   const ub_RawData_t          _rawCrateData;
-  std::unique_ptr<ub_MarkedRawCrateData> _markedRawCrateData;
 
+  std::unique_ptr<ub_MarkedRawCrateData> _markedRawCrateData;
   void CreateMarkedRawCrateData();
 
-  std::vector<cardData> _cardDataVector;
+  std::vector<ub_CardData> _cardDataVector;
   void FillCardDataVector();
 
   friend class boost::serialization::access;
@@ -134,7 +134,7 @@ class crateData {
 }  // end of namespace gov
 
 // This MACRO must be outside any namespaces.
-BOOST_CLASS_VERSION(gov::fnal::uboone::datatypes::crateData, gov::fnal::uboone::datatypes::constants::VERSION)    
+BOOST_CLASS_VERSION(gov::fnal::uboone::datatypes::ub_CrateData, gov::fnal::uboone::datatypes::constants::VERSION)    
 
 #endif /* #ifndef BOONETYPES_H */
 

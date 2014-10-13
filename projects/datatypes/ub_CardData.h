@@ -15,6 +15,8 @@
 #include <boost/serialization/binary_object.hpp>
 
 #include "constants.h"
+#include "ub_MarkedRawCardData.h"
+#include "ub_ChannelData.h"
 
 namespace gov {
 namespace fnal {
@@ -27,38 +29,40 @@ using namespace gov::fnal::uboone;
  *  Note: this is the serialization class that handles the card data.
  ***/
 
-class cardData {
+class ub_CardData {
 
  public:
   static const uint8_t DAQ_version_number = gov::fnal::uboone::datatypes::constants::VERSION::v6_00_00;
   
-  cardData(){}
-
+  ub_CardData(ub_VersionWord_t const version, 
+	   ub_RawData_t const rd ):
+  _version(version), _rawCrateData(rd){}
+  
   //accessors for the raw data
   ub_VersionWord_t const& getRawDataVersionWord() { return _version; }
   
   //accesors for the card-level data
-  uint32_t const& getCardIDAndModuleWord();
-  uint32_t const& getCardWordCountWord();
-  uint32_t const& getCardEventWord();
-  uint32_t const& getCardFrameWord();
-  uint32_t const& getCardChecksumWord();
-  uint32_t const& getCardTrigFrameAndSampleWord();
-  uint32_t getID() const;
-  uint32_t getModule() const;
-  uint32_t getEvent() const;
-  uint32_t getFrame() const;
-  uint32_t getChecksum() const;
-  uint32_t getWordCount() const;
-  uint32_t getTrigFrame() const;
-  uint8_t  getTrigFrameMod16() const;
-  uint32_t getTrigSample() const;
+  uint32_t const& getCardIDAndModuleWord() { CreateMarkedRawCardData(); return _markedRawCardData->getCardIDAndModuleWord(); }
+  uint32_t const& getCardWordCountWord() { CreateMarkedRawCardData(); return _markedRawCardData->getCardWordCountWord(); }
+  uint32_t const& getCardEventWord() { CreateMarkedRawCardData(); return _markedRawCardData->getCardEventWord(); }
+  uint32_t const& getCardFrameWord() { CreateMarkedRawCardData(); return _markedRawCardData->getCardFrameWord(); }
+  uint32_t const& getCardChecksumWord() { CreateMarkedRawCardData(); return _markedRawCardData->getCardChecksumWord(); }
+  uint32_t const& getCardTrigFrameAndSampleWord() { CreateMarkedRawCardData(); return _markedRawCardData->getCardTrigFrameAndSampleWord(); }
+  uint32_t getID() const { CreateMarkedRawCardData(); return _markedRawCardData->getID(); }
+  uint32_t getModule() const { CreateMarkedRawCardData(); return _markedRawCardData->getModule(); }
+  uint32_t getEvent() const { CreateMarkedRawCardData(); return _markedRawCardData->getEvent(); }
+  uint32_t getFrame() const { CreateMarkedRawCardData(); return _markedRawCardData->getFrame(); }
+  uint32_t getChecksum() const { CreateMarkedRawCardData(); return _markedRawCardData->getChecksum(); }
+  uint32_t getWordCount() const { CreateMarkedRawCardData(); return _markedRawCardData->getWordCount(); }
+  uint32_t getTrigFrame() const { CreateMarkedRawCardData(); return _markedRawCardData->getTrigFrame(); }
+  uint8_t  getTrigFrameMod16() const { CreateMarkedRawCardData(); return _markedRawCardData->getTrigFrameMod16(); }
+  uint32_t getTrigSample() const { CreateMarkedRawCardData(); return _markedRawCardData->getTrigSample(); }
   std::vector<ub_RawDataWord_t> const& getDataVector();
 
   //accessors for the channel-level data
   size_t getNChannels() const { FillChannelDataVector(); return _channelDataVector.size(); }
-  std::vector<channelData> const& getChannelDataVector() { FillChannelDataVector(); return _channelDataVector; }
-  channelData const& getChannelData(unsigned int i) { FillChannelDataVector(); return _channelDataVector.at(i); }
+  std::vector<ub_ChannelData> const& getChannelDataVector() { FillChannelDataVector(); return _channelDataVector; }
+  ub_ChannelData const& getChannelData(unsigned int i) { FillChannelDataVector(); return _channelDataVector.at(i); }
 
   uint16_t const& getChannelHeaderWord(unsigned int i)
   { return getChannelData(i).getChannelHeaderWord(); }
@@ -77,11 +81,11 @@ class cardData {
   //this is the raw data coming from the card
   const ub_VersionWord_t      _version;
   const ub_RawData_t          _rawCardData;
-  std::unique_ptr<ub_MarkedRawCardData> _markedRawCardData;
 
+  std::unique_ptr<ub_MarkedRawCardData> _markedRawCardData;
   void CreateMarkedRawCardData();
 
-  std::vector<channelData> _channelDataVector;
+  std::vector<ub_ChannelData> _channelDataVector;
   void FillChannelDataVector();
 
   friend class boost::serialization::access;
@@ -90,8 +94,10 @@ class cardData {
     void serialize(Archive & ar, const unsigned int version)
     {
       if(version==VERSION::v6_00_00){
-	ar & data_vector
-	   & channel_locations_vector;
+	ar & _version
+	   & _rawCrateData
+ 	   & _markedRawCardData
+	   & _channelDataVector;
       }
       else if(version<VERSION::v6_00_00) {
 	std::cout << "==========================================================================" << std::endl;
