@@ -10,6 +10,14 @@ set_source_files_properties(${LIB_SOURCES} PROPERTIES COMPILE_FLAGS "-Wno-unused
 
 add_library( ${LIB_NAME} SHARED ${LIB_SOURCES}  ${COMMON_PROJECT_LIBS} )
 
+add_executable(fragmentReader main.cc)
+
+
+target_link_libraries(fragmentReader
+    ${COMMON_PROJECT_LIBS}
+    udata_types
+    )
+
 install_headers()
 
 install_source()

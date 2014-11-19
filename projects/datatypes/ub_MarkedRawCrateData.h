@@ -49,7 +49,7 @@ std::vector<CARD> const&  ub_MarkedRawCrateData<CARD>::getCards()
 		dissectCards();
 		
 	  return _markedRawCardsData;
-};
+}
 
 template <typename CARD>
 void ub_MarkedRawCrateData<CARD>::dissectCards()
@@ -68,7 +68,7 @@ void ub_MarkedRawCrateData<CARD>::dissectCards()
 	{
 		throw std::runtime_error("Caught unknown exception in ub_MarkedRawCrateData::dissectCards()."); 
 	}
-};
+}
 	
 template <typename CARD>  
 bool ub_MarkedRawCrateData<CARD>::canFullyDissect()
@@ -83,7 +83,7 @@ bool ub_MarkedRawCrateData<CARD>::canFullyDissect()
 		return false;
 	}
 	return true;
-};
+}
 
 template <typename CARD> 
 std::string ub_MarkedRawCrateData<CARD>::debugInfo()const
@@ -99,7 +99,7 @@ std::string ub_MarkedRawCrateData<CARD>::debugInfo()const
 		
 	//os <<  ub_MarkedRawDataBlock::debugInfo();
 	return os.str();
-};
+}
 
 }  // end of namespace datatypes
 }  // end of namespace uboone

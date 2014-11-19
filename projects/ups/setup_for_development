@@ -39,7 +39,7 @@ test -z "$db" && tnotnull BASH_SOURCE && set_ me=`dirname $BASH_SOURCE` && set_ 
 
 # history is applicable only for interactive t/csh
 test -z "$db" -a "$ss" = csh && test $?history = 0 && set history=5  # make sure history 1 works
-test -z "$db" -a "$ss" = csh && set me=`history 1|sed 's/^[     0-9:]*//'` && test -n "$me" && set me=`dirname $me[2]` \
+test -z "$db" -a "$ss" = csh && set me=`history 1|sed 's/^[ 	0-9:]*//'` && test -n "$me" && set me=`dirname $me[2]` \
     && set db=`sh -c "cd $me >/dev/null 2>&1 && pwd"` && vecho_ 'setting db via interactive history'
 #echo This script lives in $db
 
@@ -57,11 +57,12 @@ set_ msg5='ERROR: setup of required products has failed'
 
 echo ----------- check this block for errors -----------------------
 set_ setup_fail="false"
-set_ cetb=` grep only_for_build $CETPKG_SOURCE/ups/product_deps | grep cetbuildtools | awk '{ print $2 }' `
-set_ cetv=` grep only_for_build $CETPKG_SOURCE/ups/product_deps | grep cetbuildtools | awk '{ print $3 }' `
+set_ cetb=` grep -e '^[ \t]*cetbuildtools' $CETPKG_SOURCE/ups/product_deps | grep  only_for_build| awk '{ print $1 }' `
+set_ cetv=` grep -e '^[ \t]*cetbuildtools' $CETPKG_SOURCE/ups/product_deps | grep  only_for_build| awk '{ print $2 }' `
 #echo Found $cetb $cetv
 setup -B $cetb $cetv
-setenv UPS_OPTIONS -B
+test "$?" = 0 || set_ setup_fail="true"
+setenv UPS_OVERRIDE -B
 # now get the rest of the products
 set_ cmd="$CETBUILDTOOLS_DIR/bin/set_dev_products $CETPKG_SOURCE $CETPKG_BUILD $*"
 #echo Ready to run $cmd
@@ -69,7 +70,7 @@ source `$cmd`
 #echo "$cmd returned $setup_fail"
 test "$setup_fail" = "true" && echo "$msg5"
 test "$setup_fail" = "true" && return 1
-test -e "diag_report" && cat diag_report
+test -e "$CETPKG_BUILD/diag_report" && cat $CETPKG_BUILD/diag_report
 echo ----------------------------------------------------------------
 
 # add lib to LD_LIBRARY_PATH
@@ -85,6 +86,7 @@ test "$ss" = csh && unalias tnotnull nullout set_ vecho_ return
 unset ss db me thisdir msg1 msg2 msg3 msg4 msg5 setup_fail
 unset set_ setenv unsetenv_ tnotnull nullout vecho_
 
-echo;echo;echo;
-echo "Please use this cmake command:"
-echo "cmake -DCMAKE_INSTALL_PREFIX=\${UBOONEDAQ_HOME_DIR}/install -DCMAKE_BUILD_TYPE=\$CETPKG_TYPE -Dqualifier:STRING=\$CETPKG_QUAL \$CETPKG_SOURCE"
+echo " "
+echo " "
+echo " Do not run above. Run this instead. "
+echo '  env CC=gcc CXX=g++ FC=gfortran cmake -DCMAKE_INSTALL_PREFIX="${UBOONEDAQ_HOME_DIR}/install" -DCMAKE_BUILD_TYPE=${CETPKG_TYPE} "${CETPKG_SOURCE}"'

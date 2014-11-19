@@ -67,7 +67,7 @@ std::string ub_MarkedRawDataBlock< HEADER,  TRAILER>::debugInfo()const
 	os << "  Data:     " << ub_data_types::debugInfo (data());
 	
 	return os.str();
-};
+}
 
 }  // end of namespace datatypes
 }  // end of namespace uboone

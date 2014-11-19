@@ -17,8 +17,8 @@ class ub_MarkedRawChannelData : public ub_MarkedRawDataBlock<ub_ChannelHeader,ub
   ub_MarkedRawDataBlock<ub_ChannelHeader,ub_ChannelTrailer>(rawdata),
   _isValid{isValid()},_isFullyDissected{canFullyDissect()}{}
   
-  uint16_t const getChannelHeaderWord() const { return this->header().channel_mark; }
-  uint16_t const getChannelTrailerWord() const { return this->trailer().channel_mark; }
+  uint16_t getChannelHeaderWord() const { return this->header().channel_mark; }
+  uint16_t getChannelTrailerWord() const { return this->trailer().channel_mark; }
   uint16_t getChannelNumber() const { return this->header().getChannelNumber(); }
   
   ub_MarkedRawChannelData() = delete;

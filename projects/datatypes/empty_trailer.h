@@ -15,7 +15,7 @@ struct empty_trailer{
 template <> constexpr 
 size_t size_of<empty_trailer>(){
 	return 0;
-};
+}
 
 
 }  // end of namespace datatypes

@@ -30,7 +30,7 @@ public:
     ub_RawDataBlock::const_iterator begin() const{return _begin;}
     ub_RawDataBlock::const_iterator end() const{return _end;}
 	
-	size_t size() const { std::distance(begin(), end());}
+	size_t size() const {return std::distance(begin(), end());}
 private:    
 	ub_RawDataBlock::const_iterator _begin;
     ub_RawDataBlock::const_iterator _end;
@@ -49,12 +49,12 @@ std::string debugInfoRawData(raw_data_containter<raw_data_type>const& data);
 template <typename T>
 constexpr typename std::underlying_type<T>::type cast_enum(T value) {
     return static_cast<typename std::underlying_type<T>::type>(value);
-};
+}
 
 template <typename TYPE> 
 TYPE const& quick_cast(ub_RawData::const_iterator data){
 	return *reinterpret_cast<TYPE const *>(&*data);
-};
+}
 
 
 
@@ -62,12 +62,12 @@ TYPE const& quick_cast(ub_RawData::const_iterator data){
 template <typename T, typename ... ARGS>
 std::unique_ptr<T> factory(ARGS&&... args){
     return std::unique_ptr<T>(new T { std::forward<ARGS>(args)... });
-};
+}
 
 template <typename T> 
 constexpr size_t size_of(){
 	return sizeof(T)/sizeof(raw_data_type);
-};
+}
 
 }  // end of namespace datatypes
 }  // end of namespace uboone
