@@ -1,0 +1,7 @@
+#ifndef _UBOONE_DATATYPES_RAWDATAACCESS_H
+#define _UBOONE_DATATYPES_RAWDATAACCESS_H  1
+
+#include "uboone_data_v6_headers.h"
+
+#endif //_UBOONE_DATATYPES_RAWDATAACCESS_H
+
