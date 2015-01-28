@@ -5,7 +5,7 @@
 #include <sys/types.h>
 #include <inttypes.h>
 #include "evttypes.h"
-#include "ub_CrateHeader.h"
+#include "ub_CrateHeader_v0.h"
 
 #include <boost/serialization/list.hpp>
 #include <boost/serialization/string.hpp>
@@ -32,7 +32,7 @@ class crateHeader {
  public:
   static const uint8_t DAQ_version_number = gov::fnal::uboone::datatypes::constants::VERSION;
   crateHeader();
-  crateHeader(crate_header_t cH) {  bt_crate_header = cH; }
+  crateHeader(ub_CrateHeader cH) {  bt_crate_header = cH; }
   
   bool getCrateComplete() const { return bt_crate_header.complete; }
   uint32_t getCrateSize() const { return bt_crate_header.size; }
@@ -54,11 +54,11 @@ class crateHeader {
   void setSebTimeSec(uint32_t sec) { bt_crate_header.seb_time_sec = sec; }
   void setSebTimeUec(uint32_t usec) { bt_crate_header.seb_time_usec = usec; }
 
-  crate_header_t getCrateHeader() const { return bt_crate_header; }
-  void setCrateHeader(crate_header_t cH) { bt_crate_header = cH; }
+  ub_CrateHeader getCrateHeader() const { return bt_crate_header; }
+  void setCrateHeader(ub_CrateHeader cH) { bt_crate_header = cH; }
 
  // private:
-  crate_header_t bt_crate_header;
+  ub_CrateHeader bt_crate_header;
 
   friend class boost::serialization::access;
   

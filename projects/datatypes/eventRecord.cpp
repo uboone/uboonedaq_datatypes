@@ -7,7 +7,7 @@ eventRecord::eventRecord() {
   //use default constructors here
   global_header = globalHeader();
   trigger_data = triggerData();
-  gps_data = gps();
+  gps_data = ub_GPS();
 
   beam_header = beamHeader();
   beam_data_vector.clear();

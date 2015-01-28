@@ -3,6 +3,9 @@
 
 #include "empty_trailer.h"
 
+
+#include "ub_CrateHeader_v0.h"
+
 #include "ub_ChannelHeaderTrailer_v0.h"
 #include "ub_ChannelData_v6.h"
 

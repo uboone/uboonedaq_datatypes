@@ -5,7 +5,7 @@
 #include "evttypes.h"
 #include "globalHeader.h"
 #include "triggerData.h"
-#include "gps.h"
+#include "ub_GPS_DataTypes.h"
 #include "crateHeader.h"
 #include "beamHeader.h"
 #include "beamData.h"
@@ -50,7 +50,7 @@ class eventRecord {
   eventRecord();  
   void setGlobalHeader (globalHeader gH) { global_header = gH; }
   void setTriggerData (triggerData tD) { trigger_data = tD; }
-  void setGPS (gps g) { gps_data = g; }
+  void setGPS (ub_GPS g) { gps_data = g; }
   void setBeamHeader (beamHeader bH) { beam_header = bH; }
 
   void insertBeamData (beamData bD) { beam_data_vector.push_back(bD); }
@@ -64,7 +64,7 @@ class eventRecord {
   
   globalHeader getGlobalHeader() { return global_header; }
   triggerData getTriggerData() { return trigger_data; }
-  gps getGPS() { return gps_data; }
+  ub_GPS getGPS() { return gps_data; }
   beamHeader getBeamHeader() { return beam_header; }
 
   std::vector<beamData> getBeamDataVector() { return beam_data_vector; }
@@ -75,7 +75,7 @@ class eventRecord {
 
   globalHeader* getGlobalHeaderPtr() { return &global_header; }
   triggerData* getTriggerDataPtr() { return &trigger_data; }
-  gps* getGPSPtr() { return &gps_data; }
+  ub_GPS* getGPSPtr() { return &gps_data; }
   beamHeader* getBeamHeaderPtr() { return &beam_header; }
 
   int getSEBMap_size() { return seb_map.size(); }
@@ -96,7 +96,7 @@ class eventRecord {
 
   globalHeader global_header;
   triggerData trigger_data;
-  gps gps_data;
+  ub_GPS gps_data;
   sebMap_t    seb_map;
   sebMapPMT_t seb_pmt_map;
   beamHeader beam_header;

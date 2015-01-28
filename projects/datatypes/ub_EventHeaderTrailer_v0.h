@@ -8,7 +8,9 @@ namespace gov {
 namespace fnal {
 namespace uboone {
 namespace datatypes {
-	
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
 struct ub_EventHeader
 {
 	union {
@@ -20,6 +22,7 @@ struct ub_EventHeader
 	uint32_t getMarker() const {return marker;}
 	std::string debugInfo()const;
 };
+
 
 static_assert (sizeof(ub_EventHeader) == 4, "ub_EventHeader structure size is not correct.");
   
@@ -36,6 +39,7 @@ struct ub_EventTrailer
 };
   
 static_assert (sizeof(ub_EventTrailer) == 4, "ub_EventTrailer structure size is not correct.");
+#pragma GCC diagnostic pop
 
 }  // end of namespace datatypes
 }  // end of namespace uboone

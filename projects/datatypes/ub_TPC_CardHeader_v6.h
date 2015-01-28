@@ -14,6 +14,8 @@ first word  {16'hffff,               4'h7,id[6:0],module[4:0]}
 3d word     {4'h7,wordcount[23:12],  4'h7,wordcount[11:0]}
 4th word    {4'h7,checksum[23:12],   4'h7,checksum[11:0]}
 **/	
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
 
 struct ub_TPC_CardHeader_v6
 {
@@ -90,6 +92,7 @@ struct ub_TPC_CardHeader_v6
   uint32_t getTrigFrameMod16()const {return tf3;}
   std::string debugInfo()const; 
 };
+#pragma GCC diagnostic pop
 
 static_assert (sizeof(ub_TPC_CardHeader_v6) == 24, "ub_CardHeader_v6 structure size is not correct.");
 }  // end of namespace datatypes

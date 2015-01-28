@@ -3,7 +3,7 @@
 
 # note that major version number should match VERSION in products/datatypes/constants.h
 
-parent uboonedaq_datatypes   v5_00_01
+parent uboonedaq_datatypes   v5_00_02
 defaultqual     e6
 
 
@@ -28,7 +28,7 @@ gcc                  v4_9_1
 boost                v1_56_0
 
 
-cetbuildtools	v4_03_01	-	only_for_build
+cetbuildtools	v4_04_01	-	only_for_build
 end_product_list
 
  

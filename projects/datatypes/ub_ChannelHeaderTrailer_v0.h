@@ -12,6 +12,8 @@ namespace datatypes {
     Remaining 12 bits are the channel #.
     Use this for degugging on seb side.
 **/
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
 struct ub_ChannelHeader
 {
   union {
@@ -42,6 +44,7 @@ uint16_t getTrailerMark() const {return trailer_mark;}
 } ;
 
 static_assert (sizeof(ub_ChannelTrailer) == 2, "ub_ChannelTrailer structure size is not correct.");
+#pragma GCC diagnostic pop
 
 }  // end of namespace datatypes
 }  // end of namespace uboone
