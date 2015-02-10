@@ -69,6 +69,16 @@ std::string ub_MarkedRawDataBlock< HEADER,  TRAILER>::debugInfo()const
 	return os.str();
 }
 
+template <typename TYPE>
+    typename TYPE::header_type const&  const_header_from(ub_RawData &data) {
+                return *(reinterpret_cast<typename TYPE::header_type const*>(&* 
+                data.begin()));}
+                
+template <typename TYPE>
+    typename TYPE::trailer_type const&  const_trailer_from(ub_RawData &data) {
+                return *(reinterpret_cast<typename TYPE::trailer_type const*>(&* 
+                (data.begin()+data.size()-size_of<typename TYPE::trailer_type>() ) ));}
+		
 }  // end of namespace datatypes
 }  // end of namespace uboone
 }  // end of namespace fnal

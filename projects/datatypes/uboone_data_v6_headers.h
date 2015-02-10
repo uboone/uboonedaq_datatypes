@@ -3,8 +3,8 @@
 
 #include "empty_trailer.h"
 
+#include "ub_CrateHeader_v6.h"
 
-#include "ub_CrateHeader_v0.h"
 
 #include "ub_ChannelHeaderTrailer_v0.h"
 #include "ub_ChannelData_v6.h"
@@ -15,7 +15,7 @@
 #include "ub_PMT_CardHeader_v6.h"
 #include "ub_PMT_CardData_v6.h"
 
-#include "ub_EventHeaderTrailer_v0.h"
+#include "ub_XMITEventHeaderTrailer_v0.h"
 #include "ub_TPC_CrateData_v6.h"
 #include "ub_PMT_CrateData_v6.h"
 

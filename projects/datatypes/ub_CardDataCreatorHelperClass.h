@@ -12,10 +12,12 @@ namespace datatypes {
 template<typename MRCD>
 class ub_CardDataCreatorHelperClass {
  public:
-  ub_CardDataCreatorHelperClass(ub_RawData const& rd) :_rawData(rd){}
+  ub_CardDataCreatorHelperClass(ub_RawData const& rd) :_rawData(rd),_dissectableDataSize(0){}
   void populateCardDataVector(std::vector<MRCD> & cardDataVector) ;
+  size_t getTrueDataSize() const {return _dissectableDataSize;}
  private:
   const ub_RawData _rawData;
+  size_t _dissectableDataSize; 
 };
 
 template<typename MRCD>
@@ -37,6 +39,7 @@ void ub_CardDataCreatorHelperClass<MRCD>::populateCardDataVector(std::vector<MRC
 	if (quick_cast<uint32_t>(curr_rawData.begin())==EVENTTRAILER)
 		break;
   }
+  _dissectableDataSize=std::distance(_rawData.begin(),curr_rawData.end());
   cardDataVector.swap(retValue);
 }
 

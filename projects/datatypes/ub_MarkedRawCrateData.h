@@ -3,7 +3,7 @@
 
 #include "uboone_data_utils.h"
 #include "uboone_data_internals.h"
-#include "ub_EventHeaderTrailer_v0.h"
+#include "ub_XMITEventHeaderTrailer_v0.h"
 #include "ub_CardDataCreatorHelperClass.h"
 
 namespace gov {
@@ -12,13 +12,13 @@ namespace uboone {
 namespace datatypes {
 	
 template <typename CARD> class ub_MarkedRawCrateData : 
-public ub_MarkedRawDataBlock<ub_EventHeader,ub_EventTrailer>{
+public ub_MarkedRawDataBlock<ub_XMITEventHeader,ub_XMITEventTrailer>{
   public:
 	template <typename MRCD> using dissector_type = ub_CardDataCreatorHelperClass<MRCD>;
     
 	explicit ub_MarkedRawCrateData(ub_RawData const rawdata): 
-	ub_MarkedRawDataBlock<ub_EventHeader,ub_EventTrailer>(rawdata),
-	_markedRawCardsData{},_isValid{isValid()},_isFullyDissected{canFullyDissect()}{}
+	ub_MarkedRawDataBlock<ub_XMITEventHeader,ub_XMITEventTrailer>(rawdata),
+	_markedRawCardsData{},_isValid{isValid()},_isFullyDissected{canFullyDissect()},_dissectableDataSize{0}{}
 
     uint32_t const& getHeaderWord() const {return header().raw_data; } 
 	uint32_t const& getTrailerWord() const {return trailer().raw_data; } 
@@ -28,10 +28,14 @@ public ub_MarkedRawDataBlock<ub_EventHeader,ub_EventTrailer>{
 	ub_MarkedRawCrateData() = delete;
 	//ub_MarkedRawCrateData(ub_MarkedRawCrateData const &) = delete;
 	ub_MarkedRawCrateData& operator=(ub_MarkedRawCrateData const &) = delete;
-	size_t getCrateDataSize() const{return rawdata().size();};
-
+	size_t getSizeOfCardsData() const {return data().size();};
+	size_t getSizeOfRAWCrateData() const {return rawdata().size();};
+	
 	void dissectCards();
 	std::string debugInfo()const;
+	
+	size_t getSizeOfDissectableCrateData() const {
+	  assert(_dissectableDataSize ==0 ); return _dissectableDataSize;};
 private:
 	bool isValid();
 	bool canFullyDissect();	
@@ -39,6 +43,7 @@ private:
 	std::vector<CARD> _markedRawCardsData;	
 	bool _isValid;
 	bool _isFullyDissected;
+	size_t _dissectableDataSize; 
   };
   
  
@@ -58,7 +63,10 @@ void ub_MarkedRawCrateData<CARD>::dissectCards()
 	{
 		dissector_type<CARD> dissector(data());
 		dissector.populateCardDataVector(_markedRawCardsData);
-		_isFullyDissected=true;
+		_isFullyDissected=true;		
+		_dissectableDataSize=minsize()+dissector.getTrueDataSize();
+		assert(_dissectableDataSize > minsize());
+		assert(_dissectableDataSize < rawdata().size());
 	}
 	catch(std::exception &ex)
 	{

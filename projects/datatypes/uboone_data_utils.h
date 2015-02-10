@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <string>
+#include <cassert>
 #include <cxxabi.h>
 #include <iostream>
 #include <algorithm>

@@ -2,7 +2,7 @@
 
 project(datatypes)
 
-set( LIB_NAME udata_types)
+set( LIB_NAME ubdata_types)
 
 FILE(GLOB_RECURSE LIB_SOURCES *.cpp )
 
@@ -13,7 +13,7 @@ add_executable(fragmentReader main.cc)
 
 target_link_libraries(fragmentReader
     ${COMMON_PROJECT_LIBS}
-    udata_types
+    ubdata_types
     )
 
 install_headers()
