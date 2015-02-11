@@ -1,9 +1,9 @@
-#include "globalHeader.h"
+#include "ub_GlobalHeader.h"
 
 
 using namespace gov::fnal::uboone::datatypes;
 
-globalHeader::globalHeader() {
+ub_GlobalHeader::ub_GlobalHeader() {
 
   record_type        = RESERVED;
   record_origin      = 0xff;

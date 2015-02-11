@@ -1,12 +1,9 @@
 #ifndef _UBOONETYPES_GLOBALHEADER_H
 #define _UBOONETYPES_GLOBALHEADER_H
 
-#include <boost/serialization/list.hpp>
-#include <boost/serialization/string.hpp>
-#include <boost/serialization/version.hpp>
-
 #include "evttypes.h"
 #include "constants.h"
+#include "boostSerialization.h"
 
 namespace gov {
 namespace fnal {
@@ -21,11 +18,11 @@ using namespace gov::fnal::uboone;
  ***/
 
 
-class globalHeader {
+class ub_GlobalHeader {
 
  public:
   static const uint8_t DAQ_version_number = gov::fnal::uboone::datatypes::constants::VERSION;
-  globalHeader();
+  ub_GlobalHeader();
   
   void setRecordType(uint8_t type) { record_type = type; }
   void setRecordOrigin(uint8_t origin) { record_origin = origin; }
@@ -102,7 +99,7 @@ class globalHeader {
 }  // end of namespace gov
 
 // This MACRO must be outside any namespaces.
-BOOST_CLASS_VERSION(gov::fnal::uboone::datatypes::globalHeader, gov::fnal::uboone::datatypes::constants::VERSION)    
+BOOST_CLASS_VERSION(gov::fnal::uboone::datatypes::ub_GlobalHeader, gov::fnal::uboone::datatypes::constants::VERSION)    
 
 #endif /* #ifndef BOONETYPES_H */
 

@@ -5,7 +5,7 @@
 #include <fstream>
 #include <string>
 #include <sys/time.h>
-#include "eventRecord.h"
+#include "ub_EventRecord.h"
 #include "raw_data_access.h"
 //#include "share/boonetypes.h"
 
@@ -62,26 +62,26 @@ using namespace gov::fnal::uboone::datatypes;
 int main() {
 
   /*****************************************************************************
-   --- STEP 1: Read an eventRecord object from a file.
+   --- STEP 1: Read an ub_EventRecord object from a file.
    This is the easy part: you can read in an entire event with basically one 
    line of code! After this, you have all the data in the event stored in your
-   eventRecord object. Now it's just a matter of doing what you'd like with it.
+   ub_EventRecord object. Now it's just a matter of doing what you'd like with it.
   ******************************************************************************/
 
-  eventRecord event_record;  // Declare an eventRecord object. This is yous.
+  ub_EventRecord event_record;  // Declare an ub_EventRecord object. This is yous.
   std::ifstream ifs("input_event.dat", std::ios::binary); // open the file that has your data (note: binary)
   boost::archive::binary_iarchive ia(ifs); // declare a boost::archive::binary_iarchive object
-  ia >> event_record;  // read in from the archive into your eventRecord object
+  ia >> event_record;  // read in from the archive into your ub_EventRecord object
   ifs.close();
 
 
   /*****************************************************************************
-   --- STEP 2: Update the granularity on your eventRecord object.
+   --- STEP 2: Update the granularity on your ub_EventRecord object.
    First, a little bit about the data. When we write events in the assembler, we
    will likely write them at a very course granularity. The data from each crate
    arrives at the assembler as a big block of binary data. End users likely need
    something more than that: data broken down card-by-card or even 
-   channel-by-channel. The "eventRecord::updateIOMode()" function does this. 
+   channel-by-channel. The "ub_EventRecord::updateIOMode()" function does this. 
    Granularity modes are definied in datatypes/constants.h.
 
    It is possible to write events in higher granularity---so, if the event you 
@@ -103,7 +103,7 @@ int main() {
 
   //For example, here's how to get info from the global header in the event record.
   //Other header-type objects will be very, very similar.
-  globalHeader *global_header = event_record.getGlobalHeaderPtr();
+  ub_GlobalHeader *global_header = event_record.getGlobalHeaderPtr();
   std::cout << "\n\nFrom global header, run number is " << std::hex << global_header->getRunNumber() << std::endl;
   std::cout << "From global header, event number is " << std::hex << global_header->getEventNumber() << std::endl;
   std::cout << "From global header, event size is " << std::dec << (double)global_header->getNumberOfBytesInRecord()/1024/1024 << " MB" << std::endl;

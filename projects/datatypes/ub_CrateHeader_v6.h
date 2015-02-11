@@ -33,6 +33,7 @@ struct ub_CrateHeader_v6
   uint32_t size; //bytes, needs to be uint32_t for large events
   uint8_t crate_number; // Crate #
   uint8_t card_count; // Card count
+  uint8_t crate_type; // Card count
   uint32_t event_number; // Event #
   uint32_t frame_number; // Frame #
   ub_GPS_Time gps_time; // Inserted for SEB-10 only in rawFragmentDMASource.cpp: PPS time
@@ -40,48 +41,10 @@ struct ub_CrateHeader_v6
   uint32_t seb_time_sec;  // Read time on SEB. Added v4. Seconds since the epoch.
   uint32_t seb_time_usec; //                             Microseconds since the second
  
-  ub_CrateHeader_v6():
-  data_transmission_header{},
-  complete{0},crateBits{0},
-  size{0},
-  crate_number{0},
-  card_count{0},
-  event_number{0},
-  frame_number{0},
-  gps_time{},
-  daqClock_time{},
-  seb_time_sec{0},
-  seb_time_usec{0}
-  {}
-  
-  ub_CrateHeader_v6(ub_TPC_CardHeader_v6 cardHeader):
-  data_transmission_header{},
-  complete{0},crateBits{0},
-  size{0},
-  crate_number{0},
-  card_count{0},
-  event_number{cardHeader.getEvent()},
-  frame_number{cardHeader.getFrame()},
-  gps_time{},
-  daqClock_time{},
-  seb_time_sec{0},
-  seb_time_usec{0}
-  {}
-
-  ub_CrateHeader_v6(ub_PMT_CardHeader_v6 cardHeader):
-  data_transmission_header{},
-  complete{0},crateBits{0},
-  size{0},
-  crate_number{0},
-  card_count{0},
-  event_number{cardHeader.getEvent()},
-  frame_number{cardHeader.getFrame()},
-  gps_time{},
-  daqClock_time{},
-  seb_time_sec{0},
-  seb_time_usec{0}
-  {}
-  
+  ub_CrateHeader_v6(); 
+  ub_CrateHeader_v6(ub_TPC_CardHeader_v6 cardHeader);
+  ub_CrateHeader_v6(ub_PMT_CardHeader_v6 cardHeader);
+  std::string debugInfo()const;
 
    template<class Archive>
     void serialize(Archive & ar, const unsigned int version)

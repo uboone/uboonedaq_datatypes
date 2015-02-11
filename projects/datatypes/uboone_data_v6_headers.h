@@ -19,5 +19,12 @@
 #include "ub_TPC_CrateData_v6.h"
 #include "ub_PMT_CrateData_v6.h"
 
+#include "ub_GlobalHeader.h"
+//#include "triggerData.h"
+//#include "ub_GPS_DataTypes.h"
+//#include "crateHeader.h"
+//#include "beamHeader.h"
+//#include "beamData.h"
+
 #endif //_UBOONE_DATATYPES_V6_HEADERS_H
 
