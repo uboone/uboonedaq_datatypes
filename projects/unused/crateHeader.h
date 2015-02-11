@@ -32,7 +32,7 @@ class crateHeader {
  public:
   static const uint8_t DAQ_version_number = gov::fnal::uboone::datatypes::constants::VERSION;
   crateHeader();
-  crateHeader(ub_CrateHeader_v6 cH) {  bt_crate_header = cH; }
+  //crateHeader(ub_CrateHeader_v6 cH) {  bt_crate_header = cH; }
   
   bool getCrateComplete() const { return bt_crate_header.complete; }
   uint32_t getCrateSize() const { return bt_crate_header.size; }

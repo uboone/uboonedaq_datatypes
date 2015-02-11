@@ -13,8 +13,10 @@ namespace datatypes {
 	
 class ub_PMT_CardData_v6 : public ub_MarkedRawCardData<ub_ChannelData_v6,ub_PMT_CardHeader_v6,empty_trailer>{
 public: 
-  ub_PMT_CardData_v6(ub_RawData const rawdata, bool createHeaderFromData=false): 
-  ub_MarkedRawCardData<ub_ChannelData_v6,ub_PMT_CardHeader_v6,empty_trailer>(rawdata),_createHeaderFromData(createHeaderFromData){}
+  typedef ub_CrateHeader_v6 ub_CrateHeader;
+
+  ub_PMT_CardData_v6(ub_RawData const rawdata): 
+  ub_MarkedRawCardData<ub_ChannelData_v6,ub_PMT_CardHeader_v6,empty_trailer>(rawdata){}
 
   uint32_t const& getCardTrigFrameAndSampleWord() const { return header().trig_frame_and_sample; }
 
@@ -27,14 +29,6 @@ public:
   uint32_t getTrigFrameMod16() const {return header().getTrigFrameMod16();}
   uint32_t getTrigSample() const {return header().getTrigSample();}
   uint32_t getTrigFrame() const ;
-  
-  ub_CrateHeader_v6& crateHeader() {return _crateHeader;}
-  ub_CrateHeader_v6 const& crateHeader()const {return _crateHeader;}
-  
-private:
-  bool _createHeaderFromData;
-  ub_CrateHeader_v6 _crateHeader;
-  
 };
 
 }  // end of namespace datatypes

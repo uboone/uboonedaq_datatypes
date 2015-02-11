@@ -18,9 +18,15 @@ public ub_MarkedRawDataBlock<ub_XMITEventHeader,ub_XMITEventTrailer>{
     
 	explicit ub_MarkedRawCrateData(ub_RawData const rawdata): 
 	ub_MarkedRawDataBlock<ub_XMITEventHeader,ub_XMITEventTrailer>(rawdata),
-	_markedRawCardsData{},_isValid{isValid()},_isFullyDissected{canFullyDissect()},_dissectableDataSize{0}{}
+	_markedRawCardsData{},_dissectableDataSize{0},_isValid{isValid()},
+	_isFullyDissected{canFullyDissect()},_crateHeader{nullptr},_createHeaderFromData{false}{}
 
-    uint32_t const& getHeaderWord() const {return header().raw_data; } 
+	explicit ub_MarkedRawCrateData(ub_RawData const rawdata,bool createHeaderFromData): 
+	ub_MarkedRawDataBlock<ub_XMITEventHeader,ub_XMITEventTrailer>(rawdata),
+	_markedRawCardsData{},_dissectableDataSize{0},_isValid{isValid()},
+	_isFullyDissected{canFullyDissect()},_crateHeader{nullptr},_createHeaderFromData{createHeaderFromData}{}
+	
+       uint32_t const& getHeaderWord() const {return header().raw_data; } 
 	uint32_t const& getTrailerWord() const {return trailer().raw_data; } 
 	std::vector<CARD> const&  getCards() ;
 	std::vector<CARD> const&  getCards() const {return _markedRawCardsData;}
@@ -35,18 +41,22 @@ public ub_MarkedRawDataBlock<ub_XMITEventHeader,ub_XMITEventTrailer>{
 	std::string debugInfo()const;
 	
 	size_t getSizeOfDissectableCrateData() const {
-	  assert(_dissectableDataSize ==0 ); return _dissectableDataSize;};
+	  assert(_dissectableDataSize !=0 ); return _dissectableDataSize;};
+	  
+	std::unique_ptr<typename CARD::ub_CrateHeader>& crateHeader();
+	std::unique_ptr<typename CARD::ub_CrateHeader> const& crateHeader()const{return _crateHeader;}; 
 private:
 	bool isValid();
 	bool canFullyDissect();	
 private:
 	std::vector<CARD> _markedRawCardsData;	
-	bool _isValid;
-	bool _isFullyDissected;
 	size_t _dissectableDataSize; 
+	bool _isValid;
+	bool _isFullyDissected;	
+	std::unique_ptr<typename CARD::ub_CrateHeader> _crateHeader;
+	bool _createHeaderFromData;
   };
   
- 
 template <typename CARD>  
 std::vector<CARD> const&  ub_MarkedRawCrateData<CARD>::getCards()
 { 
@@ -66,7 +76,7 @@ void ub_MarkedRawCrateData<CARD>::dissectCards()
 		_isFullyDissected=true;		
 		_dissectableDataSize=minsize()+dissector.getTrueDataSize();
 		assert(_dissectableDataSize > minsize());
-		assert(_dissectableDataSize < rawdata().size());
+		assert(_dissectableDataSize <= rawdata().size());
 	}
 	catch(std::exception &ex)
 	{
@@ -92,6 +102,23 @@ bool ub_MarkedRawCrateData<CARD>::canFullyDissect()
 	}
 	return true;
 }
+
+template <typename CARD>  
+std::unique_ptr<typename CARD::ub_CrateHeader>& ub_MarkedRawCrateData<CARD>::crateHeader() 
+{ 
+  if(_crateHeader)
+    return _crateHeader;
+    
+  assert(!getCards().empty());
+  
+  std::unique_ptr<typename CARD::ub_CrateHeader> crateHeader{
+    new typename CARD::ub_CrateHeader(getCards().begin()->header())};
+    
+  _crateHeader.swap(crateHeader);
+  
+  return _crateHeader; 
+}
+
 
 template <typename CARD> 
 std::string ub_MarkedRawCrateData<CARD>::debugInfo()const

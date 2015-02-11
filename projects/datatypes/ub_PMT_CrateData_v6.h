@@ -12,12 +12,12 @@ namespace uboone {
 namespace datatypes {
 	
   class ub_PMT_CrateData_v6 : public ub_MarkedRawCrateData<ub_PMT_CardData_v6>{
-  public:    
-	ub_PMT_CrateData_v6(ub_RawData const rawdata): 
-	ub_MarkedRawCrateData<ub_PMT_CardData_v6>(rawdata){}
+  public:   
+	typedef ub_PMT_CardData_v6::ub_CrateHeader ub_CrateHeader_t;
+	ub_PMT_CrateData_v6(ub_RawData const rawdata, bool createHeaderFromData=false): 
+	ub_MarkedRawCrateData<ub_PMT_CardData_v6>(rawdata, createHeaderFromData){}
 
 	ub_PMT_CrateData_v6() = delete;
-	//ub_PMT_CrateData_v6(ub_PMT_CrateData_v6 const &) = delete;
 	ub_PMT_CrateData_v6& operator=(ub_PMT_CrateData_v6 const &) = delete;
 };
  
