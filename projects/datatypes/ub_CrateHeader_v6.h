@@ -46,6 +46,9 @@ struct ub_CrateHeader_v6
   ub_CrateHeader_v6(ub_PMT_CardHeader_v6 cardHeader);
   std::string debugInfo()const;
 
+  
+  static ub_CrateHeader_v6 const& getHeaderFromFragment(raw_data_containter<raw_data_type> const& fragment);
+  
    template<class Archive>
     void serialize(Archive & ar, const unsigned int version)
     {    

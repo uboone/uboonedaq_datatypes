@@ -35,7 +35,7 @@ cet_set_compiler_flags(DIAGS VIGILANT WERROR NO_UNDEFINED EXTRA_FLAGS -pedantic)
 cet_have_qual( e6 )
 
 if ( ${CET_HAVE_QUAL} )
-  cet_add_compiler_flags(CXX -std=c++11 -D_GLIBCXX_USE_NANOSLEEP)
+  cet_add_compiler_flags(CXX -std=c++1y -D_GLIBCXX_USE_NANOSLEEP)
 endif()
 
 cet_report_compiler_flags()

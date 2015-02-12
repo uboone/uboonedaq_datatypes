@@ -28,21 +28,32 @@ using namespace gov::fnal::uboone::datatypes;
 class ub_EventRecord {
 
  public:
-   typedef std::map<int,std::unique_ptr<tpc_crate_data_t>> tpc_seb_map_t;
-   typedef std::map<int,std::unique_ptr<pmt_crate_data_t>> pmt_seb_map_t;
-
+   typedef std::tuple<raw_data_containter<raw_data_type>, 
+		      std::unique_ptr<ub_RawData>,
+		      std::unique_ptr<tpc_crate_data_t>> tpc_crate_data_tuple_t;
+   typedef std::map<int,tpc_crate_data_tuple_t> tpc_seb_map_t;
+   
+   typedef std::map<int,tpc_crate_data_t const&> tpc_map_t;
+   
+   typedef std::tuple<raw_data_containter<raw_data_type>,
+		      std::unique_ptr<ub_RawData>,
+		      std::unique_ptr<pmt_crate_data_t>> pmt_crate_data_tuple_t;
+   typedef std::map<int,pmt_crate_data_tuple_t> pmt_seb_map_t;
+   
+   typedef std::map<int,pmt_crate_data_t const&> pmt_map_t;
+   
+   typedef std::vector<raw_data_containter<raw_data_type>const*> fragment_references_t;
+   
   static const uint8_t DAQ_version_number = gov::fnal::uboone::datatypes::constants::VERSION;
   ub_EventRecord():_global_header(),_tpc_seb_map(),_pmt_seb_map(){}  
   void setGlobalHeader (global_header_t & header) { _global_header = header; }
   global_header_t& getGlobalHeader() { return _global_header; }
 
-  void insertSEB(std::unique_ptr<tpc_crate_data_t>& crate) {_tpc_seb_map.emplace(crate->crateHeader()->crate_number, std::move(crate));}
-  void insertSEB(std::unique_ptr<pmt_crate_data_t>& crate) {_pmt_seb_map.emplace(crate->crateHeader()->crate_number, std::move(crate));}
+  void addFragment(raw_data_containter<raw_data_type>& fragment);
   
-  const tpc_seb_map_t& getTPCSEBMap() const { return _tpc_seb_map; }
-  const pmt_seb_map_t& getPMTSEBMap() const { return _pmt_seb_map; }
-  tpc_seb_map_t& getTPCSEBMap() { return _tpc_seb_map; }
-  pmt_seb_map_t& getPMTSEBMap() { return _pmt_seb_map; }
+  const tpc_map_t getTPCSEBMap() const;
+  const pmt_map_t getPMTSEBMap() const;
+  void  getFragments(fragment_references_t& fragments) const;
 
 //  void setTriggerData (triggerData tD) { trigger_data = tD; }
 //  void setGPS (ub_GPS g) { gps_data = g; }
@@ -70,18 +81,15 @@ class ub_EventRecord {
 //  uint8_t er_IO_mode;
 
   friend class boost::serialization::access;
-  
-  template<class Archive>
-    void serialize(Archive & ar, const unsigned int version)
-    {
-      if(version>=3)
+    template<class Archive>
+    void save(Archive & ar, const unsigned int version) const
+    {      
+        if(version>=3)
 	ar //& er_IO_mode
 	   & _global_header
 	   //& trigger_data
 	   //& gps_data
 	   //& beam_header & beam_data_vector //beam stuff...empty at first, added in later
-	   & _tpc_seb_map
-	   & _pmt_seb_map
 	   ;
 
       else if(version>1)
@@ -90,16 +98,52 @@ class ub_EventRecord {
 	   //& trigger_data
 	   //& gps_data
 	   //& beam_header & beam_data_vector //beam stuff...empty at first, added in later
-	   & _tpc_seb_map
-	   & _pmt_seb_map
 	   ;
       else if(version>0)
 	ar //& er_IO_mode
 	   & _global_header
-	   & _tpc_seb_map
-	   & _pmt_seb_map
 	   ;
+    
+      //this must be the last step
+      fragment_references_t fragments;
+      getFragments(fragments);      
+      for(auto const& fragment : fragments)
+      {
+          ;
+      }
     }
+ 
+    template<class Archive>
+    void load(Archive & ar, const unsigned int version)
+    {
+      std::vector<raw_data_containter<raw_data_type>> fragments;
+    
+       if(version>=3)
+	ar //& er_IO_mode
+	   & _global_header
+	   //& trigger_data
+	   //& gps_data
+	   //& beam_header & beam_data_vector //beam stuff...empty at first, added in later
+	   ;
+
+      else if(version>1)
+	ar //& er_IO_mode
+	   & _global_header
+	   //& trigger_data
+	   //& gps_data
+	   //& beam_header & beam_data_vector //beam stuff...empty at first, added in later
+	   ;
+      else if(version>0)
+	ar //& er_IO_mode
+	   & _global_header
+	   ;
+
+    //this must be the last step	   
+    for(auto& fragment:fragments)
+	    addFragment(fragment);
+	   
+    }
+    BOOST_SERIALIZATION_SPLIT_MEMBER()
 };
 
 }  // end of namespace datatypes

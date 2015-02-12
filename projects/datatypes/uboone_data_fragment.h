@@ -26,6 +26,33 @@ namespace datatypes {
 #endif
 
 
+struct artdaq_fragment_header {
+  typedef  raw_data_type RawDataType;
+  typedef uint64_t RawMetaDataType;
+  RawMetaDataType word_count          : 32; // number of RawDataTypes in this Fragment
+  RawMetaDataType version             : 16;
+  RawMetaDataType type                :  8;
+  RawMetaDataType metadata_word_count :  8;
+  RawMetaDataType sequence_id : 48;
+  RawMetaDataType fragment_id : 16;
+  RawMetaDataType unused1     : 16;
+  RawMetaDataType unused2     : 16;
+  RawMetaDataType unused3     : 16;
+  RawMetaDataType unused4     : 16;
+  constexpr static std::size_t num_words() {
+    return sizeof(artdaq_fragment_header) / sizeof(artdaq_fragment_header::RawDataType);    
+    }
+    
+  template<typename T> static std::size_t padded_size_of(){
+  std::size_t bytes{sizeof(T)};
+  std::size_t remainder{bytes % sizeof(artdaq_fragment_header::RawDataType)};  
+  return bytes + (remainder>0?sizeof(artdaq_fragment_header::RawDataType) - remainder:0);}
+  
+};
+
+static_assert((artdaq_fragment_header::num_words() * sizeof(artdaq_fragment_header::RawDataType)) == sizeof(artdaq_fragment_header),
+              "sizeof(RawFragmentHeader) is not an integer ""multiple of sizeof(RawDataType)!");
+              
 struct ub_fragment_header
 {
   //do not reorder or chnge this data structure
@@ -57,6 +84,17 @@ struct ub_fragment_header
 
 constexpr std::size_t ub_fragment_header_size = sizeof(ub_fragment_header);
 
+
+class datatypes_exception : public std::exception
+{
+public:
+    datatypes_exception(std::string const& message, std::string const& name="datatypes_exception");
+    virtual const char *    what () const throw ();
+    virtual ~datatypes_exception() throw();
+private:
+    std::string _name;
+    std::string _message;
+};
 }  // end of namespace datatypes
 }  // end of namespace uboone
 }  // end of namespace fnal
