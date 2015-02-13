@@ -4,7 +4,7 @@
 #include <iostream>
 #include <algorithm>
 #include <stdexcept>
-#include <sstream> 
+#include <sstream>
 #include  <iomanip>
 
 #include "uboone_data_utils.h"
@@ -18,44 +18,45 @@ namespace datatypes {
 
 std::string demangle(const std::type_info  &type_info)
 {
-  int     status;
-  char   *name = abi::__cxa_demangle(type_info.name(), 0, 0, &status);
-  std::string retValue{name};
-  free(name);
-  return retValue.empty()?type_info.name():retValue;
+    int     status;
+    char   *name = abi::__cxa_demangle(type_info.name(), 0, 0, &status);
+    std::string retValue {name};
+    free(name);
+    return retValue.empty()?type_info.name():retValue;
 }
 
 std::string debugInfo(ub_RawData const& data)
 {
-	std::ostringstream os;
-	os <<"Buffer size is "<< std::dec << std::distance(data.begin(), data.end())  *sizeof(raw_data_type);
-	os << " bytes, or "<< std::distance(data.begin(), data.end()) << " elements " ;
-	os << sizeof(raw_data_type) << " bytes each."<< std::endl <<  STRTAB;
-	
-	size_t counter{0};
-	
-	std::for_each(data.begin(), data.end(),
-	[&os,&counter](raw_data_type data) { 
-	  os << std::hex <<std::setfill('0') << std::setw(4) << data ;
-	  if (++counter%0x10 == 0) 
-	  {
-		os <<std::endl  << STRTAB;
-			
-		if (counter%0x100 == 0)
-			os <<std::endl  << STRTAB;
-	  }
-	  else 
-		    os << " ";}
-			);
-	
-	os  <<std::endl;
- 
-	return os.str();
-}	
+    std::ostringstream os;
+    os <<"Buffer size is "<< std::dec << std::distance(data.begin(), data.end())  *sizeof(raw_data_type);
+    os << " bytes, or "<< std::distance(data.begin(), data.end()) << " elements " ;
+    os << sizeof(raw_data_type) << " bytes each."<< std::endl <<  STRTAB;
+
+    size_t counter {0};
+
+    std::for_each(data.begin(), data.end(),
+    [&os,&counter](raw_data_type data) {
+        os << std::hex <<std::setfill('0') << std::setw(4) << data ;
+        if (++counter%0x10 == 0)
+        {
+            os <<std::endl  << STRTAB;
+
+            if (counter%0x100 == 0)
+                os <<std::endl  << STRTAB;
+        }
+        else
+            os << " ";
+    }
+                 );
+
+    os  <<std::endl;
+
+    return os.str();
+}
 
 std::string debugInfoRawData(raw_data_containter<raw_data_type>const& data)
 {
-	return debugInfo(ub_RawData(data.begin(),data.end()));
+    return debugInfo(ub_RawData(data.begin(),data.end()));
 }
 
 }  // end of namespace datatypes

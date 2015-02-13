@@ -16,31 +16,39 @@ namespace datatypes {
 #pragma GCC diagnostic ignored "-Wpedantic"
 struct ub_ChannelHeader
 {
-  union {
-	struct {
-	  uint16_t channel_number :8;		
-	  uint16_t header_mark    :8;
-	} ;
-	uint16_t channel_mark=0xDEAD; 
-  } ;
-uint16_t getChannelNumber() const {return channel_number;}
-uint16_t getHeaderMark() const {return header_mark;}
-std::string debugInfo()const;
+    union {
+        struct {
+            uint16_t channel_number :8;
+            uint16_t header_mark    :8;
+        } ;
+        uint16_t channel_mark=0xDEAD;
+    } ;
+    uint16_t getChannelNumber() const {
+        return channel_number;
+    }
+    uint16_t getHeaderMark() const {
+        return header_mark;
+    }
+    std::string debugInfo()const;
 } ;
 static_assert (sizeof(ub_ChannelHeader) == 2, "ub_ChannelHeader structure size is not correct.");
 
 struct ub_ChannelTrailer
 {
-  union {
-	struct {
-	  uint16_t channel_number :8;	
-	  uint16_t trailer_mark   :8;
-	} ;
-	uint16_t channel_mark=0xDEAD;
-  } ;
-std::string debugInfo()const;
-uint16_t getChannelNumber() const {return channel_number;}
-uint16_t getTrailerMark() const {return trailer_mark;}
+    union {
+        struct {
+            uint16_t channel_number :8;
+            uint16_t trailer_mark   :8;
+        } ;
+        uint16_t channel_mark=0xDEAD;
+    } ;
+    std::string debugInfo()const;
+    uint16_t getChannelNumber() const {
+        return channel_number;
+    }
+    uint16_t getTrailerMark() const {
+        return trailer_mark;
+    }
 } ;
 
 static_assert (sizeof(ub_ChannelTrailer) == 2, "ub_ChannelTrailer structure size is not correct.");

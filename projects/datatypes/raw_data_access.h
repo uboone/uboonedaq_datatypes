@@ -3,7 +3,7 @@
 
 #include "uboone_data_v6_headers.h"
 
-using namespace gov::fnal::uboone::datatypes;	
+using namespace gov::fnal::uboone::datatypes;
 
 typedef ub_XMITEventTrailer event_trailer_t;
 typedef ub_XMITEventHeader  event_header_t;

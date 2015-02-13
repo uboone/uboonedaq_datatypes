@@ -20,7 +20,7 @@
 #include <iterator>
 #include <cstdlib>
 #include <ctime>
-#include <cmath> 
+#include <cmath>
 #include <ctgmath>
 #include <functional>
 

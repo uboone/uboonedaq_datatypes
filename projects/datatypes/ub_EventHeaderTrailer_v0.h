@@ -13,31 +13,35 @@ namespace datatypes {
 #pragma GCC diagnostic ignored "-Wpedantic"
 struct ub_EventHeader
 {
-	union {
-		struct{
-			uint32_t marker;
-		};
-	uint32_t raw_data=0xDEADBEEF;
-	};
-	uint32_t getMarker() const {return marker;}
-	std::string debugInfo()const;
+    union {
+        struct {
+            uint32_t marker;
+        };
+        uint32_t raw_data=0xDEADBEEF;
+    };
+    uint32_t getMarker() const {
+        return marker;
+    }
+    std::string debugInfo()const;
 };
 
 
 static_assert (sizeof(ub_EventHeader) == 4, "ub_EventHeader structure size is not correct.");
-  
+
 struct ub_EventTrailer
 {
-	union {
-		struct{
-			uint32_t marker;
-		};
-	uint32_t raw_data=0xDEADBEEF;
-	};
-	uint32_t getMarker() const {return marker;}
-	std::string debugInfo()const;
+    union {
+        struct {
+            uint32_t marker;
+        };
+        uint32_t raw_data=0xDEADBEEF;
+    };
+    uint32_t getMarker() const {
+        return marker;
+    }
+    std::string debugInfo()const;
 };
-  
+
 static_assert (sizeof(ub_EventTrailer) == 4, "ub_EventTrailer structure size is not correct.");
 #pragma GCC diagnostic pop
 
