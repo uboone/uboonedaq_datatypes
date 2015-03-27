@@ -56,7 +56,7 @@ endif()
 message(STATUS "Project is ${product} ${version} ${qualifier}")
 
 set (COMMON_PROJECT_LIBS 
-  ${Boost_SERIALIZATION_LIBRARY} 
+  ${Boost_SERIALIZATION_LIBRARY}
   )
 
 # source

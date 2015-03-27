@@ -7,13 +7,17 @@
 #include <algorithm>
 #include <iterator>
 
-#define EVENTTRAILER 0xe0000000
-#define EVENTHEADER  0xffffffff
 
 namespace gov {
 namespace fnal {
 namespace uboone {
 namespace datatypes {
+
+constexpr uint32_t EVENTTRAILER{0xe0000000};
+constexpr uint32_t EVENTHEADER{0xffffffff};
+
+constexpr uint32_t UBOONE_EHDR{0xE974E974};
+constexpr uint32_t UBOONE_ETLR{0x974E974E};
 
 
 #if 0
@@ -50,39 +54,69 @@ struct artdaq_fragment_header {
     RawMetaDataType unused2     : 16;
     RawMetaDataType unused3     : 16;
     RawMetaDataType unused4     : 16;
+    
     constexpr static std::size_t num_words() {
         return sizeof(artdaq_fragment_header) / sizeof(artdaq_fragment_header::RawDataType);
     }
 
-    template<typename T> static std::size_t padded_size_of() {
-        std::size_t bytes {sizeof(T)};
-        std::size_t remainder {bytes % sizeof(artdaq_fragment_header::RawDataType)};
-        return bytes + (remainder>0?sizeof(artdaq_fragment_header::RawDataType) - remainder:0);
+
+    template<typename T>
+    constexpr static std::size_t bytes_to_pad() {        
+        return  sizeof(T) % sizeof(artdaq_fragment_header::RawDataType);
+    }
+
+    template<typename T>
+    constexpr static std::size_t padding_bytes_count() {        
+        return (bytes_to_pad<T>() >0) ? (sizeof(artdaq_fragment_header::RawDataType) - bytes_to_pad<T>()) : 0;
+    }
+    
+    template<typename T>
+    constexpr static std::size_t padded_size_of() {
+        return sizeof(T) + padding_bytes_count<T>();
+    }
+
+    template<typename T> 
+    constexpr static std::size_t padded_wordcount_of() {
+        return sizeof(T)/sizeof(artdaq_fragment_header::RawDataType) + (bytes_to_pad<T>() >0 ? 1 : 0);
     }
 
 };
 
-static_assert((artdaq_fragment_header::num_words() * sizeof(artdaq_fragment_header::RawDataType)) == sizeof(artdaq_fragment_header),
-              "sizeof(RawFragmentHeader) is not an integer ""multiple of sizeof(RawDataType)!");
+static_assert((artdaq_fragment_header::bytes_to_pad<artdaq_fragment_header>() == 0),
+              "sizeof(RawFragmentHeader) is not an integer multiple of sizeof(artdaq_fragment_header::RawDataType)!");
 
 struct ub_fragment_header
 {
-    //do not reorder or chnge this data structure
-    uint32_t total_fragment_data_size;           //1st position represents a total size of crate data
-    uint8_t  fragment_format_version;            //2nd position represents a data format version
-    uint8_t  is_fragment_complete;               //3rd position 1 is complete; 0 is incomplete
-    uint32_t raw_fragment_byte_size;             //4th position size of raw dma'ed data, includeing all headers/trailers
-    uint32_t raw_fragment_beginning_byte_offset; //5th position offest to the begining of the raw dma'ed data
-    unsigned char md5hash[MD5_DIGEST_LENGTH];     //6th position md5 hash of raw dma'ed data, which was calculated by deb
-    uint32_t reserved[4];                        //7th position reserved
+    //do not reorder or change this data structure
+    std::size_t   total_fragment_wordcount;           //1st position represents a total size of crate data
+    uint8_t  	  fragment_format_version;            //2nd position represents a data format version
+    bool  	  is_fragment_complete;               //3rd position 1 is complete; 0 is incomplete
+    std::size_t   raw_fragment_wordcount;             //4th position size of raw dma'ed data, includeing all headers/trailers
+    std::size_t   raw_fragment_beginning_word_offset; //5th position offest to the begining of the raw dma'ed data
+    unsigned char md5hash[MD5_DIGEST_LENGTH];    //6th position md5 hash of raw dma'ed data, which was calculated by seb
+    uint32_t      reserved[4];                        //7th position reserved
 
     ub_fragment_header():
-        total_fragment_data_size {0},
-                             fragment_format_version {0},
-                             is_fragment_complete {0},
-                             raw_fragment_byte_size {0},
-    raw_fragment_beginning_byte_offset {0} {}
+        total_fragment_wordcount {0},
+        fragment_format_version {0},
+        is_fragment_complete {0},
+        raw_fragment_wordcount {0},
+	raw_fragment_beginning_word_offset {0},
+	reserved {0,0,0,0} {}
 
+/*	
+    ub_fragment_header(uin32_t total_fragment_wordcount_, 
+                       uint8_t fragment_format_version_,
+                       uint8_t  is_fragment_complete_,
+                       uint32_t raw_fragment_wordcount_,
+                       uint32_t raw_fragment_beginning_word_offset_):
+        total_fragment_wordcount {total_fragment_wordcount_},
+        fragment_format_version {fragment_format_version_},
+        is_fragment_complete {is_fragment_complete_},
+        raw_fragment_wordcount {raw_fragment_wordcount_},
+	raw_fragment_beginning_word_offset {raw_fragment_beginning_word_offset_} {}
+*/	
+	
     void calculateMD5hash(raw_data_containter<raw_data_type> const& data) {
         MD5((unsigned char const*) data.data(),  data.size()*sizeof(raw_data_type) , md5hash);
     }
@@ -96,9 +130,62 @@ struct ub_fragment_header
     bool compare(ub_fragment_header const&, bool do_rethrow=false) const throw(datatypes_exception);
 
 };
-
 constexpr std::size_t ub_fragment_header_size = sizeof(ub_fragment_header);
+constexpr std::size_t ub_fragment_header_wordcount = sizeof(ub_fragment_header)/sizeof(artdaq_fragment_header::RawDataType);
 
+static_assert( (artdaq_fragment_header::bytes_to_pad<ub_fragment_header>() == 0),
+    "sizeof(ub_fragment_header) is not an integer multiple of sizeof(artdaq_fragment_header::RawDataType)!");
+
+
+struct ub_event_header
+{
+    //do not reorder or change this data structure
+    uint32_t mark_E974;                         	//always E974
+    std::size_t total_event_wordcount;                  //1st position represents a total size of event including header/trailer words
+    uint8_t     event_format_version;                   //2nd position represents a data format version
+    bool        is_event_complete;                      //3rd position 1 is complete; 0 is incomplete cumulative state of all fragments
+    std::size_t event_fragment_count;                   //4rd position represent number of events per fragment
+    
+    std::size_t raw_event_fragments_wordcount;          //5th position size of raw dma'ed data, includeing all headers/trailers
+    std::size_t event_global_header_word_offset; 	//6th position offest to the begining of the global header offest
+    uint32_t reserved[4];                               //7th position reserved
+
+    ub_event_header():   mark_E974{UBOONE_EHDR},
+			 total_event_wordcount {0},
+                         event_format_version {0},
+                         is_event_complete {0},
+                         event_fragment_count{0},
+                         raw_event_fragments_wordcount {0},
+    event_global_header_word_offset {0},
+    reserved {0,0,0,0} {}
+
+    //bool compare(ub_event_header const&, bool do_rethrow=false) const throw(datatypes_exception){return true;};
+
+};
+constexpr std::size_t ub_event_header_size = sizeof(ub_event_header);
+constexpr std::size_t ub_event_header_wordcount = sizeof(ub_event_header)/sizeof(artdaq_fragment_header::RawDataType);
+
+static_assert( (artdaq_fragment_header::bytes_to_pad<ub_event_header>() == 0),
+    "sizeof(ub_event_header) is not an integer multiple of sizeofartdaq_fragment_header::RawDataType)!");
+
+    
+
+struct ub_event_trailer
+{
+    //do not reorder or change this data structure
+    uint32_t reserved[4];                       //1st position reserved
+    uint32_t mark_974E;                      	//always E974
+    ub_event_trailer():reserved {0,0,0,0},mark_974E{UBOONE_ETLR}{}
+};
+constexpr std::size_t ub_event_trailer_size = sizeof(ub_event_trailer);
+constexpr std::size_t ub_event_trailer_wordcount = sizeof(ub_event_trailer)/sizeof(artdaq_fragment_header::RawDataType);
+
+static_assert( (artdaq_fragment_header::bytes_to_pad<ub_event_trailer>() == 0),
+    "sizeof(ub_event_trailer) is not an integer multiple of sizeof(artdaq_fragment_header::RawDataType)!");
+    
+constexpr std::size_t ub_size_t_wordcount = artdaq_fragment_header::padded_wordcount_of<std::size_t>();
+static_assert( (artdaq_fragment_header::bytes_to_pad<std::size_t>() == 0),
+    "sizeof(std::size_t) is not an integer multiple of sizeof(artdaq_fragment_header::RawDataType)!");
 
 }  // end of namespace datatypes
 }  // end of namespace uboone

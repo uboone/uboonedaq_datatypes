@@ -6,7 +6,9 @@ set( LIB_NAME ubdata_types)
 
 FILE(GLOB_RECURSE LIB_SOURCES *.cpp )
 
-add_library( ${LIB_NAME} SHARED ${LIB_SOURCES}  ${COMMON_PROJECT_LIBS} )
+add_library( ${LIB_NAME} SHARED ${LIB_SOURCES}  ${COMMON_PROJECT_LIBS})
+
+target_link_libraries (${LIB_NAME} -lcrypto)
 
 add_executable(fragmentReader main.cc)
 

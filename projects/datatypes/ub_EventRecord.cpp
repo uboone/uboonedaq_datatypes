@@ -7,10 +7,12 @@ void ub_EventRecord::addFragment(raw_fragment_data_t& fragment) throw(datatypes_
 {
     artdaq_fragment_header const* artdaq_header= reinterpret_cast<artdaq_fragment_header const*>(&* fragment.begin());
 
-    if(artdaq_fragment_header::num_words()<=fragment.size())
+    if(artdaq_fragment_header::num_words()>fragment.size())
         throw datatypes_exception("Invalid fragment: fragment is too short.");
 
-    ub_CrateHeader_v6 const & crate_header= ub_CrateHeader_v6::getHeaderFromFragment(fragment);
+    ub_RawData data(fragment.begin(),fragment.end());
+    
+    ub_CrateHeader_v6 const & crate_header= ub_CrateHeader_v6::getHeaderFromFragment(data);
 
     if(crate_header.crate_type == 2)
     {
@@ -42,6 +44,8 @@ void ub_EventRecord::addFragment(raw_fragment_data_t& fragment) throw(datatypes_
 
     getGlobalHeader().setNumberOfBytesInRecord(getGlobalHeader().getNumberOfBytesInRecord()+crate_header.size);
     getGlobalHeader().setNumberOfSEBs((uint8_t)(_tpc_seb_map.size() + _pmt_seb_map.size()));
+    
+    updateDTHeader();
 }
 
 const ub_EventRecord::tpc_map_t ub_EventRecord::getTPCSEBMap() const throw(datatypes_exception)
@@ -65,6 +69,32 @@ void ub_EventRecord::getFragments(fragment_references_t& fragments) const throw(
         fragments.emplace_back(&std::get<0>(tpc.second));
     for(auto& pmt : _pmt_seb_map)
         fragments.emplace_back(&std::get<0>(pmt.second));
+}
+
+
+void ub_EventRecord::updateDTHeader()
+{
+        fragment_references_t fragments;
+        getFragments(fragments);
+        
+	_bookkeeping_header.event_fragment_count=fragments.size();
+	
+	_bookkeeping_header.raw_event_fragments_wordcount=std::accumulate(
+	  fragments.begin(),fragments.end(),0u,[](auto total, auto const& fragment){
+	      return total+fragment->size()*sizeof(fragment_value_type_t);});
+
+	_bookkeeping_header.event_global_header_word_offset=
+			      ub_event_header_wordcount+
+			    _bookkeeping_header.raw_event_fragments_wordcount+
+			    _bookkeeping_header.event_fragment_count*ub_size_t_wordcount;
+	
+        _bookkeeping_header.total_event_wordcount=_bookkeeping_header.event_global_header_word_offset
+                                //+ ADD GLOBAL HEADER SIZES
+				+ub_event_trailer_wordcount;
+	  	  
+        _bookkeeping_header.event_format_version= gov::fnal::uboone::datatypes::constants::VERSION;
+	  
+	_bookkeeping_header.is_event_complete=true;
 }
 
 bool ub_EventRecord::compare(const ub_EventRecord& event_record, bool do_rethrow=false) const throw(datatypes_exception)

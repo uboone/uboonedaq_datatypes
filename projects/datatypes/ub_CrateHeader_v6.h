@@ -30,7 +30,7 @@ struct ub_CrateHeader_v6
     uint16_t crateBits; // word=fedcba9876543210 ... bits [0-3] = 4 bits for crate 0 through 9
     //                           bits [4-7] = 4 bits for crate type (PMT/TPC)
     //                           bits [8-f] = 8 bits currently open
-    uint32_t size; //bytes, needs to be uint32_t for large events
+    std::size_t size; //bytes, needs to be uint32_t for large events
     uint8_t crate_number; // Crate #
     uint8_t card_count; // Card count
     uint8_t crate_type; // Card count
@@ -46,9 +46,11 @@ struct ub_CrateHeader_v6
     ub_CrateHeader_v6(ub_PMT_CardHeader_v6 cardHeader);
     std::string debugInfo()const;
 
+    void updateDTHeader(ub_RawData const& data);
+    
     bool compare(ub_CrateHeader_v6 const&,bool do_rethrow=false) const throw(datatypes_exception);
-
-    static ub_CrateHeader_v6 const& getHeaderFromFragment(raw_data_containter<raw_data_type> const& fragment);
+    
+    static ub_CrateHeader_v6 const& getHeaderFromFragment(ub_RawData const& data);
 
     template<class Archive>
     void serialize(Archive & ar, const unsigned int version)

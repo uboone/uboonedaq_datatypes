@@ -70,26 +70,52 @@ std::string ub_CrateHeader_v6::debugInfo()const
     return os.str();
 }
 
-
-ub_CrateHeader_v6 const& ub_CrateHeader_v6::getHeaderFromFragment(raw_data_containter<raw_data_type> const& fragment)
+void ub_CrateHeader_v6::updateDTHeader(ub_RawData const& data)
 {
-    artdaq_fragment_header const* artdaq_header= reinterpret_cast<artdaq_fragment_header const*>(&* fragment.begin());
-
-    if(artdaq_fragment_header::num_words()<=fragment.size())
+    if(artdaq_fragment_header::num_words()>data.size())
         throw datatypes_exception("Invalid fragment: fragment is too short.");
 
-    if(artdaq_header->word_count!=fragment.size())
+    artdaq_fragment_header const* artdaq_header= reinterpret_cast<artdaq_fragment_header const*>(&*data.begin());
+
+    if(artdaq_header->word_count!=data.size())
+        throw datatypes_exception("Invalid fragment: fragment length doesn't match header word count.");
+        
+    if(artdaq_header->metadata_word_count !=artdaq_fragment_header::padded_wordcount_of<ub_CrateHeader_v6>() )
+        throw datatypes_exception("Invalid fragment: wrong metadata_word_count, or wrong header version");
+    
+    data_transmission_header.total_fragment_wordcount=artdaq_header->word_count;
+    data_transmission_header.is_fragment_complete=complete;
+    
+    data_transmission_header.fragment_format_version= gov::fnal::uboone::datatypes::constants::VERSION;
+    
+    data_transmission_header.raw_fragment_beginning_word_offset=
+      artdaq_fragment_header::num_words()+
+      artdaq_fragment_header::padded_wordcount_of<ub_CrateHeader_v6>();
+      
+    data_transmission_header.raw_fragment_wordcount=
+      data_transmission_header.total_fragment_wordcount-
+      data_transmission_header.raw_fragment_beginning_word_offset;    
+}
+
+ub_CrateHeader_v6 const& ub_CrateHeader_v6::getHeaderFromFragment(ub_RawData const& data)
+{
+    if(artdaq_fragment_header::num_words()>data.size())
+        throw datatypes_exception("Invalid fragment: fragment is too short.");
+
+    artdaq_fragment_header const* artdaq_header= reinterpret_cast<artdaq_fragment_header const*>(&* data.begin());
+
+    if(artdaq_header->word_count!=data.size())
         throw datatypes_exception("Invalid fragment: fragment length doesn't match header word count.");
 
     if(!artdaq_header->sequence_id)
         throw datatypes_exception("Invalid fragment: sequence_id is not set");
 
-    if(!artdaq_header->metadata_word_count !=artdaq_fragment_header::padded_size_of<ub_CrateHeader_v6>() )
+    if(artdaq_header->metadata_word_count !=artdaq_fragment_header::padded_wordcount_of<ub_CrateHeader_v6>() )
         throw datatypes_exception("Invalid fragment: wrong metadata_word_count, or wrong header version");
 
-    ub_CrateHeader_v6 const* crate_header =reinterpret_cast<ub_CrateHeader_v6 const *>(&*(fragment.begin()+artdaq_fragment_header::num_words()));
+    ub_CrateHeader_v6 const* crate_header =reinterpret_cast<ub_CrateHeader_v6 const *>(&*(data.begin()+artdaq_fragment_header::num_words()));
 
-    if(crate_header->size + artdaq_fragment_header::num_words() +artdaq_header->metadata_word_count != fragment.size())
+    if(crate_header->data_transmission_header.raw_fragment_wordcount + artdaq_fragment_header::num_words() +artdaq_header->metadata_word_count != data.size())
         throw datatypes_exception("Invalid crate header: wrong data size.");
 
     return *crate_header;

@@ -17,7 +17,6 @@ size_t size_of<empty_trailer>() {
     return 0;
 }
 
-
 }  // end of namespace datatypes
 }  // end of namespace uboone
 }  // end of namespace fnal

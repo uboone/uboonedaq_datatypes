@@ -2,6 +2,7 @@
 #define _UBOONETYPES_EVENTRECORD_H
 
 
+#include <assert.h>
 #include "evttypes.h"
 #include "constants.h"
 #include "boostSerialization.h"
@@ -29,6 +30,8 @@ class ub_EventRecord {
 
 public:
     typedef raw_data_containter<raw_data_type>   raw_fragment_data_t;
+    typedef raw_fragment_data_t::value_type      fragment_value_type_t;
+    
     typedef std::tuple<raw_fragment_data_t,
             std::unique_ptr<ub_RawData>,
             std::unique_ptr<tpc_crate_data_t>> tpc_crate_data_tuple_t;
@@ -60,6 +63,8 @@ public:
 
     const tpc_map_t getTPCSEBMap() const throw(datatypes_exception);
     const pmt_map_t getPMTSEBMap() const throw(datatypes_exception);
+    void updateDTHeader();
+    
     void  getFragments(fragment_references_t& fragments) const throw(datatypes_exception);
 
 //  void setTriggerData (triggerData tD) { trigger_data = tD; }
@@ -77,9 +82,11 @@ public:
 //  int getBeamDataVecotr_size() { return beam_data_vector.size(); }
 //  void clearBeamDataVector() { beam_data_vector.clear(); }
 private:
-    global_header_t  _global_header;
-    tpc_seb_map_t    _tpc_seb_map;
-    pmt_seb_map_t    _pmt_seb_map;
+    ub_event_header    _bookkeeping_header;
+    ub_event_trailer   _bookkeeping_trailer;
+    global_header_t    _global_header;
+    tpc_seb_map_t      _tpc_seb_map;
+    pmt_seb_map_t      _pmt_seb_map;
 
 //  triggerData trigger_data;
 //  ub_GPS gps_data;
@@ -87,10 +94,33 @@ private:
 //  std::vector<beamData> beam_data_vector;
 //  uint8_t er_IO_mode;
 
+    #define UNUSED(x) (void)(x)
     friend class boost::serialization::access;
     template<class Archive>
     void save(Archive & ar, const unsigned int version) const
-    {
+    {	
+	UNUSED(version);
+	
+        //BEGIN SERIALIZE RAW EVENT FRAGMENT DATA
+        fragment_references_t fragments;
+        getFragments(fragments);
+	assert(_bookkeeping_header.event_fragment_count==fragments.size());
+	assert(_bookkeeping_header.raw_event_fragments_wordcount==std::accumulate(
+	  fragments.begin(),fragments.end(),0u,[](auto total, auto const& fragment){
+	      return total+fragment->size()*sizeof(fragment_value_type_t);}));
+
+	 // write bookkeeping info          
+	 ar.save_binary(&_bookkeeping_header,ub_event_header_size);
+	 
+	// write raw fragmetns with crate headers        
+        for(auto const& fragment : fragments){
+            std::size_t size{fragment->size()};
+            ar.save_binary(&size, sizeof(std::size_t)) ;
+            ar.save_binary(fragment->data(),size*sizeof(fragment_value_type_t));
+        }
+	//END SERIALIZE RAW EVENT FRAGMENT DATA
+#if 0	
+        // write remaining event details
         if(version>=3)
             ar //& er_IO_mode
             & _global_header
@@ -110,20 +140,37 @@ private:
             ar //& er_IO_mode
             & _global_header
             ;
-
+#endif 
         //this must be the last step
-        fragment_references_t fragments;
-        getFragments(fragments);
-        ar & (size_t) fragments.size();
-        for(auto const& fragment : fragments)
-            ar & fragment;
+        ar.save_binary(&_bookkeeping_trailer,ub_event_trailer_size);
     }
 
     template<class Archive>
     void load(Archive & ar, const unsigned int version)
     {
-        std::vector<raw_fragment_data_t> fragments;
+        UNUSED(version);
+        //BEGIN SERIALIZE RAW EVENT FRAGMENT DATA
+        // read bookkeeping info          
+        ar.load_binary(&_bookkeeping_header,ub_event_header_size);
+        assert(_bookkeeping_header.mark_E974==UBOONE_EHDR); 
+	// write raw fragmetns with crate headers        
+        for(std::size_t frag_number=0; frag_number < _bookkeeping_header.event_fragment_count; frag_number++)
+        {
+            raw_fragment_data_t fragment;         
+	    std::size_t size;
+            ar.load_binary(&size,sizeof(std::size_t)) ;
+	    fragment.resize(size);
+            ar.load_binary(fragment.data(),fragment.size()*sizeof(fragment_value_type_t));
+            addFragment(fragment);
+        }
+        fragment_references_t fragments;
+        getFragments(fragments);        
+	assert(_bookkeeping_header.raw_event_fragments_wordcount==std::accumulate(
+	  fragments.begin(),fragments.end(),0u,[](auto total, auto const& fragment){
+	      return total+fragment->size()*sizeof(fragment_value_type_t);}));        
+	//END SERIALIZE RAW EVENT FRAGMENT DATA
 
+#if 0        
         if(version>=3)
             ar //& er_IO_mode
             & _global_header
@@ -143,16 +190,10 @@ private:
             ar //& er_IO_mode
             & _global_header
             ;
-
+#endif
         //this must be the last step
-        size_t num_fragments;
-        ar & num_fragments;
-        for(size_t frag_number=0; frag_number < num_fragments; num_fragments++)
-        {
-            raw_fragment_data_t fragment;
-            ar & fragment;
-            addFragment(fragment);
-        }
+        ar.load_binary(&_bookkeeping_trailer,ub_event_trailer_size);
+        assert(_bookkeeping_trailer.mark_974E==UBOONE_ETLR);            
     }
     BOOST_SERIALIZATION_SPLIT_MEMBER()
 };
