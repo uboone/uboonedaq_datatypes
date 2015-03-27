@@ -16,8 +16,8 @@ namespace datatypes {
 constexpr uint32_t EVENTTRAILER{0xe0000000};
 constexpr uint32_t EVENTHEADER{0xffffffff};
 
-constexpr uint32_t UBOONE_EHDR{0xE974E974};
-constexpr uint32_t UBOONE_ETLR{0x974E974E};
+constexpr uint32_t UBOONE_EHDR{0x74E974E9};
+constexpr uint32_t UBOONE_ETLR{0x4E974E97};
 
 
 #if 0
@@ -102,7 +102,7 @@ struct ub_fragment_header
         is_fragment_complete {0},
         raw_fragment_wordcount {0},
 	raw_fragment_beginning_word_offset {0},
-	reserved {0,0,0,0} {}
+	reserved {1,2,3,4} {}
 
 /*	
     ub_fragment_header(uin32_t total_fragment_wordcount_, 
@@ -157,7 +157,7 @@ struct ub_event_header
                          event_fragment_count{0},
                          raw_event_fragments_wordcount {0},
     event_global_header_word_offset {0},
-    reserved {0,0,0,0} {}
+    reserved {1,2,3,4} {}
 
     //bool compare(ub_event_header const&, bool do_rethrow=false) const throw(datatypes_exception){return true;};
 
@@ -175,7 +175,7 @@ struct ub_event_trailer
     //do not reorder or change this data structure
     uint32_t reserved[4];                       //1st position reserved
     uint32_t mark_974E;                      	//always E974
-    ub_event_trailer():reserved {0,0,0,0},mark_974E{UBOONE_ETLR}{}
+    ub_event_trailer():reserved {1,2,3,4},mark_974E{UBOONE_ETLR}{}
 };
 constexpr std::size_t ub_event_trailer_size = sizeof(ub_event_trailer);
 constexpr std::size_t ub_event_trailer_wordcount = sizeof(ub_event_trailer)/sizeof(artdaq_fragment_header::RawDataType);

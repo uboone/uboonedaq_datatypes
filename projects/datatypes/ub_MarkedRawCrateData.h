@@ -18,13 +18,13 @@ public:
 
     explicit ub_MarkedRawCrateData(ub_RawData const rawdata):
         ub_MarkedRawDataBlock<ub_XMITEventHeader,ub_XMITEventTrailer>(rawdata),
-        _markedRawCardsData {},_dissectableDataSize {0},_isValid {isValid()},
-    _isFullyDissected {canFullyDissect()},_crateHeader {nullptr},_createHeaderFromData {false} {}
+        _markedRawCardsData {},_dissectableDataSize {0},_crateHeader {nullptr},_isValid {isValid()},
+    _isFullyDissected {canFullyDissect()},_createHeaderFromData {false} {}
 
     explicit ub_MarkedRawCrateData(ub_RawData const rawdata,bool createHeaderFromData):
         ub_MarkedRawDataBlock<ub_XMITEventHeader,ub_XMITEventTrailer>(rawdata),
-        _markedRawCardsData {},_dissectableDataSize {0},_isValid {isValid()},
-    _isFullyDissected {canFullyDissect()},_crateHeader {nullptr},_createHeaderFromData {createHeaderFromData} {}
+        _markedRawCardsData {},_dissectableDataSize {0},_crateHeader {nullptr},_isValid {isValid()},
+    _isFullyDissected {canFullyDissect()},_createHeaderFromData {createHeaderFromData} {}
 
     uint32_t const& getHeaderWord() const {
         return header().raw_data;
@@ -67,16 +67,16 @@ private:
 private:
     std::vector<CARD> _markedRawCardsData;
     size_t _dissectableDataSize;
+    std::unique_ptr<typename CARD::ub_CrateHeader> _crateHeader;
     bool _isValid;
     bool _isFullyDissected;
-    std::unique_ptr<typename CARD::ub_CrateHeader> _crateHeader;
     bool _createHeaderFromData;
 };
 
 template <typename CARD>
 std::vector<CARD> const&  ub_MarkedRawCrateData<CARD>::getCards()
 {
-    if(!_isFullyDissected)
+    if(!_isFullyDissected)    
         dissectCards();
 
     return _markedRawCardsData;
@@ -110,12 +110,14 @@ bool ub_MarkedRawCrateData<CARD>::canFullyDissect()
     try
     {
         dissectCards();
+        crateHeader();
     }
     catch(std::exception &ex)
     {
         std::cout << "Exception:" << ex.what() << std::endl;
         return false;
     }
+    
     return true;
 }
 
