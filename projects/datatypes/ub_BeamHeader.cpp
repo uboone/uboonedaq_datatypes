@@ -1,8 +1,8 @@
-#include "beamHeader.h"
+#include "ub_BeamHeader.h"
 
 using namespace gov::fnal::uboone::datatypes;
 
-std::ostream & operator<<(std::ostream &os, const gov::fnal::uboone::datatypes::beamHeader &bh)
+std::ostream & operator<<(std::ostream &os, const gov::fnal::uboone::datatypes::ub_BeamHeader &bh)
 {
   return os <<"Record type: " << (int)bh.getRecordType() << std::endl
 	    <<"Event signal: "<< bh.getEventSignal() << std::endl
@@ -12,7 +12,7 @@ std::ostream & operator<<(std::ostream &os, const gov::fnal::uboone::datatypes::
 	    <<"Number of bytes in record: "<< bh.getNumberOfBytesInRecord() << std::endl;	 
 }
 
-beamHeader::beamHeader()
+ub_BeamHeader::ub_BeamHeader()
 {
   record_type=0;
   event_signal="";

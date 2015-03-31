@@ -1,8 +1,8 @@
-#include "beamData.h"
+#include "ub_BeamData.h"
 
 using namespace gov::fnal::uboone::datatypes;
 
-std::ostream & operator<<(std::ostream &os, const gov::fnal::uboone::datatypes::beamData &bd)
+std::ostream & operator<<(std::ostream &os, const gov::fnal::uboone::datatypes::ub_BeamData &bd)
 {
   os << std::left
      << std::setw(12) << bd.getDeviceName()
@@ -16,7 +16,7 @@ std::ostream & operator<<(std::ostream &os, const gov::fnal::uboone::datatypes::
   return os;
 }
 
-beamData::beamData()
+ub_BeamData::ub_BeamData()
 {
   device_name="";
   units="";

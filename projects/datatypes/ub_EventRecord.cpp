@@ -12,8 +12,8 @@ void ub_EventRecord::addFragment(raw_fragment_data_t& fragment) throw(datatypes_
 
     ub_RawData data(fragment.begin(),fragment.end());
     
-    ub_CrateHeader_v6 const & crate_header= ub_CrateHeader_v6::getHeaderFromFragment(data);
-
+    ub_CrateHeader_v6 const & crate_header= ub_CrateHeader_v6::getHeaderFromFragment(data);    
+    
     if(crate_header.crate_type == 2)
     {
         _pmt_seb_map.emplace(crate_header.crate_number,std::make_tuple(
@@ -44,7 +44,7 @@ void ub_EventRecord::addFragment(raw_fragment_data_t& fragment) throw(datatypes_
 
     getGlobalHeader().setNumberOfBytesInRecord(getGlobalHeader().getNumberOfBytesInRecord()+crate_header.size);
     getGlobalHeader().setNumberOfSEBs((uint8_t)(_tpc_seb_map.size() + _pmt_seb_map.size()));
-    
+    getGlobalHeader().setEventNumberCrate (crate_header.event_number);
     updateDTHeader();
 }
 

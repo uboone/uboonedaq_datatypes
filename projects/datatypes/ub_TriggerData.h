@@ -26,12 +26,12 @@ using namespace gov::fnal::uboone;
    should be made here as well, and the version number should be increased.
  **/
 
-class triggerData {
+class ub_TriggerData {
 
 public:
     static const uint8_t DAQ_version_number = gov::fnal::uboone::datatypes::constants::VERSION;
-    triggerData();
-    triggerData(trigger_data_t bt) {
+    ub_TriggerData();
+    ub_TriggerData(trigger_data_t bt) {
         bt_trigger_data = bt;
     }
 
@@ -141,7 +141,7 @@ private:
 }  // end of namespace gov
 
 // This MACRO must be outside any namespaces.
-BOOST_CLASS_VERSION(gov::fnal::uboone::datatypes::triggerData, gov::fnal::uboone::datatypes::constants::VERSION)
+BOOST_CLASS_VERSION(gov::fnal::uboone::datatypes::ub_TriggerData, gov::fnal::uboone::datatypes::constants::VERSION)
 
 #endif /* #ifndef BOONETYPES_H */
 

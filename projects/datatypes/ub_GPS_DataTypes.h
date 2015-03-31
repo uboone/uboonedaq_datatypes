@@ -2,10 +2,15 @@
 #define _UBOONE_TYPES_GPSDDATA_H 1
 
 #include <cstdint>
+
+#include <boost/serialization/string.hpp>
+#include <boost/serialization/version.hpp>
+
+#include "constants.h"
+
 /* The gps structure is what is read off the card
  * in the trigger crate and represents the GPS time at the arrival of a PPS.
  */
-
 namespace gov {
 namespace fnal {
 namespace uboone {
@@ -27,6 +32,14 @@ struct ub_GPS {
     void setUpper(uint32_t upper) {
         upper = upper;
     }
+
+    
+  template<class Archive>
+    void serialize(Archive & ar, const unsigned int version)
+    {
+      if( version > 0 )
+        ar & lower & upper;
+    }    
 };
 
 
@@ -47,6 +60,11 @@ struct ub_GPS_Time
 }  // end of namespace uboone
 }  // end of namespace fnal
 }
+
+// This MACRO must be outside any namespaces.
+
+BOOST_CLASS_VERSION(gov::fnal::uboone::datatypes::ub_GPS, gov::fnal::uboone::datatypes::constants::VERSION)    
+
 
 #endif //_UBOONE_TYPES_GPSDDATA_H
 

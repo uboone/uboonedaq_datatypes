@@ -67,20 +67,22 @@ public:
     
     void  getFragments(fragment_references_t& fragments) const throw(datatypes_exception);
 
-//  void setTriggerData (triggerData tD) { trigger_data = tD; }
-//  void setGPS (ub_GPS g) { gps_data = g; }
-//  void setBeamHeader (beamHeader bH) { beam_header = bH; }
-//  void insertBeamData (beamData bD) { beam_data_vector.push_back(bD); }
-//  ub_GlobalHeader getGlobalHeader() { return global_header; }
-//  triggerData getTriggerData() { return trigger_data; }
-//  ub_GPS getGPS() { return gps_data; }
-//  beamHeader getBeamHeader() { return beam_header; }
-//  std::vector<beamData> getBeamDataVector() { return beam_data_vector; }
-//  triggerData* getTriggerDataPtr() { return &trigger_data; }
-//  ub_GPS* getGPSPtr() { return &gps_data; }
-//  beamHeader* getBeamHeaderPtr() { return &beam_header; }
-//  int getBeamDataVecotr_size() { return beam_data_vector.size(); }
-//  void clearBeamDataVector() { beam_data_vector.clear(); }
+#if 1	    
+    void setTriggerData (ub_TriggerData& tD) { trigger_data = tD; }
+    void setGPS (ub_GPS g) { gps_data = g; }
+    void setBeamHeader (ub_BeamHeader& bH) { beam_header = bH; }
+    void insertBeamData (ub_BeamData bD) { beam_data_vector.push_back(bD); }
+    ub_TriggerData getTriggerData() { return trigger_data; }
+    ub_GPS getGPS() { return gps_data; }
+    ub_BeamHeader getBeamHeader() { return beam_header; }
+    std::vector<ub_BeamData> getBeamDataVector() { return beam_data_vector; }
+    ub_TriggerData* getTriggerDataPtr() { return &trigger_data; }
+    ub_GPS* getGPSPtr() { return &gps_data; }
+    ub_BeamHeader* getBeamHeaderPtr() { return &beam_header; }
+    int getBeamDataVecotr_size() { return beam_data_vector.size(); }
+    void clearBeamDataVector() { beam_data_vector.clear(); }
+#endif 
+
 private:
     ub_event_header    _bookkeeping_header;
     ub_event_trailer   _bookkeeping_trailer;
@@ -88,11 +90,10 @@ private:
     tpc_seb_map_t      _tpc_seb_map;
     pmt_seb_map_t      _pmt_seb_map;
 
-//  triggerData trigger_data;
-//  ub_GPS gps_data;
-//  beamHeader beam_header;
-//  std::vector<beamData> beam_data_vector;
-//  uint8_t er_IO_mode;
+    ub_TriggerData trigger_data;
+    ub_GPS gps_data;
+    ub_BeamHeader beam_header;
+    std::vector<ub_BeamData> beam_data_vector;
 
     #define UNUSED(x) (void)(x)
     friend class boost::serialization::access;
@@ -119,27 +120,18 @@ private:
             ar.save_binary(fragment->data(),size*sizeof(fragment_value_type_t));
         }
 	//END SERIALIZE RAW EVENT FRAGMENT DATA
-#if 0	
+#if 1	
         // write remaining event details
-        if(version>=3)
-            ar //& er_IO_mode
-            & _global_header
-            //& trigger_data
-            //& gps_data
-            //& beam_header & beam_data_vector //beam stuff...empty at first, added in later
-            ;
-
-        else if(version>1)
-            ar //& er_IO_mode
-            & _global_header
-            //& trigger_data
-            //& gps_data
-            //& beam_header & beam_data_vector //beam stuff...empty at first, added in later
-            ;
-        else if(version>0)
-            ar //& er_IO_mode
-            & _global_header
-            ;
+        if(version>=6)
+        {
+            ar << _global_header;
+            ar << trigger_data;
+            ar << gps_data;
+            ar << beam_header;
+            ar << beam_data_vector; //beam stuff...empty at first, added in later
+         } else if(version>0)
+         { 
+         }
 #endif 
         //this must be the last step
         ar.save_binary(&_bookkeeping_trailer,ub_event_trailer_size);
@@ -170,26 +162,19 @@ private:
 	      return total+fragment->size()*sizeof(fragment_value_type_t);}));        
 	//END SERIALIZE RAW EVENT FRAGMENT DATA
 
-#if 0        
-        if(version>=3)
-            ar //& er_IO_mode
-            & _global_header
-            //& trigger_data
-            //& gps_data
-            //& beam_header & beam_data_vector //beam stuff...empty at first, added in later
-            ;
+#if 1   
+        // write remaining event details
+        if(version>=6)
+        {
+            ar >> _global_header;
+            ar >> trigger_data;
+            ar >> gps_data;
+            ar >> beam_header;
+            ar >> beam_data_vector; //beam stuff...empty at first, added in later
+         } else if(version>0)
+         { 
+         }
 
-        else if(version>1)
-            ar //& er_IO_mode
-            & _global_header
-            //& trigger_data
-            //& gps_data
-            //& beam_header & beam_data_vector //beam stuff...empty at first, added in later
-            ;
-        else if(version>0)
-            ar //& er_IO_mode
-            & _global_header
-            ;
 #endif
         //this must be the last step
         ar.load_binary(&_bookkeeping_trailer,ub_event_trailer_size);

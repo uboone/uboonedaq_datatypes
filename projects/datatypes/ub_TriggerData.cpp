@@ -1,10 +1,10 @@
 
 #include <time.h>
-#include "triggerData.h"
+#include "ub_TriggerData.h"
 
 using namespace gov::fnal::uboone::datatypes;
 
-triggerData::triggerData() {
+ub_TriggerData::ub_TriggerData() {
 
     bt_trigger_data.word1 = 0;
     bt_trigger_data.word2 = 0;
