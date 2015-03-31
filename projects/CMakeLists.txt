@@ -32,20 +32,19 @@ cet_cmake_env()
 
 cet_set_compiler_flags(DIAGS VIGILANT WERROR NO_UNDEFINED EXTRA_FLAGS -pedantic)
 
-cet_have_qual( e2 )
+cet_have_qual( e6 )
 
 if ( ${CET_HAVE_QUAL} )
-  cet_add_compiler_flags(CXX -std=c++11 -D_GLIBCXX_USE_NANOSLEEP)
+  cet_add_compiler_flags(CXX -std=c++1y -D_GLIBCXX_USE_NANOSLEEP)
 endif()
 
 cet_report_compiler_flags()
 
 # these are minimum required versions, not the actual product versions
-find_ups_product( cetbuildtools v3_04_04 )
+find_ups_product( cetbuildtools v4_04_01 )
 
-find_ups_boost( v1_53_0  serialization )
+find_ups_boost( v1_56_0  serialization )
 
-cet_check_gcc()
 
 
 # Debug streamer.
@@ -57,14 +56,14 @@ endif()
 message(STATUS "Project is ${product} ${version} ${qualifier}")
 
 set (COMMON_PROJECT_LIBS 
-  ${Boost_SERIALIZATION_LIBRARY} 
+  ${Boost_SERIALIZATION_LIBRARY}
   )
 
 # source
 add_subdirectory(share)
 add_subdirectory(datatypes)
-add_subdirectory(datatypes_utilities)
-add_subdirectory(gps)
+#add_subdirectory(datatypes_utilities)
+#add_subdirectory(gps)
 
 # ups - table and config files
 add_subdirectory(ups)
