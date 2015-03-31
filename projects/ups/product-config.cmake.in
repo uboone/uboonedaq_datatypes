@@ -1,5 +1,6 @@
-set( @product@_VERSION @VERSION_MAJOR@.@VERSION_MINOR@.@VERSION_PATCH@ )
-set( @product@_UPS_VERSION v@VERSION_MAJOR@_@VERSION_MINOR@_@VERSION_PATCH@ )
+
+set( @product@_VERSION @cet_dot_version@ )
+set( @product@_UPS_VERSION @version@ )
 
 @PACKAGE_INIT@
 
@@ -7,9 +8,5 @@ set( @product@_UPS_VERSION v@VERSION_MAJOR@_@VERSION_MINOR@_@VERSION_PATCH@ )
 
 @CONFIG_FIND_LIBRARY_COMMANDS@
 
-# Eventually the following lines will be included automatically
-# include search path
-#include_directories ( $ENV{LIBSIGCPP_INC}/sigc++-2.0 )
-#include_directories ( $ENV{LIBSIGCPP_LIB}/sigc++-2.0/include )
-
 check_required_components(@product@)
+

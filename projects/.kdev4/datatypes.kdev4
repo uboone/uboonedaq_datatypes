@@ -1,0 +1,9 @@
+[Buildset]
+BuildItems=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x01\x00\x00\x00\x0b\x00\x00\x00\x00\x01\x00\x00\x00\x12\x00d\x00a\x00t\x00a\x00t\x00y\x00p\x00e\x00s)
+
+[MakeBuilder]
+Make Binary=/home/lukhanin/development/run/urebuild-types.sh
+Number Of Jobs=1
+
+[Project]
+VersionControlSupport=kdevgit

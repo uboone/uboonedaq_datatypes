@@ -1,17 +1,27 @@
 # project name
+
 project(datatypes)
 
-set( LIB_NAME udata_types)
+set( LIB_NAME ubdata_types)
 
 FILE(GLOB_RECURSE LIB_SOURCES *.cpp )
 
-set_source_files_properties(${LIB_SOURCES} PROPERTIES COMPILE_FLAGS "-Wno-unused-variable -Wno-deprecated-declarations -Wno-unused-function -Wno-sign-compare -Wno-unused-parameter -Wno-format -Wno-unused-but-set-variable -Wno-return-type")
+add_library( ${LIB_NAME} SHARED ${LIB_SOURCES}  ${COMMON_PROJECT_LIBS})
 
-add_library( ${LIB_NAME} SHARED ${LIB_SOURCES}  ${COMMON_PROJECT_LIBS} )
+target_link_libraries (${LIB_NAME} -lcrypto)
+
+add_executable(fragmentReader main.cc)
+
+
+target_link_libraries(fragmentReader
+    ${COMMON_PROJECT_LIBS}
+    ubdata_types
+    )
 
 install_headers()
+
 install_source()
 
 install( TARGETS ${LIB_NAME}
-         DESTINATION ${flavorqual_dir}/lib )
 
+         DESTINATION ${flavorqual_dir}/lib )

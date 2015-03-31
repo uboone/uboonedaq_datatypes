@@ -30,7 +30,7 @@
 #define TPC_TYPE 6
 #define PMT_TYPE 7
 #define GRANITE_TYPE 8
-#define VETO_TYPE 9               /* For some potential future hardware */ 
+#define VETO_TYPE 9               /* For some potential future hardware */
 #define NO_UPPER_COSMICS_TYPE 10  /* Nevis trigger on inactivity */
 #define BNB_TYPE 18
 #define NUMI_TYPE 19
