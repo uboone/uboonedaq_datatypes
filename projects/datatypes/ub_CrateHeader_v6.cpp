@@ -94,7 +94,10 @@ void ub_CrateHeader_v6::updateDTHeader(ub_RawData const& data)
       
     data_transmission_header.raw_fragment_wordcount=
       data_transmission_header.total_fragment_wordcount-
-      data_transmission_header.raw_fragment_beginning_word_offset;    
+      data_transmission_header.raw_fragment_beginning_word_offset; 
+
+    data_transmission_header.calculateMD5hash((unsigned char const* )&*data.begin(),data.size()*sizeof(raw_data_type));
+  
 }
 
 ub_CrateHeader_v6 const& ub_CrateHeader_v6::getHeaderFromFragment(ub_RawData const& data)
