@@ -116,11 +116,16 @@ struct ub_fragment_header
         raw_fragment_wordcount {raw_fragment_wordcount_},
 	raw_fragment_beginning_word_offset {raw_fragment_beginning_word_offset_} {}
 */	
+
 	
     void calculateMD5hash(raw_data_containter<raw_data_type> const& data) {
         MD5((unsigned char const*) data.data(),  data.size()*sizeof(raw_data_type) , md5hash);
     }
-
+        
+    void calculateMD5hash(unsigned char const* addr, std::size_t bytes) {
+        MD5(addr, bytes , md5hash);
+    }
+    
     bool verifyMD5hash(raw_data_containter<raw_data_type> const& data) {
         unsigned char md5hash_[MD5_DIGEST_LENGTH];
         MD5((unsigned char const*) data.data(),  data.size()*sizeof(raw_data_type) , md5hash_);
