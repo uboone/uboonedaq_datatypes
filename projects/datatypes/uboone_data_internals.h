@@ -43,21 +43,21 @@ public:
         rawdata.begin()+rawdata.size()-size_of<TRAILER>())
     } {};
 
-    HEADER const&  header() const {
+    HEADER const&  header() const noexcept{
         return *(reinterpret_cast<HEADER const *>(&*std::get<cast_enum(data_types::header)>(_data_markers)) );
     }
-    TRAILER const&  trailer() const {
+    TRAILER const&  trailer() const noexcept{
         return * (reinterpret_cast<TRAILER const *>(&*std::get<cast_enum(data_types::trailer)>(_data_markers)) );
     }
 
-    ub_RawData const&  data() const {
+    ub_RawData const&  data() const noexcept{
         return std::get<cast_enum(data_types::data)>(_data_markers);
     }
-    ub_RawData const&  rawdata() const {
+    ub_RawData const&  rawdata() const noexcept{
         return std::get<cast_enum(data_types::rawdata)>(_data_markers);
     }
 
-    std::string debugInfo()const;
+    std::string debugInfo()const noexcept;
     bool compare(ub_MarkedRawDataBlock const&,bool do_rethrow=false) const throw(datatypes_exception);
 
     constexpr size_t minsize()const {
@@ -69,7 +69,7 @@ private:
 };
 
 template <typename HEADER, typename TRAILER>
-std::string ub_MarkedRawDataBlock< HEADER,  TRAILER>::debugInfo()const
+std::string ub_MarkedRawDataBlock< HEADER,  TRAILER>::debugInfo()const noexcept
 {
     std::ostringstream os;
 
@@ -97,9 +97,9 @@ bool ub_MarkedRawDataBlock< HEADER,  TRAILER>::compare(ub_MarkedRawDataBlock con
         else
             return false;
     } catch(...) {
-        std::cerr << "Unknown exception.";
+        std::cerr << "Unknown exception ub_MarkedRawDataBlock< HEADER,  TRAILER>::compare()";
         if(do_rethrow)
-            throw datatypes_exception("Unknown exception.");
+            throw datatypes_exception("Unknown exception ub_MarkedRawDataBlock< HEADER,  TRAILER>::compare()");
         else
             return false;
     }
@@ -109,13 +109,13 @@ bool ub_MarkedRawDataBlock< HEADER,  TRAILER>::compare(ub_MarkedRawDataBlock con
 
 
 template <typename TYPE>
-typename TYPE::header_type const&  const_header_from(ub_RawData &data) {
+typename TYPE::header_type const&  const_header_from(ub_RawData &data) noexcept{
     return *(reinterpret_cast<typename TYPE::header_type const*>(&*
              data.begin()));
 }
 
 template <typename TYPE>
-typename TYPE::trailer_type const&  const_trailer_from(ub_RawData &data) {
+typename TYPE::trailer_type const&  const_trailer_from(ub_RawData &data) noexcept{
     return *(reinterpret_cast<typename TYPE::trailer_type const*>(&*
              (data.begin()+data.size()-size_of<typename TYPE::trailer_type>() ) ));
 }

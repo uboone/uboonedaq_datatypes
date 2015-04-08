@@ -22,7 +22,7 @@ struct ub_PMT_CardHeader_v6
         struct {
             uint32_t mark 	:16;
             uint32_t module	:5;
-            uint32_t id  		:7;
+            uint32_t id  	:7;
             uint32_t  		:4;
         };
         uint32_t id_and_module =0xDEADBEEF;
@@ -93,7 +93,7 @@ struct ub_PMT_CardHeader_v6
     union {
         struct  {
             uint32_t tf2  		:4;
-            uint32_t tf3 			:4;
+            uint32_t tf3 		:4;
             uint32_t  			:4;
             uint32_t  			:4;
             uint32_t tf1  		:8;

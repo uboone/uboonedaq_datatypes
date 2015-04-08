@@ -9,7 +9,7 @@ namespace uboone {
 namespace datatypes {
 struct empty_trailer {
     uint16_t foo; //unused
-    std::string debugInfo()const;
+    std::string debugInfo()const noexcept;
 };
 
 template <> constexpr

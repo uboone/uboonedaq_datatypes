@@ -8,9 +8,8 @@ namespace uboone {
 namespace datatypes {
 
 template <>
-bool  ub_MarkedRawCrateData<ub_TPC_CardData_v6>::isValid()
+bool  ub_MarkedRawCrateData<ub_TPC_CardData_v6>::isValid() noexcept
 {
-    //FIXME: GAL add additional validation for the header and trailer
     return true;
 }
 
@@ -26,13 +25,18 @@ bool ub_TPC_CrateData_v6::compare(ub_TPC_CrateData_v6 const & crate_data, bool d
         else
             return false;
     } catch(...) {
-        std::cerr << "Unknown exception.";
+        std::cerr << "Unknown exception in ub_TPC_CrateData_v6::compare()";
         if(do_rethrow)
-            throw datatypes_exception("Unknown exception.");
+            throw datatypes_exception("Unknown exception in ub_TPC_CrateData_v6::compare()");
         else
             return false;
     }
     return true;
+}
+
+ub_TPC_CrateData_v6::ub_TPC_CrateData_v6(ub_RawData const rawdata, bool createHeaderFromData):
+    ub_MarkedRawCrateData<ub_TPC_CardData_v6>(rawdata, createHeaderFromData)
+{
 }
 
 }  // end of namespace datatypes

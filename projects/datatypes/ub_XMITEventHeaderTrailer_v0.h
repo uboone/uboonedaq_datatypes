@@ -19,10 +19,10 @@ struct ub_XMITEventHeader
         };
         uint32_t raw_data=0xDEADBEEF;
     };
-    uint32_t getMarker() const {
+    uint32_t getMarker() const noexcept{
         return marker;
     }
-    std::string debugInfo()const;
+    std::string debugInfo()const noexcept;
 };
 
 
@@ -36,10 +36,10 @@ struct ub_XMITEventTrailer
         };
         uint32_t raw_data=0xDEADBEEF;
     };
-    uint32_t getMarker() const {
+    uint32_t getMarker() const noexcept{
         return marker;
     }
-    std::string debugInfo()const;
+    std::string debugInfo()const noexcept;
 };
 
 static_assert (sizeof(ub_XMITEventTrailer) == 4, "ub_XMITEventTrailer structure size is not correct.");

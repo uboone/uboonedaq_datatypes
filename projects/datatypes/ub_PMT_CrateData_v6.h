@@ -14,9 +14,7 @@ namespace datatypes {
 class ub_PMT_CrateData_v6 : public ub_MarkedRawCrateData<ub_PMT_CardData_v6> {
 public:
     typedef ub_PMT_CardData_v6::ub_CrateHeader ub_CrateHeader_t;
-    ub_PMT_CrateData_v6(ub_RawData const rawdata, bool createHeaderFromData=false):
-        ub_MarkedRawCrateData<ub_PMT_CardData_v6>(rawdata, createHeaderFromData) {}
-
+    ub_PMT_CrateData_v6(ub_RawData const rawdata, bool createHeaderFromData=false);
     bool compare(ub_PMT_CrateData_v6 const & crate_data, bool do_rethrow=false) const throw(datatypes_exception);
 
     ub_PMT_CrateData_v6() = delete;

@@ -156,9 +156,9 @@ bool ub_EventRecord::compare(ub_EventRecord const& event_record, bool do_rethrow
         else
             return false;
     } catch(...) {
-        std::cerr << "Unknown exception in ub_EventRecord::updateDTHeader()";
+        std::cerr << "Unknown exception in ub_EventRecord::compare()";
         if(do_rethrow)
-            throw datatypes_exception("Unknown exception in ub_EventRecord::updateDTHeader()");
+            throw datatypes_exception("Unknown exception in ub_EventRecord::compare()");
         else
             return false;
     }

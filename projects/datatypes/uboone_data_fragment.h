@@ -48,7 +48,7 @@ class datatypes_exception : public std::exception
 {
 public:
     datatypes_exception(std::string const& message, std::string const& name="datatypes_exception");
-    virtual const char *    what () const throw ();
+    virtual const char *    what () const noexcept;
     virtual ~datatypes_exception() noexcept;
 private:
     std::string _name;
@@ -117,29 +117,9 @@ struct ub_fragment_header
 	raw_fragment_beginning_word_offset {0},
 	reserved {1,2,3,4} {}
 
-/*	
-    ub_fragment_header(uin32_t total_fragment_wordcount_, 
-                       uint8_t fragment_format_version_,
-                       uint8_t  is_fragment_complete_,
-                       uint32_t raw_fragment_wordcount_,
-                       uint32_t raw_fragment_beginning_word_offset_):
-        total_fragment_wordcount {total_fragment_wordcount_},
-        fragment_format_version {fragment_format_version_},
-        is_fragment_complete {is_fragment_complete_},
-        raw_fragment_wordcount {raw_fragment_wordcount_},
-	raw_fragment_beginning_word_offset {raw_fragment_beginning_word_offset_} {}
-*/	
-
-	
-    void calculateMD5hash(unsigned char const* addr, std::size_t bytes) {
-        MD5(addr, bytes , md5hash);
-    }
+    void calculateMD5hash(unsigned char const* addr, std::size_t bytes) noexcept;
     
-    bool verifyMD5hash(unsigned char const* addr, std::size_t bytes) {
-        unsigned char md5hash_[MD5_DIGEST_LENGTH];
-        MD5(addr, bytes , md5hash_);
-        return std::equal(std::begin(md5hash), std::end(md5hash), std::begin(md5hash_));
-    }
+    bool verifyMD5hash(unsigned char const* addr, std::size_t bytes) const noexcept;
 
     bool compare(ub_fragment_header const&, bool do_rethrow=false) const throw(datatypes_exception);
 
@@ -154,7 +134,7 @@ static_assert( (artdaq_fragment_header::bytes_to_pad<ub_fragment_header>() == 0)
 struct ub_event_header
 {
     //do not reorder or change this data structure
-    uint32_t mark_E974;                         	//always E974
+    uint32_t 	mark_E974;                         	//always E974
     std::size_t total_event_wordcount;                  //1st position represents a total size of event including header/trailer words
     uint8_t     event_format_version;                   //2nd position represents a data format version
     bool        is_event_complete;                      //3rd position 1 is complete; 0 is incomplete cumulative state of all fragments
@@ -162,7 +142,7 @@ struct ub_event_header
     
     std::size_t raw_event_fragments_wordcount;          //5th position size of raw dma'ed data, includeing all headers/trailers
     std::size_t event_global_header_word_offset; 	//6th position offest to the begining of the global header offest
-    uint32_t reserved[4];                               //7th position reserved
+    uint32_t 	reserved[4];                            //7th position reserved
 
     ub_event_header():   mark_E974{UBOONE_EHDR},
 			 total_event_wordcount {0},

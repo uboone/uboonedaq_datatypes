@@ -128,7 +128,7 @@ ub_CrateHeader_v6 const& ub_CrateHeader_v6::getHeaderFromFragment(ub_RawData con
     } catch(datatypes_exception &ex) {
             throw;
     } catch(...) {
-            throw datatypes_exception("Unknown exception in ub_CrateHeader_v6::getHeaderFromFragment");
+            throw datatypes_exception("Unknown exception in ub_CrateHeader_v6::getHeaderFromFragment()");
     }
 }
 
@@ -181,9 +181,9 @@ bool ub_CrateHeader_v6::compare(ub_CrateHeader_v6 const& crate_header,bool do_re
         else
             return false;
     } catch(...) {
-        std::cerr << "Unknown exception.";
+        std::cerr << "Unknown exception in ub_CrateHeader_v6::compare()";
         if(do_rethrow)
-            throw datatypes_exception("Unknown exception.");
+            throw datatypes_exception("Unknown exception in ub_CrateHeader_v6::compare()");
         else
             return false;
     }

@@ -26,45 +26,45 @@ public:
         _markedRawCardsData {},_dissectableDataSize {0},_crateHeader {nullptr},_isValid {isValid()},
     _isFullyDissected {canFullyDissect()},_createHeaderFromData {createHeaderFromData} {}
 
-    uint32_t const& getHeaderWord() const {
+    uint32_t const& getHeaderWord() const noexcept{
         return header().raw_data;
     }
-    uint32_t const& getTrailerWord() const {
+    uint32_t const& getTrailerWord() const noexcept{
         return trailer().raw_data;
     }
-    std::vector<CARD> const&  getCards() ;
-    std::vector<CARD> const&  getCards() const {
+    std::vector<CARD> const&  getCards() throw(datatypes_exception);
+    std::vector<CARD> const&  getCards() const noexcept{
         return _markedRawCardsData;
     }
 
     ub_MarkedRawCrateData() = delete;
     //ub_MarkedRawCrateData(ub_MarkedRawCrateData const &) = delete;
     ub_MarkedRawCrateData& operator=(ub_MarkedRawCrateData const &) = delete;
-    size_t getSizeOfCardsData() const {
+    size_t getSizeOfCardsData() const noexcept{
         return data().size();
     };
-    size_t getSizeOfRAWCrateData() const {
+    size_t getSizeOfRAWCrateData() const noexcept{
         return rawdata().size();
     };
 
-    void dissectCards();
-    std::string debugInfo()const;
+    void dissectCards() throw(datatypes_exception);
+    std::string debugInfo()const noexcept;
 
-    size_t getSizeOfDissectableCrateData() const {
+    size_t getSizeOfDissectableCrateData() const noexcept{
         assert(_dissectableDataSize !=0 );
         return _dissectableDataSize;
     };
 
-    std::unique_ptr<typename CARD::ub_CrateHeader>& crateHeader();
-    std::unique_ptr<typename CARD::ub_CrateHeader> const& crateHeader()const {	
+    std::unique_ptr<typename CARD::ub_CrateHeader>& crateHeader() throw(datatypes_exception);
+    std::unique_ptr<typename CARD::ub_CrateHeader> const& crateHeader()const noexcept{	
         return _crateHeader;
     };
 
     bool compare(ub_MarkedRawCrateData const&,bool do_rethrow=false) const throw(datatypes_exception);
      bool initialize() throw(datatypes_exception);
 private:
-    bool isValid();
-    bool canFullyDissect();
+    bool isValid() noexcept;
+    bool canFullyDissect() noexcept;
    
     
 private:
@@ -77,7 +77,7 @@ private:
 };
 
 template <typename CARD>
-std::vector<CARD> const&  ub_MarkedRawCrateData<CARD>::getCards()
+std::vector<CARD> const&  ub_MarkedRawCrateData<CARD>::getCards() throw(datatypes_exception)
 {
     if(!_isFullyDissected)
         dissectCards();
@@ -86,7 +86,7 @@ std::vector<CARD> const&  ub_MarkedRawCrateData<CARD>::getCards()
 }
 
 template <typename CARD>
-void ub_MarkedRawCrateData<CARD>::dissectCards()
+void ub_MarkedRawCrateData<CARD>::dissectCards() throw(datatypes_exception)
 {
     try
     {
@@ -97,13 +97,10 @@ void ub_MarkedRawCrateData<CARD>::dissectCards()
         assert(_dissectableDataSize > minsize());
         assert(_dissectableDataSize <= rawdata().size());
     }
-    catch(std::exception &ex)
-    {
+    catch(std::exception &ex){
         throw;
-    }
-    catch(...)
-    {
-        throw std::runtime_error("Caught unknown exception in ub_MarkedRawCrateData::dissectCards().");
+    }catch(...){
+        throw datatypes_exception("Caught unknown exception in ub_MarkedRawCrateData::dissectCards().");
     }
 }
 
@@ -116,7 +113,7 @@ bool ub_MarkedRawCrateData<CARD>::initialize() throw(datatypes_exception)
 	    return crateHeader()->initialize(rawdata());
 	 return true;
     } catch(std::exception &ex) {
-        std::cout << "Exception:" << ex.what() << std::endl;
+        std::cerr << "Exception:" << ex.what() << std::endl;
         return false;
     } catch(...) {
         std::cerr << "Unknown exception.";
@@ -129,22 +126,24 @@ return true;
 
 
 template <typename CARD>
-bool ub_MarkedRawCrateData<CARD>::canFullyDissect()
+bool ub_MarkedRawCrateData<CARD>::canFullyDissect() noexcept
 {
     try
     {
         dissectCards();
         crateHeader();
     } catch(std::exception &ex) {
-        std::cout << "Exception:" << ex.what() << std::endl;
+        std::cerr << "Exception:" << ex.what() << std::endl;
+        return false;
+    }catch(...){
+        std::cerr << "Caught unknown exception in ub_MarkedRawCrateData::dissectCards().";
         return false;
     }
-
     return true;
 }
 
 template <typename CARD>
-std::unique_ptr<typename CARD::ub_CrateHeader>& ub_MarkedRawCrateData<CARD>::crateHeader()
+std::unique_ptr<typename CARD::ub_CrateHeader>& ub_MarkedRawCrateData<CARD>::crateHeader() throw(datatypes_exception)
 {
     if(_crateHeader)
         return _crateHeader;
@@ -189,9 +188,9 @@ bool ub_MarkedRawCrateData<CARD>::compare(ub_MarkedRawCrateData<CARD> const& mar
         else
             return false;
     } catch(...) {
-        std::cerr << "Unknown exception.";
+        std::cerr << "Unknown exception in ub_MarkedRawCrateData<CARD>::compare()";
         if(do_rethrow)
-            throw datatypes_exception("Unknown exception.");
+            throw datatypes_exception("Unknown exception in ub_MarkedRawCrateData<CARD>::compare()");
         else
             return false;
     }
@@ -199,7 +198,7 @@ bool ub_MarkedRawCrateData<CARD>::compare(ub_MarkedRawCrateData<CARD> const& mar
 }
 
 template <typename CARD>
-std::string ub_MarkedRawCrateData<CARD>::debugInfo()const
+std::string ub_MarkedRawCrateData<CARD>::debugInfo()const noexcept
 {
     std::ostringstream os;
     os << "Object " << demangle(typeid(this)) << "."<< std::endl;

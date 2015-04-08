@@ -30,10 +30,10 @@ public:
                              ub_RawDataBlock::const_iterator end)
         :_begin {begin},_end {end} {}
 
-    ub_RawDataBlock::const_iterator begin() const {
+    ub_RawDataBlock::const_iterator begin() const noexcept{
         return _begin;
     }
-    ub_RawDataBlock::const_iterator end() const {
+    ub_RawDataBlock::const_iterator end() const noexcept{
         return _end;
     }
 
@@ -63,9 +63,9 @@ bool ub_RawDataBlock< CONTAINER,  TYPE>::compare(ub_RawDataBlock const& data_blo
         else
             return false;
     } catch(...) {
-        std::cerr << "Unknown exception.";
+        std::cerr << "Unknown exception in ub_RawDataBlock< CONTAINER,  TYPE>::compare()";
         if(do_rethrow)
-            throw datatypes_exception("Unknown exception.");
+            throw datatypes_exception("Unknown exception in ub_RawDataBlock< CONTAINER,  TYPE>::compare()");
         else
             return false;
     }
@@ -77,9 +77,9 @@ typedef ub_RawDataBlock< raw_data_containter,raw_data_type> ub_RawData;
 
 #define STRTAB "            "
 
-std::string demangle(const std::type_info  &type_info);
-std::string debugInfo(ub_RawData const& data);
-std::string debugInfoRawData(raw_data_containter<raw_data_type>const& data);
+std::string demangle(const std::type_info  &type_info) noexcept;
+std::string debugInfo(ub_RawData const& data) noexcept;
+std::string debugInfoRawData(raw_data_containter<raw_data_type>const& data) noexcept;
 
 
 template <typename T>
