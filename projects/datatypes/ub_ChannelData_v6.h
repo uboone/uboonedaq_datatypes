@@ -12,8 +12,8 @@ namespace datatypes {
 class ub_ChannelData_v6 : public ub_MarkedRawChannelData
 {
 public:
-    ub_ChannelData_v6(ub_RawData const rawdata): ub_MarkedRawChannelData(rawdata) {}
-
+    ub_ChannelData_v6(ub_RawData const rawdata);
+    
     ub_ChannelData_v6() = delete;
     ub_ChannelData_v6& operator=(ub_ChannelData_v6 const &) = delete;
 };

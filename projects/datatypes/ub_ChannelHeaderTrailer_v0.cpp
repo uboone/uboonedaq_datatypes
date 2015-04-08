@@ -2,7 +2,7 @@
 
 using namespace gov::fnal::uboone::datatypes;
 
-std::string ub_ChannelHeader::debugInfo()const
+std::string ub_ChannelHeader::debugInfo()const noexcept
 {
     std::ostringstream os;
     os << "Object " << demangle(typeid(this)) << "."<< std::endl;
@@ -12,7 +12,7 @@ std::string ub_ChannelHeader::debugInfo()const
     return os.str();
 }
 
-std::string ub_ChannelTrailer::debugInfo()const
+std::string ub_ChannelTrailer::debugInfo()const noexcept
 {
     std::ostringstream os;
     os << "Object " << demangle(typeid(this))<< "."<< std::endl;

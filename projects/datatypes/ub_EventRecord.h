@@ -59,29 +59,21 @@ public:
 
     void addFragment(raw_fragment_data_t & fragment) throw(datatypes_exception);
 
-    bool compare(const ub_EventRecord& event_record, bool do_rethrow) const throw(datatypes_exception);
+    bool compare(ub_EventRecord const& event_record, bool do_rethrow) const throw(datatypes_exception);
 
     const tpc_map_t getTPCSEBMap() const throw(datatypes_exception);
     const pmt_map_t getPMTSEBMap() const throw(datatypes_exception);
-    void updateDTHeader();
+    void updateDTHeader() throw (datatypes_exception);
     
     void  getFragments(fragment_references_t& fragments) const throw(datatypes_exception);
 
-#if 1	    
-    void setTriggerData (ub_TriggerData& tD) { trigger_data = tD; }
-    void setGPS (ub_GPS g) { gps_data = g; }
-    void setBeamHeader (ub_BeamHeader& bH) { beam_header = bH; }
-    void insertBeamData (ub_BeamData bD) { beam_data_vector.push_back(bD); }
-    ub_TriggerData getTriggerData() { return trigger_data; }
-    ub_GPS getGPS() { return gps_data; }
-    ub_BeamHeader getBeamHeader() { return beam_header; }
-    std::vector<ub_BeamData> getBeamDataVector() { return beam_data_vector; }
-    ub_TriggerData* getTriggerDataPtr() { return &trigger_data; }
-    ub_GPS* getGPSPtr() { return &gps_data; }
-    ub_BeamHeader* getBeamHeaderPtr() { return &beam_header; }
-    int getBeamDataVecotr_size() { return beam_data_vector.size(); }
-    void clearBeamDataVector() { beam_data_vector.clear(); }
-#endif 
+    void setTriggerData (ub_TriggerData const& trigger_data) noexcept {_trigger_data = trigger_data;}
+    void setGPSData(ub_GPS const& gps_data) noexcept { _gps_data = gps_data;}
+    void setBeamRecord(ub_BeamRecord const& beam_record) noexcept {_beam_record=beam_record;}
+    ub_GPS const& GPSData() const noexcept {return _gps_data; }    
+    ub_TriggerData const& triggerData()const noexcept {return _trigger_data; }    
+    ub_BeamRecord const& beamRecord()const noexcept {return _beam_record;}
+    ub_BeamRecord& beamRecord() noexcept {return _beam_record;}    
 
 private:
     ub_event_header    _bookkeeping_header;
@@ -90,10 +82,9 @@ private:
     tpc_seb_map_t      _tpc_seb_map;
     pmt_seb_map_t      _pmt_seb_map;
 
-    ub_TriggerData trigger_data;
-    ub_GPS gps_data;
-    ub_BeamHeader beam_header;
-    std::vector<ub_BeamData> beam_data_vector;
+    ub_TriggerData     _trigger_data;
+    ub_GPS             _gps_data;
+    ub_BeamRecord      _beam_record;
 
     #define UNUSED(x) (void)(x)
     friend class boost::serialization::access;
@@ -118,21 +109,17 @@ private:
             std::size_t size{fragment->size()};
             ar.save_binary(&size, sizeof(std::size_t)) ;
             ar.save_binary(fragment->data(),size*sizeof(fragment_value_type_t));
-        }
+        }        
 	//END SERIALIZE RAW EVENT FRAGMENT DATA
-#if 1	
+	
         // write remaining event details
-        if(version>=6)
+        if(version>0)
         {
             ar << _global_header;
-            ar << trigger_data;
-            ar << gps_data;
-            ar << beam_header;
-            ar << beam_data_vector; //beam stuff...empty at first, added in later
-         } else if(version>0)
-         { 
+            ar << _trigger_data;
+            ar << _gps_data;
+            ar << _beam_record;
          }
-#endif 
         //this must be the last step
         ar.save_binary(&_bookkeeping_trailer,ub_event_trailer_size);
     }
@@ -162,20 +149,15 @@ private:
 	      return total+fragment->size()*sizeof(fragment_value_type_t);}));        
 	//END SERIALIZE RAW EVENT FRAGMENT DATA
 
-#if 1   
         // write remaining event details
-        if(version>=6)
+        if(version>0)
         {
             ar >> _global_header;
-            ar >> trigger_data;
-            ar >> gps_data;
-            ar >> beam_header;
-            ar >> beam_data_vector; //beam stuff...empty at first, added in later
-         } else if(version>0)
-         { 
-         }
+            ar >> _trigger_data;
+            ar >> _gps_data;
+            ar >> _beam_record;
+        }
 
-#endif
         //this must be the last step
         ar.load_binary(&_bookkeeping_trailer,ub_event_trailer_size);
         assert(_bookkeeping_trailer.mark_974E==UBOONE_ETLR);            

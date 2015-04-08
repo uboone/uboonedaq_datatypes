@@ -7,6 +7,27 @@
 #include <algorithm>
 #include <iterator>
 
+# define DO_STDVEC 1
+
+
+typedef uint16_t raw_data_type;
+
+template<typename TYPE, template<typename,typename> class CONTAINER,  typename ALLOC> 
+class data_containter_wrap: public CONTAINER<TYPE,ALLOC> {
+public:
+explicit data_containter_wrap():CONTAINER<TYPE,ALLOC>(0){}
+explicit data_containter_wrap(std::size_t size):CONTAINER<TYPE,ALLOC>(size){}
+explicit data_containter_wrap(std::size_t size, const TYPE& value):CONTAINER<TYPE,ALLOC>(size,value){}
+};
+
+#if DO_STDVEC == 1
+template <class TYPE,class ALLOC = std::allocator<TYPE>> using raw_data_containter = data_containter_wrap<TYPE, std::vector, ALLOC>;
+#else
+#include "share/QuickVec.hh"
+template <class TYPE,class ALLOC = std::allocator<TYPE>> using raw_data_containter = data_containter_wrap<TYPE, QuickVec, ALLOC>;
+#endif
+
+
 
 namespace gov {
 namespace fnal {
@@ -20,15 +41,8 @@ constexpr uint32_t UBOONE_EHDR{0x74E974E9};
 constexpr uint32_t UBOONE_ETLR{0x4E974E97};
 
 
-#if 0
-#include "DAQdata/Fragment.hh"
-typedef artdaq::RawDataType raw_data_type;
-typedef artdaq::Fragment    raw_data_containter;
-#else
-typedef uint16_t raw_data_type;
-template <class T,class Alloc = std::allocator<T>> using raw_data_containter = std::vector<T, Alloc>;
+
 typedef raw_data_containter<raw_data_type> raw_fragment_t;
-#endif
 
 class datatypes_exception : public std::exception
 {
@@ -78,8 +92,7 @@ struct artdaq_fragment_header {
     template<typename T> 
     constexpr static std::size_t padded_wordcount_of() {
         return sizeof(T)/sizeof(artdaq_fragment_header::RawDataType) + (bytes_to_pad<T>() >0 ? 1 : 0);
-    }
-
+    }    
 };
 
 static_assert((artdaq_fragment_header::bytes_to_pad<artdaq_fragment_header>() == 0),
@@ -118,17 +131,13 @@ struct ub_fragment_header
 */	
 
 	
-    void calculateMD5hash(raw_data_containter<raw_data_type> const& data) {
-        MD5((unsigned char const*) data.data(),  data.size()*sizeof(raw_data_type) , md5hash);
-    }
-        
     void calculateMD5hash(unsigned char const* addr, std::size_t bytes) {
         MD5(addr, bytes , md5hash);
     }
     
-    bool verifyMD5hash(raw_data_containter<raw_data_type> const& data) {
+    bool verifyMD5hash(unsigned char const* addr, std::size_t bytes) {
         unsigned char md5hash_[MD5_DIGEST_LENGTH];
-        MD5((unsigned char const*) data.data(),  data.size()*sizeof(raw_data_type) , md5hash_);
+        MD5(addr, bytes , md5hash_);
         return std::equal(std::begin(md5hash), std::end(md5hash), std::begin(md5hash_));
     }
 

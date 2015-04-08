@@ -56,14 +56,17 @@ public:
     };
 
     std::unique_ptr<typename CARD::ub_CrateHeader>& crateHeader();
-    std::unique_ptr<typename CARD::ub_CrateHeader> const& crateHeader()const {
+    std::unique_ptr<typename CARD::ub_CrateHeader> const& crateHeader()const {	
         return _crateHeader;
     };
-    bool compare(ub_MarkedRawCrateData const&,bool do_rethrow=false) const throw(datatypes_exception);
 
+    bool compare(ub_MarkedRawCrateData const&,bool do_rethrow=false) const throw(datatypes_exception);
+     bool initialize() throw(datatypes_exception);
 private:
     bool isValid();
     bool canFullyDissect();
+   
+    
 private:
     std::vector<CARD> _markedRawCardsData;
     size_t _dissectableDataSize;
@@ -76,7 +79,7 @@ private:
 template <typename CARD>
 std::vector<CARD> const&  ub_MarkedRawCrateData<CARD>::getCards()
 {
-    if(!_isFullyDissected)    
+    if(!_isFullyDissected)
         dissectCards();
 
     return _markedRawCardsData;
@@ -105,19 +108,38 @@ void ub_MarkedRawCrateData<CARD>::dissectCards()
 }
 
 template <typename CARD>
+bool ub_MarkedRawCrateData<CARD>::initialize() throw(datatypes_exception)
+{
+/*
+    try
+    {    if(_createHeaderFromData)
+	    return crateHeader()->initialize(rawdata());
+	 return true;
+    } catch(std::exception &ex) {
+        std::cout << "Exception:" << ex.what() << std::endl;
+        return false;
+    } catch(...) {
+        std::cerr << "Unknown exception.";
+        return false;
+    }
+*/
+return true;
+}
+
+
+
+template <typename CARD>
 bool ub_MarkedRawCrateData<CARD>::canFullyDissect()
 {
     try
     {
         dissectCards();
         crateHeader();
-    }
-    catch(std::exception &ex)
-    {
+    } catch(std::exception &ex) {
         std::cout << "Exception:" << ex.what() << std::endl;
         return false;
     }
-    
+
     return true;
 }
 
@@ -133,6 +155,8 @@ std::unique_ptr<typename CARD::ub_CrateHeader>& ub_MarkedRawCrateData<CARD>::cra
         new typename CARD::ub_CrateHeader(getCards().begin()->header())
     };
 
+    initialize();
+    
     _crateHeader.swap(crateHeader);
 
     return _crateHeader;

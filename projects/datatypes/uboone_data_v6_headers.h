@@ -24,8 +24,7 @@
 #include "ub_TriggerData.h"
 #include "ub_GPS_DataTypes.h"
 #include "ub_GlobalHeader.h"
-#include "ub_BeamHeader.h"
-#include "ub_BeamData.h"
+#include "ub_BeamRecord.h"
 
 #endif //_UBOONE_DATATYPES_V6_HEADERS_H
 

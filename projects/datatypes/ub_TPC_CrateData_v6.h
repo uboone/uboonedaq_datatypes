@@ -21,6 +21,9 @@ public:
 
     ub_TPC_CrateData_v6() = delete;
     ub_TPC_CrateData_v6& operator=(ub_TPC_CrateData_v6 const &) = delete;
+
+    bool updateCrateHeader(ub_MarkedRawCrateData const&) const throw(datatypes_exception);
+
 };
 
 }  // end of namespace datatypes

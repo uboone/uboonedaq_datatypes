@@ -24,8 +24,10 @@ void ub_ChannelDataCreatorHelperClass<MRCD>::populateChannelDataVector(std::vect
     static constexpr size_t tpc_card_channel_count = 64;
     ub_RawData curr_rawData {_rawData};
     uint16_t curr_header {0x4000},curr_trailer {0x5000};
+    
     std::vector<MRCD> retValue;
     retValue.reserve(tpc_card_channel_count);
+    
     for(size_t channel=0; channel < tpc_card_channel_count; channel++,curr_trailer++)
     {
         if(*curr_rawData.begin()!=curr_header++)
@@ -36,10 +38,14 @@ void ub_ChannelDataCreatorHelperClass<MRCD>::populateChannelDataVector(std::vect
             if(curr_trailer==*curr_position && (curr_header==*(curr_position+1) || channel+1 == tpc_card_channel_count ))
             {
                 ub_RawData data {curr_rawData.begin(),curr_position+1};
+                
                 retValue.emplace_back( data );
+                
                 curr_rawData=ub_RawData {curr_position+1,curr_rawData.end()};
+                
                 if(curr_rawData.size()!=0 && channelDataVector.back().minsize() >curr_rawData.size())
                     throw std::runtime_error("Junk data: Corrupt channel data.");
+                    
                 break;
             }
         }

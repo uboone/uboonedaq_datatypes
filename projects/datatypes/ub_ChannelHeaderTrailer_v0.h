@@ -23,13 +23,13 @@ struct ub_ChannelHeader
         } ;
         uint16_t channel_mark=0xDEAD;
     } ;
-    uint16_t getChannelNumber() const {
+    uint16_t getChannelNumber() const noexcept{
         return channel_number;
     }
-    uint16_t getHeaderMark() const {
+    uint16_t getHeaderMark() const noexcept{
         return header_mark;
     }
-    std::string debugInfo()const;
+    std::string debugInfo()const noexcept;
 } ;
 static_assert (sizeof(ub_ChannelHeader) == 2, "ub_ChannelHeader structure size is not correct.");
 
@@ -42,11 +42,11 @@ struct ub_ChannelTrailer
         } ;
         uint16_t channel_mark=0xDEAD;
     } ;
-    std::string debugInfo()const;
-    uint16_t getChannelNumber() const {
+    std::string debugInfo()const noexcept;
+    uint16_t getChannelNumber() const noexcept{
         return channel_number;
     }
-    uint16_t getTrailerMark() const {
+    uint16_t getTrailerMark() const noexcept{
         return trailer_mark;
     }
 } ;
