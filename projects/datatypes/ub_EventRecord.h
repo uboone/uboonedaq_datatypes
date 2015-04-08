@@ -53,7 +53,7 @@ public:
     void setGlobalHeader (global_header_t & header) {
         _global_header = header;
     }
-    global_header_t& getGlobalHeader() throw() {
+    global_header_t& getGlobalHeader() noexcept {
         return _global_header;
     }
 

@@ -23,35 +23,35 @@ public:
         return compare(card_data,false);
     }
 
-    uint32_t const& getCardTrigFrameAndSampleWord() const throw() {
+    uint32_t const& getCardTrigFrameAndSampleWord() const noexcept {
         return header().trig_frame_and_sample;
     }
 
-    uint32_t getID() const throw() {
+    uint32_t getID() const noexcept {
         return header().getID();
     }
-    uint32_t getModule() const throw() {
+    uint32_t getModule() const noexcept {
         return header().getModule();
     }
-    uint32_t getEvent() const throw() {
+    uint32_t getEvent() const noexcept {
         return header().getEvent();
     }
-    uint32_t getFrame() const throw() {
+    uint32_t getFrame() const noexcept {
         return header().getFrame();
     }
-    uint32_t getChecksum() const throw() {
+    uint32_t getChecksum() const noexcept {
         return header().getChecksum();
     }
-    uint32_t getWordCount() const throw() {
+    uint32_t getWordCount() const noexcept {
         return header().getWordCount();
     }
-    uint32_t getTrigFrameMod16() const throw() {
+    uint32_t getTrigFrameMod16() const noexcept {
         return header().getTrigFrameMod16();
     }
-    uint32_t getTrigSample() const throw() {
+    uint32_t getTrigSample() const noexcept {
         return header().getTrigSample();
     }
-    uint32_t getTrigFrame() const throw();
+    uint32_t getTrigFrame() const noexcept;
 
 
 };

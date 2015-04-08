@@ -27,13 +27,13 @@ struct ub_PMT_CardHeader_v6
         };
         uint32_t id_and_module =0xDEADBEEF;
     } ;
-    uint32_t getID()const throw() {
+    uint32_t getID()const noexcept {
         return id;
     }
-    uint32_t getModule()const throw() {
+    uint32_t getModule()const noexcept {
         return module;
     }
-    uint32_t getMark()const throw() {
+    uint32_t getMark()const noexcept {
         return mark;
     }
 
@@ -46,7 +46,7 @@ struct ub_PMT_CardHeader_v6
         };
         uint32_t word_count=0xDEADBEEF;
     } ;
-    uint32_t getWordCount()const throw() {
+    uint32_t getWordCount()const noexcept {
         return wc2<<12|wc1;
     }
 
@@ -59,7 +59,7 @@ struct ub_PMT_CardHeader_v6
         };
         uint32_t event_number=0xDEADBEEF;
     } ;
-    uint32_t getEvent()const throw() {
+    uint32_t getEvent()const noexcept {
         return en2<<12|en1;
     }
 
@@ -72,7 +72,7 @@ struct ub_PMT_CardHeader_v6
         };
         uint32_t frame_number=0xDEADBEEF;
     } ;
-    uint32_t getFrame()const throw() {
+    uint32_t getFrame()const noexcept {
         return fn2<<12|fn1;
     }
 
@@ -86,7 +86,7 @@ struct ub_PMT_CardHeader_v6
         };
         uint32_t checksum=0xDEADBEEF;
     } ;
-    uint32_t getChecksum()const throw() {
+    uint32_t getChecksum()const noexcept {
         return cs2<<12|cs1;
     }
 
@@ -101,13 +101,13 @@ struct ub_PMT_CardHeader_v6
         };
         uint32_t trig_frame_and_sample=0xDEADBEEF;
     };
-    uint32_t getTrigSample()const throw() {
+    uint32_t getTrigSample()const noexcept {
         return tf2<<8|tf1;
     }
-    uint32_t getTrigFrameMod16()const throw() {
+    uint32_t getTrigFrameMod16()const noexcept {
         return tf3;
     }
-    std::string debugInfo() const throw();
+    std::string debugInfo() const noexcept;
 };
 #pragma GCC diagnostic pop
 

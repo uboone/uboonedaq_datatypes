@@ -19,7 +19,7 @@ bool ub_MarkedRawCardData<ub_ChannelData_v6,ub_PMT_CardHeader_v6,empty_trailer>:
 }  // end of namespace fnal
 }
 
-uint32_t ub_PMT_CardData_v6::getTrigFrame() const throw()
+uint32_t ub_PMT_CardData_v6::getTrigFrame() const noexcept
 {
     // Attempt to resolve the rollover situation: the lower 4 bits are given by the trigger frame, which should crudely match the upper bits from the course frame.
     // Here is how I resolved it --- Nathaniel

@@ -17,7 +17,7 @@ const char * datatypes_exception::what () const throw ()
     return _message.c_str();
 }
 
-datatypes_exception::~datatypes_exception() throw()
+datatypes_exception::~datatypes_exception() noexcept
 {
 
 }

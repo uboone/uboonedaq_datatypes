@@ -49,7 +49,7 @@ class datatypes_exception : public std::exception
 public:
     datatypes_exception(std::string const& message, std::string const& name="datatypes_exception");
     virtual const char *    what () const throw ();
-    virtual ~datatypes_exception() throw();
+    virtual ~datatypes_exception() noexcept;
 private:
     std::string _name;
     std::string _message;

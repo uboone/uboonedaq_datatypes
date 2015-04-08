@@ -2,7 +2,7 @@
 
 using namespace gov::fnal::uboone::datatypes;
 
-std::string ub_PMT_CardHeader_v6::debugInfo()const throw()
+std::string ub_PMT_CardHeader_v6::debugInfo()const noexcept
 {
     std::ostringstream os;
     os << "Object " << demangle(typeid(this)) << "."<< std::endl;
