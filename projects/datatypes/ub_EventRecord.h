@@ -26,7 +26,7 @@ namespace datatypes {
 
 using namespace gov::fnal::uboone::datatypes;
 
-class ub_EventRecord {
+class ub_EventRecord final{
 
 public:
     typedef raw_data_containter<raw_data_type>   raw_fragment_data_t;

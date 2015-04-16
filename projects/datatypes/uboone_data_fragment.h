@@ -37,8 +37,8 @@ namespace datatypes {
 constexpr uint32_t EVENTTRAILER{0xe0000000};
 constexpr uint32_t EVENTHEADER{0xffffffff};
 
-constexpr uint32_t UBOONE_EHDR{0x74E974E9};
-constexpr uint32_t UBOONE_ETLR{0x4E974E97};
+constexpr uint32_t UBOONE_EHDR{0xE974E974};
+constexpr uint32_t UBOONE_ETLR{0x974E974E};
 
 
 
@@ -55,7 +55,7 @@ private:
     std::string _message;
 };
 
-struct artdaq_fragment_header {
+struct artdaq_fragment_header final{
     typedef  raw_data_type RawDataType;
     typedef uint64_t RawMetaDataType;
     RawMetaDataType word_count          : 32; // number of RawDataTypes in this Fragment
@@ -98,7 +98,7 @@ struct artdaq_fragment_header {
 static_assert((artdaq_fragment_header::bytes_to_pad<artdaq_fragment_header>() == 0),
               "sizeof(RawFragmentHeader) is not an integer multiple of sizeof(artdaq_fragment_header::RawDataType)!");
 
-struct ub_fragment_header
+struct ub_fragment_header final
 {
     //do not reorder or change this data structure
     std::size_t   total_fragment_wordcount;           //1st position represents a total size of crate data
@@ -131,7 +131,7 @@ static_assert( (artdaq_fragment_header::bytes_to_pad<ub_fragment_header>() == 0)
     "sizeof(ub_fragment_header) is not an integer multiple of sizeof(artdaq_fragment_header::RawDataType)!");
 
 
-struct ub_event_header
+struct ub_event_header final
 {
     //do not reorder or change this data structure
     uint32_t 	mark_E974;                         	//always E974
@@ -164,7 +164,7 @@ static_assert( (artdaq_fragment_header::bytes_to_pad<ub_event_header>() == 0),
 
     
 
-struct ub_event_trailer
+struct ub_event_trailer final
 {
     //do not reorder or change this data structure
     uint32_t reserved[4];                       //1st position reserved

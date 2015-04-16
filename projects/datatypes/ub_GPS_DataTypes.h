@@ -15,7 +15,7 @@ namespace fnal {
 namespace uboone {
 namespace datatypes {
 
-struct ub_GPS {
+struct ub_GPS final{
     friend class boost::serialization::access;
   template<class Archive>
     void serialize(Archive & ar, const unsigned int version)
@@ -39,11 +39,19 @@ struct ub_GPS {
 /**
    This replaces tmub ../gps/symm.h
  **/
-struct ub_GPS_Time
+struct ub_GPS_Time final
 {
     uint32_t second; // seconds since the epoch.
     uint32_t micro;  // microseconds since the second.
     uint32_t nano;  // nanoseconds since the second.   
+};
+
+
+struct HasGPSTime 
+{
+  void copyOut(ub_GPS_Time& target) noexcept  { target=_myValue; }
+  void copyIn(ub_GPS_Time const& source) noexcept {_myValue=source;};  
+  ub_GPS_Time _myValue;
 };
 
 }  // end of namespace datatypes

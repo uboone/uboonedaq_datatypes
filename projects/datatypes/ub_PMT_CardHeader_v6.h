@@ -16,7 +16,7 @@ first word  {16'hffff,               4'h7,id[6:0],module[4:0]}
 **/
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
-struct ub_PMT_CardHeader_v6
+struct ub_PMT_CardHeader_v6 final
 {
     union {
         struct {
@@ -47,7 +47,7 @@ struct ub_PMT_CardHeader_v6
         uint32_t word_count=0xDEADBEEF;
     } ;
     uint32_t getWordCount()const noexcept {
-        return wc2<<12|wc1;
+        return wc2<<12|(wc1 +1);
     }
 
     union {

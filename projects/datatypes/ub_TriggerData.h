@@ -19,7 +19,7 @@ using namespace gov::fnal::uboone;
    should be made here as well, and the version number should be increased.
  **/
 
-class ub_TriggerData {
+class ub_TriggerData final{
     friend class boost::serialization::access;
 
     template<class Archive>

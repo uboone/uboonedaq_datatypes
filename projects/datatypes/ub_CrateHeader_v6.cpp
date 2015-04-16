@@ -15,8 +15,7 @@ ub_CrateHeader_v6::ub_CrateHeader_v6():
                          frame_number {0},
                          gps_time {0,0,0},
                          trigger_board_time {0,0,0},
-                         seb_time_sec {0},
-                         seb_time_usec {0}
+                         local_host_time {0,0}                         
 {}
 
 ub_CrateHeader_v6::ub_CrateHeader_v6(ub_TPC_CardHeader_v6 const& cardHeader):
@@ -29,8 +28,7 @@ ub_CrateHeader_v6::ub_CrateHeader_v6(ub_TPC_CardHeader_v6 const& cardHeader):
                          frame_number {cardHeader.getFrame()},
                          gps_time {0,0,0},
                          trigger_board_time {0,0,0},
-                         seb_time_sec {0},
-                         seb_time_usec {0}
+                         local_host_time {0,0}
 {}
 
 ub_CrateHeader_v6::ub_CrateHeader_v6(ub_PMT_CardHeader_v6 const& cardHeader):
@@ -43,9 +41,20 @@ ub_CrateHeader_v6::ub_CrateHeader_v6(ub_PMT_CardHeader_v6 const& cardHeader):
                          frame_number {cardHeader.getFrame()},
                          gps_time {0,0,0},
                          trigger_board_time {0,0,0},
-                         seb_time_sec {0},
-                         seb_time_usec {0}
+                         local_host_time {0,0}
 {}
+
+
+void ub_CrateHeader_v6::copyIn(ub_CrateHeader_v6 const& source)  noexcept
+{
+    *this=source;
+}
+
+
+void ub_CrateHeader_v6::copyOut(ub_CrateHeader_v6&  target)  noexcept
+{
+    target=*this;
+}
 
 std::string ub_CrateHeader_v6::debugInfo()const noexcept
 {
@@ -57,8 +66,8 @@ std::string ub_CrateHeader_v6::debugInfo()const noexcept
     os << "  Crate Number " << (unsigned int)crate_number;
     os << "  Crate Bits " << (unsigned int) crateBits;
     os << "  Crate Complete " << (unsigned int) complete;
-    os << "  Crate seb_time_sec " << (unsigned int)seb_time_sec;
-    os << "  Crate seb_time_usec " << (unsigned int) seb_time_usec;
+    os << "  Crate seb_time_sec " << (unsigned int)local_host_time.seb_time_sec;
+    os << "  Crate seb_time_usec " << (unsigned int) local_host_time.seb_time_usec;
     if(crate_number == 10) {
         os << "  \n Crate 10 gps_time (sec, micro, nano) " << gps_time.second << ",  "
         << gps_time.micro << ",  " << gps_time.nano ;
@@ -167,12 +176,11 @@ bool ub_CrateHeader_v6::compare(ub_CrateHeader_v6 const& crate_header,bool do_re
 
         if(!trigger_board_time.compare(crate_header.trigger_board_time))
             throw datatypes_exception(make_compare_message("ub_CrateHeader_v6", "trigger_board_time", trigger_board_time,crate_header.trigger_board_time));
-#endif
-        if(!seb_time_sec!=crate_header.seb_time_sec)
-            throw datatypes_exception(make_compare_message("ub_CrateHeader_v6", "seb_time_sec", seb_time_sec,crate_header.seb_time_sec));
 
-        if(!seb_time_usec!=crate_header.seb_time_usec)
-            throw datatypes_exception(make_compare_message("ub_CrateHeader_v6", "seb_time_usec", seb_time_usec,crate_header.seb_time_usec));
+        if(!local_host_time!=crate_header.local_host_time)
+            throw datatypes_exception(make_compare_message("ub_CrateHeader_v6", "local_host_time"));
+#endif
+
 
     } catch(datatypes_exception &ex) {
         std::cerr << ex.what();

@@ -23,5 +23,8 @@ install_headers()
 install_source()
 
 install( TARGETS ${LIB_NAME}
-
          DESTINATION ${flavorqual_dir}/lib )
+         
+install( TARGETS fragmentReader
+         DESTINATION ${flavorqual_dir}/bin )
+         

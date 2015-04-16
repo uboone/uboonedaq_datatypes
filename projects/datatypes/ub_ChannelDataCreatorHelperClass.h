@@ -10,7 +10,7 @@ namespace uboone {
 namespace datatypes {
 
 template<typename MRCD>
-class ub_ChannelDataCreatorHelperClass {
+class ub_ChannelDataCreatorHelperClass final{
 public:
     ub_ChannelDataCreatorHelperClass(ub_RawData const& rd) :_rawData(rd) {}
     void populateChannelDataVector(std::vector<MRCD> & channelDataVector) ;

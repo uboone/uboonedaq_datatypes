@@ -200,14 +200,16 @@ bool ub_MarkedRawCrateData<CARD>::compare(ub_MarkedRawCrateData<CARD> const& mar
 template <typename CARD>
 std::string ub_MarkedRawCrateData<CARD>::debugInfo()const noexcept
 {
+    std::size_t idx{0};
     std::ostringstream os;
     os << "Object " << demangle(typeid(this)) << "."<< std::endl;
     os << header().debugInfo();
     os << trailer().debugInfo();
 
-    os << " *Found " << std::dec << getCards().size() << " cards." << std::endl;
+    os << " *Found " << std::dec << getCards().size() << " cards." << std::endl;  
+    
     for(auto card : getCards())
-        os << card.debugInfo();
+	os << "Card " << ++idx << std::endl << card.debugInfo();
 
     //os <<  ub_MarkedRawDataBlock::debugInfo();
     return os.str();

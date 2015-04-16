@@ -22,7 +22,7 @@ namespace fnal {
 namespace uboone {
 namespace datatypes {
 
-template< template<class, class> class CONTAINER, typename TYPE> class ub_RawDataBlock {
+template< template<class, class> class CONTAINER, typename TYPE> class ub_RawDataBlock final{
 public:
     typedef typename CONTAINER<TYPE, std::allocator<TYPE>>::const_iterator const_iterator;
 
@@ -33,7 +33,7 @@ public:
     ub_RawDataBlock::const_iterator begin() const noexcept{
         return _begin;
     }
-    ub_RawDataBlock::const_iterator end() const noexcept{
+    ub_RawDataBlock::const_iterator end() const  noexcept{
         return _end;
     }
 

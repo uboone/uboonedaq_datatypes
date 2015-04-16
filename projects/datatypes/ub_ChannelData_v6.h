@@ -9,7 +9,7 @@ namespace fnal {
 namespace uboone {
 namespace datatypes {
 
-class ub_ChannelData_v6 : public ub_MarkedRawChannelData
+class ub_ChannelData_v6 final: public ub_MarkedRawChannelData
 {
 public:
     ub_ChannelData_v6(ub_RawData const rawdata);

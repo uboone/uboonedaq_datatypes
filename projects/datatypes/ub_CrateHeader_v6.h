@@ -6,17 +6,39 @@
 #include "ub_TPC_CardHeader_v6.h"
 #include "ub_PMT_CardHeader_v6.h"
 #include "constants.h"
-
-#include <boost/serialization/list.hpp>
-#include <boost/serialization/string.hpp>
-#include <boost/serialization/version.hpp>
+#include <sys/time.h>
+       
+#include "boostSerialization.h"
 
 namespace gov {
 namespace fnal {
 namespace uboone {
 namespace datatypes {
 
-struct ub_CrateHeader_v6
+struct ub_LocalHostTime
+{
+    uint32_t seb_time_sec;  // Read time on SEB. Added v4. Seconds since the epoch.
+    uint32_t seb_time_usec; //                             Microseconds since the second
+};
+
+struct HasLocalHostTime
+{
+  void copyOut(ub_LocalHostTime& target) noexcept  {update(); target=_myValue; }
+  void copyIn(ub_LocalHostTime const& source) noexcept {_myValue=source;};
+  
+  void update() noexcept {
+     struct timeval t_end;        
+   //update crate header   
+   gettimeofday(&t_end,NULL);
+   _myValue.seb_time_sec=t_end.tv_sec;
+   _myValue.seb_time_usec=t_end.tv_usec;
+  }
+  
+  ub_LocalHostTime _myValue;
+};
+
+
+struct ub_CrateHeader_v6 final
 {
     union {
         ub_fragment_header data_transmission_header; //must be first element
@@ -33,10 +55,11 @@ struct ub_CrateHeader_v6
     uint8_t crate_type; // Card count
     uint32_t event_number; // Event #
     uint32_t frame_number; // Frame #
-    ub_GPS_Time gps_time; // Inserted for SEB-10 only in rawFragmentDMASource.cpp: PPS time
+    //time
+    ub_GPS_Time          gps_time; // Inserted for SEB-10 only in rawFragmentDMASource.cpp: PPS time
     ub_TriggerBoardClock trigger_board_time; // Inserted for SEB-10 only in rawFragmentDMASource.cpp: PPS frame/sample/div
-    uint32_t seb_time_sec;  // Read time on SEB. Added v4. Seconds since the epoch.
-    uint32_t seb_time_usec; //                             Microseconds since the second
+    ub_LocalHostTime     local_host_time; 
+
 
     ub_CrateHeader_v6();
     ub_CrateHeader_v6(ub_TPC_CardHeader_v6 const& cardHeader);
@@ -44,9 +67,18 @@ struct ub_CrateHeader_v6
     std::string debugInfo()const noexcept;
 
     void updateDTHeader(ub_RawData const& data)  throw(datatypes_exception);
+
     bool compare(ub_CrateHeader_v6 const&,bool do_rethrow=false) const throw(datatypes_exception);
     static ub_CrateHeader_v6 const& getHeaderFromFragment(ub_RawData const& data) throw(datatypes_exception);
+    
+    void copyIn(ub_CrateHeader_v6 const& source)  noexcept;
+    void copyOut(ub_CrateHeader_v6&  target)  noexcept;
+
 };
+
+
+
+
 }  // end of namespace datatypes
 }  // end of namespace uboone
 }  // end of namespace fnal

@@ -7,9 +7,7 @@
 #include "evttypes.h"
 #include "ub_CrateHeader_v6.h"
 
-#include <boost/serialization/list.hpp>
-#include <boost/serialization/string.hpp>
-#include <boost/serialization/version.hpp>
+#include "boostSerialization.h"
 
 #include "constants.h"
 

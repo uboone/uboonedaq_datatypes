@@ -43,17 +43,17 @@ public:
         rawdata.begin()+rawdata.size()-size_of<TRAILER>())
     } {};
 
-    HEADER const&  header() const noexcept{
+    HEADER const&  header() const noexcept {
         return *(reinterpret_cast<HEADER const *>(&*std::get<cast_enum(data_types::header)>(_data_markers)) );
     }
-    TRAILER const&  trailer() const noexcept{
+    TRAILER const&  trailer() const noexcept {
         return * (reinterpret_cast<TRAILER const *>(&*std::get<cast_enum(data_types::trailer)>(_data_markers)) );
     }
 
-    ub_RawData const&  data() const noexcept{
+    ub_RawData const&  data() const noexcept {
         return std::get<cast_enum(data_types::data)>(_data_markers);
     }
-    ub_RawData const&  rawdata() const noexcept{
+    ub_RawData const&  rawdata() const noexcept {
         return std::get<cast_enum(data_types::rawdata)>(_data_markers);
     }
 
@@ -65,7 +65,7 @@ public:
     }
 
 private:
-    std::tuple<ub_RawData,ub_RawData,ub_RawData::const_iterator,ub_RawData::const_iterator> _data_markers;
+    std::tuple<ub_RawData,ub_RawData,ub_RawData::const_iterator,ub_RawData::const_iterator> _data_markers;    
 };
 
 template <typename HEADER, typename TRAILER>

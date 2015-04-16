@@ -18,7 +18,7 @@ using namespace gov::fnal::uboone;
  ***/
 
 
-class ub_GlobalHeader {
+class ub_GlobalHeader final{
     friend class boost::serialization::access;
 
     template<class Archive>

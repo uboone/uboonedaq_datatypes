@@ -11,7 +11,7 @@ namespace fnal {
 namespace uboone {
 namespace datatypes {
 
-class ub_PMT_CardData_v6 : public ub_MarkedRawCardData<ub_ChannelData_v6,ub_PMT_CardHeader_v6,empty_trailer> {
+class ub_PMT_CardData_v6 final: public ub_MarkedRawCardData<ub_ChannelData_v6,ub_PMT_CardHeader_v6,empty_trailer> {
 public:
     typedef ub_CrateHeader_v6 ub_CrateHeader;
 

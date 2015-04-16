@@ -14,7 +14,7 @@ namespace datatypes {
 **/
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
-struct ub_ChannelHeader
+struct ub_ChannelHeader final
 {
     union {
         struct {
@@ -33,7 +33,7 @@ struct ub_ChannelHeader
 } ;
 static_assert (sizeof(ub_ChannelHeader) == 2, "ub_ChannelHeader structure size is not correct.");
 
-struct ub_ChannelTrailer
+struct ub_ChannelTrailer final
 {
     union {
         struct {

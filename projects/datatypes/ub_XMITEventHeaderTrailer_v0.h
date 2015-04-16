@@ -11,7 +11,7 @@ namespace datatypes {
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
-struct ub_XMITEventHeader
+struct ub_XMITEventHeader final
 {
     union {
         struct {
@@ -28,7 +28,7 @@ struct ub_XMITEventHeader
 
 static_assert (sizeof(ub_XMITEventHeader) == 4, "ub_XMITEventHeader structure size is not correct.");
 
-struct ub_XMITEventTrailer
+struct ub_XMITEventTrailer final
 {
     union {
         struct {

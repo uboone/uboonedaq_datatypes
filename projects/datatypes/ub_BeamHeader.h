@@ -13,7 +13,7 @@ namespace datatypes {
 
 using namespace gov::fnal::uboone;
 
-class ub_BeamHeader {
+class ub_BeamHeader final{
    friend class boost::serialization::access;
 
    template<class Archive>

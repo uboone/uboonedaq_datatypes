@@ -18,7 +18,7 @@ typedef  ub_BeamHeader ub_BeamHeader_t;
 typedef  ub_BeamData ub_BeamData_t;
 typedef std::vector<ub_BeamData_t> ub_BeamDataVector_t;
 
-class ub_BeamRecord {
+class ub_BeamRecord final{
     friend class boost::serialization::access;
 
     template<class Archive>
