@@ -29,42 +29,42 @@ public:
         _markedRawChannelsData {},_isValid {isValid()},_isFullyDissected {canFullyDissect()} {}
     //_markedRawChannelsData{},_isValid{isValid()},_isFullyDissected{false}{}
 
-    uint32_t const& getCardIDAndModuleWord() const {
+    uint32_t const& getCardIDAndModuleWord() const noexcept{
         return ub_MarkedRawDataBlock<HEADER,TRAILER>::header().id_and_module;
     }
-    uint32_t const& getCardWordCountWord() const {
+    uint32_t const& getCardWordCountWord() const noexcept{
         return ub_MarkedRawDataBlock<HEADER,TRAILER>::header().word_count;
     }
-    uint32_t const& getCardEventWord() const {
+    uint32_t const& getCardEventWord() const noexcept{
         return ub_MarkedRawDataBlock<HEADER,TRAILER>::header().event_number;
     }
-    uint32_t const& getCardFrameWord() const {
+    uint32_t const& getCardFrameWord() const noexcept{
         return ub_MarkedRawDataBlock<HEADER,TRAILER>::header().frame_number;
     }
-    uint32_t const& getCardChecksumWord() const {
+    uint32_t const& getCardChecksumWord() const noexcept{
         return ub_MarkedRawDataBlock<HEADER,TRAILER>::header().checksum;
     }
-    uint32_t const& getCardTrigFrameAndSampleWord() const {
+    uint32_t const& getCardTrigFrameAndSampleWord() const noexcept{
         return ub_MarkedRawDataBlock<HEADER,TRAILER>::header().trig_frame_and_sample;
     }
 
     bool compare(ub_MarkedRawCardData const&,bool do_rethrow=false) const throw(datatypes_exception);
 
-    std::vector<CHANN>  const&  getChannels();
-    std::vector<CHANN>  const&  getChannels()const {
+    std::vector<CHANN>  const&  getChannels() throw(datatypes_exception);
+    std::vector<CHANN>  const&  getChannels()const noexcept{
         return _markedRawChannelsData;
     };
 
     ub_MarkedRawCardData() = delete;
     ub_MarkedRawCardData& operator=(ub_MarkedRawCardData const &) = delete;
 
-    void decompressChannels();
-    void dissectChannels();
-    std::string debugInfo()const;
+    void decompressChannels() throw(datatypes_exception);
+    void dissectChannels() throw(datatypes_exception);
+    std::string debugInfo()const noexcept;
 
 private:
-    bool isValid();
-    bool canFullyDissect();
+    bool isValid() noexcept;
+    bool canFullyDissect() noexcept;
 private:
     std::vector<CHANN>  _markedRawChannelsData;
     bool _isValid;
@@ -72,7 +72,7 @@ private:
 };
 
 template <typename CHANN, typename HEADER,typename TRAILER>
-std::vector<CHANN>  const&  ub_MarkedRawCardData<CHANN, HEADER,TRAILER>::getChannels()
+std::vector<CHANN>  const&  ub_MarkedRawCardData<CHANN, HEADER,TRAILER>::getChannels() throw(datatypes_exception)
 {
     if(!_isFullyDissected)
         dissectChannels();
@@ -81,7 +81,7 @@ std::vector<CHANN>  const&  ub_MarkedRawCardData<CHANN, HEADER,TRAILER>::getChan
 }
 
 template <typename CHANN, typename HEADER,typename TRAILER>
-void ub_MarkedRawCardData<CHANN, HEADER,TRAILER>::dissectChannels()
+void ub_MarkedRawCardData<CHANN, HEADER,TRAILER>::dissectChannels() throw(datatypes_exception)
 {
     try
     {
@@ -95,12 +95,12 @@ void ub_MarkedRawCardData<CHANN, HEADER,TRAILER>::dissectChannels()
     }
     catch(...)
     {
-        throw std::runtime_error("Caught unknown exception in ub_MarkedRawCardData_v6::dissectChannels().");
+        throw datatypes_exception("Caught unknown exception in ub_MarkedRawCardData_v6::dissectChannels().");
     }
 }
 
 template <typename CHANN, typename HEADER,typename TRAILER>
-bool ub_MarkedRawCardData<CHANN, HEADER,TRAILER>::canFullyDissect()
+bool ub_MarkedRawCardData<CHANN, HEADER,TRAILER>::canFullyDissect() noexcept
 {
     try
     {
@@ -108,14 +108,14 @@ bool ub_MarkedRawCardData<CHANN, HEADER,TRAILER>::canFullyDissect()
     }
     catch(std::exception &ex)
     {
-        std::cout << "Exception:" << ex.what() << std::endl;
+        std::cerr << "Exception:" << ex.what() << std::endl;
         return false;
     }
     return true;
 }
 
 template <typename CHANN, typename HEADER,typename TRAILER>
-std::string ub_MarkedRawCardData<CHANN, HEADER,TRAILER>::debugInfo()const
+std::string ub_MarkedRawCardData<CHANN, HEADER,TRAILER>::debugInfo()const noexcept
 {
     std::ostringstream os;
 

@@ -72,8 +72,10 @@ void ub_EventRecord::getFragments(fragment_references_t& fragments) const throw(
 }
 
 
-void ub_EventRecord::updateDTHeader()
+void ub_EventRecord::updateDTHeader() throw (datatypes_exception)
 {
+   try
+    {
         fragment_references_t fragments;
         getFragments(fragments);
         
@@ -95,9 +97,14 @@ void ub_EventRecord::updateDTHeader()
         _bookkeeping_header.event_format_version= gov::fnal::uboone::datatypes::constants::VERSION;
 	  
 	_bookkeeping_header.is_event_complete=true;
+    } catch(datatypes_exception &ex) {
+         throw;
+    } catch(...) {
+         throw datatypes_exception("Unknown exception in ub_EventRecord::updateDTHeader()");
+    }
 }
 
-bool ub_EventRecord::compare(const ub_EventRecord& event_record, bool do_rethrow=false) const throw(datatypes_exception)
+bool ub_EventRecord::compare(ub_EventRecord const& event_record, bool do_rethrow=false) const throw(datatypes_exception)
 {
     try
     {
@@ -149,9 +156,9 @@ bool ub_EventRecord::compare(const ub_EventRecord& event_record, bool do_rethrow
         else
             return false;
     } catch(...) {
-        std::cerr << "Unknown exception.";
+        std::cerr << "Unknown exception in ub_EventRecord::compare()";
         if(do_rethrow)
-            throw datatypes_exception("Unknown exception.");
+            throw datatypes_exception("Unknown exception in ub_EventRecord::compare()");
         else
             return false;
     }

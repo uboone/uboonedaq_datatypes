@@ -11,7 +11,7 @@ namespace datatypes {
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
-struct ub_XMITEventHeader
+struct ub_XMITEventHeader final
 {
     union {
         struct {
@@ -19,16 +19,16 @@ struct ub_XMITEventHeader
         };
         uint32_t raw_data=0xDEADBEEF;
     };
-    uint32_t getMarker() const {
+    uint32_t getMarker() const noexcept{
         return marker;
     }
-    std::string debugInfo()const;
+    std::string debugInfo()const noexcept;
 };
 
 
 static_assert (sizeof(ub_XMITEventHeader) == 4, "ub_XMITEventHeader structure size is not correct.");
 
-struct ub_XMITEventTrailer
+struct ub_XMITEventTrailer final
 {
     union {
         struct {
@@ -36,10 +36,10 @@ struct ub_XMITEventTrailer
         };
         uint32_t raw_data=0xDEADBEEF;
     };
-    uint32_t getMarker() const {
+    uint32_t getMarker() const noexcept{
         return marker;
     }
-    std::string debugInfo()const;
+    std::string debugInfo()const noexcept;
 };
 
 static_assert (sizeof(ub_XMITEventTrailer) == 4, "ub_XMITEventTrailer structure size is not correct.");

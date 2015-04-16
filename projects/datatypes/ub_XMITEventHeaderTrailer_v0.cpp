@@ -2,7 +2,7 @@
 
 using namespace gov::fnal::uboone::datatypes;
 
-std::string ub_XMITEventHeader::debugInfo()const
+std::string ub_XMITEventHeader::debugInfo()const noexcept
 {
     std::ostringstream os;
     os << "Object " << demangle(typeid(this)) << "."<< std::endl;
@@ -11,7 +11,7 @@ std::string ub_XMITEventHeader::debugInfo()const
     return os.str();
 }
 
-std::string ub_XMITEventTrailer::debugInfo()const
+std::string ub_XMITEventTrailer::debugInfo()const noexcept
 {
     std::ostringstream os;
     os << "Object " << demangle(typeid(this)) << "."<< std::endl;

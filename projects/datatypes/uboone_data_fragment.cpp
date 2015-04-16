@@ -17,7 +17,7 @@ const char * datatypes_exception::what () const throw ()
     return _message.c_str();
 }
 
-datatypes_exception::~datatypes_exception() throw()
+datatypes_exception::~datatypes_exception() noexcept
 {
 
 }
@@ -49,11 +49,22 @@ bool ub_fragment_header::compare(ub_fragment_header const& header, bool do_rethr
         else
             return false;
     } catch(...) {
-        std::cerr << "Unknown exception.";
+        std::cerr << "Unknown exception in  ub_fragment_header::compare()";
         if(do_rethrow)
-            throw datatypes_exception("Unknown exception.");
+            throw datatypes_exception("Unknown exception in  ub_fragment_header::compare()");
         else
             return false;
     }
     return true;
+}
+
+
+void ub_fragment_header::calculateMD5hash(unsigned char const* addr, std::size_t bytes) noexcept {
+    MD5(addr, bytes , md5hash);
+}
+
+bool ub_fragment_header::verifyMD5hash(unsigned char const* addr, std::size_t bytes) const noexcept {
+    unsigned char md5hash_[MD5_DIGEST_LENGTH];
+    MD5(addr, bytes , md5hash_);
+    return std::equal(std::begin(md5hash), std::end(md5hash), std::begin(md5hash_));
 }

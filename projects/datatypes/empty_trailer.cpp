@@ -2,7 +2,7 @@
 
 using namespace gov::fnal::uboone::datatypes;
 
-std::string empty_trailer::debugInfo()const
+std::string empty_trailer::debugInfo()const noexcept
 {
     std::ostringstream os;
     os << "Object " << demangle(typeid(this))<< "."<< std::endl;

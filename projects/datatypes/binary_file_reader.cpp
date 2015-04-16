@@ -21,7 +21,7 @@ raw_data_containter<raw_data_type> readFile(std::string const& fileName)
     if(-1 == fileSize)
     {
         os << ". Exception: file is missing." << std::endl;
-        std::cout <<os.str() <<std::flush;
+        std::cerr <<os.str() <<std::flush;
         throw std::runtime_error(os.str());
     }
 

@@ -7,9 +7,9 @@ namespace gov {
 namespace fnal {
 namespace uboone {
 namespace datatypes {
-struct empty_trailer {
+struct empty_trailer final{
     uint16_t foo; //unused
-    std::string debugInfo()const;
+    std::string debugInfo()const noexcept;
 };
 
 template <> constexpr

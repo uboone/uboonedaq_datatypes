@@ -2,16 +2,16 @@
 
 using namespace gov::fnal::uboone::datatypes;
 
-bool ub_MarkedRawChannelData::isValid()
+bool ub_MarkedRawChannelData::isValid() noexcept
 {
     if( header().header_mark!=0x40 )
-        throw std::runtime_error("Invalid Raw Channel Data: header word found.");
+        return false;
     if( trailer().trailer_mark!=0x50 )
-        throw std::runtime_error("Invalid Raw Channel Data: trailer word found.");
+        return false;
     return true;
 }
 
-std::string ub_MarkedRawChannelData::debugInfo()const
+std::string ub_MarkedRawChannelData::debugInfo()const noexcept
 {
     std::ostringstream os;
     os << "Object " << demangle(typeid(this)) << "."<< std::endl;
@@ -19,4 +19,28 @@ std::string ub_MarkedRawChannelData::debugInfo()const
     os << trailer().debugInfo();
     os <<  ub_MarkedRawDataBlock::debugInfo();
     return os.str();
+}
+
+
+
+ub_MarkedRawChannelData::ub_MarkedRawChannelData(ub_RawData const rawdata):
+    ub_MarkedRawDataBlock<ub_ChannelHeader,ub_ChannelTrailer>(rawdata),
+    _isValid {isValid()},_isFullyDissected {canFullyDissect()}
+{
+}
+
+uint16_t ub_MarkedRawChannelData::getChannelHeaderWord() const noexcept {
+    return header().channel_mark;
+}
+
+uint16_t ub_MarkedRawChannelData::getChannelTrailerWord() const noexcept {
+    return trailer().channel_mark;
+}
+
+uint16_t ub_MarkedRawChannelData::getChannelNumber() const noexcept {
+    return header().getChannelNumber();
+}
+
+bool ub_MarkedRawChannelData::canFullyDissect() noexcept {
+    return true;
 }

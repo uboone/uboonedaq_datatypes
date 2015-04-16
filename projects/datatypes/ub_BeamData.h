@@ -5,11 +5,8 @@
 #include <vector>
 #include <iomanip>
 
-#include <boost/serialization/list.hpp>
-#include <boost/serialization/vector.hpp>
-#include <boost/serialization/string.hpp>
-#include <boost/serialization/version.hpp>
 
+#include "boostSerialization.h"
 #include "constants.h"
 
 
@@ -20,42 +17,37 @@ namespace datatypes {
 
 using namespace gov::fnal::uboone;
 
-class ub_BeamData {
+class ub_BeamData final{
+    friend class boost::serialization::access;
 
- public:
-
-  ub_BeamData();   
-  
-  std::string getDeviceName() const {return device_name;};
-  std::string getUnits() const {return units;};
-  uint32_t getSeconds() const {return seconds;}; // GPS clock. Since Jan 1, 2012. 
-  uint16_t getMilliSeconds() const {return milli_seconds;};
-  const std::vector<double>& getData() const {return device_data;};
-
-  void setDeviceName(std::string val) {device_name=val;};
-  void setUnits(std::string val) {units=val;};
-  void setSeconds(uint32_t val) {seconds=val;};
-  void setMilliSeconds(uint16_t val) {milli_seconds=val;};
-  void setData(std::vector<double> val) {device_data=val;};
-  void pushData(double val) {device_data.push_back(val);};
- 
- private:
-
-  std::string device_name;
-  std::string units;
-  uint32_t seconds; // GPS clock. Since Jan 1, 2012. 
-  uint16_t milli_seconds;
-  std::vector<double> device_data;   
-  
-  friend class boost::serialization::access;
-  
-  template<class Archive>
-    void serialize(Archive & ar, const unsigned int version)
-    {
-      if(version > 0)
-	ar & device_name & units & seconds & milli_seconds & device_data;
+    template<class Archive>
+    void serialize(Archive & ar, const unsigned int version) {
+        if(version > 0)
+            ar & device_name & units & seconds & milli_seconds & device_data;
     }
-  
+
+public:
+    ub_BeamData();
+
+    std::string getDeviceName() const noexcept;
+    std::string getUnits() const noexcept;
+    uint32_t getSeconds() const noexcept;
+    uint16_t getMilliSeconds() const noexcept;
+    std::vector<double> const& getData() const noexcept;
+
+    void setDeviceName(std::string const& val) noexcept;
+    void setUnits(std::string const& val) noexcept;
+    void setSeconds(uint32_t const& val) noexcept;
+    void setMilliSeconds(uint16_t const& val) noexcept;
+    void setData(std::vector<double> const& val) noexcept;
+    void pushData(double const& val) noexcept;
+
+private:
+    std::string device_name;
+    std::string units;
+    uint32_t seconds; // GPS clock. Since Jan 1, 2012.
+    uint16_t milli_seconds;
+    std::vector<double> device_data;
 };
 }  // end of namespace datatypes
 }  // end of namespace uboone
@@ -66,6 +58,6 @@ std::ostream & operator<<(std::ostream &os, const gov::fnal::uboone::datatypes::
 
 // This MACRO must be outside any namespaces.
 
-BOOST_CLASS_VERSION(gov::fnal::uboone::datatypes::ub_BeamData, gov::fnal::uboone::datatypes::constants::VERSION)    
+BOOST_CLASS_VERSION(gov::fnal::uboone::datatypes::ub_BeamData, gov::fnal::uboone::datatypes::constants::VERSION)
 
 #endif /* #ifndef BOONETYPES_H */

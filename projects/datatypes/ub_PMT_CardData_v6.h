@@ -11,49 +11,26 @@ namespace fnal {
 namespace uboone {
 namespace datatypes {
 
-class ub_PMT_CardData_v6 : public ub_MarkedRawCardData<ub_ChannelData_v6,ub_PMT_CardHeader_v6,empty_trailer> {
+class ub_PMT_CardData_v6 final: public ub_MarkedRawCardData<ub_ChannelData_v6,ub_PMT_CardHeader_v6,empty_trailer> {
 public:
     typedef ub_CrateHeader_v6 ub_CrateHeader;
 
-    ub_PMT_CardData_v6(ub_RawData const rawdata):
-        ub_MarkedRawCardData<ub_ChannelData_v6,ub_PMT_CardHeader_v6,empty_trailer>(rawdata) {}
+    ub_PMT_CardData_v6(ub_RawData const rawdata);
 
     bool compare(ub_PMT_CardData_v6 const& card_data,bool do_rethrow=false) const throw(datatypes_exception);
-    bool operator==(ub_PMT_CardData_v6 const& card_data) const {
-        return compare(card_data,false);
-    }
+    bool operator==(ub_PMT_CardData_v6 const& card_data) const;
 
-    uint32_t const& getCardTrigFrameAndSampleWord() const throw() {
-        return header().trig_frame_and_sample;
-    }
+    uint32_t const& getCardTrigFrameAndSampleWord() const noexcept;
 
-    uint32_t getID() const throw() {
-        return header().getID();
-    }
-    uint32_t getModule() const throw() {
-        return header().getModule();
-    }
-    uint32_t getEvent() const throw() {
-        return header().getEvent();
-    }
-    uint32_t getFrame() const throw() {
-        return header().getFrame();
-    }
-    uint32_t getChecksum() const throw() {
-        return header().getChecksum();
-    }
-    uint32_t getWordCount() const throw() {
-        return header().getWordCount();
-    }
-    uint32_t getTrigFrameMod16() const throw() {
-        return header().getTrigFrameMod16();
-    }
-    uint32_t getTrigSample() const throw() {
-        return header().getTrigSample();
-    }
-    uint32_t getTrigFrame() const throw();
-
-
+    uint32_t getID() const noexcept;
+    uint32_t getModule() const noexcept;
+    uint32_t getEvent() const noexcept;
+    uint32_t getFrame() const noexcept;
+    uint32_t getChecksum() const noexcept;
+    uint32_t getWordCount() const noexcept;
+    uint32_t getTrigFrameMod16() const noexcept;
+    uint32_t getTrigSample() const noexcept;
+    uint32_t getTrigFrame() const noexcept;
 };
 
 }  // end of namespace datatypes

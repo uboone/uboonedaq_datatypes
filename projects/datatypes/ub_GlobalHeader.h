@@ -18,94 +18,50 @@ using namespace gov::fnal::uboone;
  ***/
 
 
-class ub_GlobalHeader {
+class ub_GlobalHeader final{
+    friend class boost::serialization::access;
 
+    template<class Archive>
+    void serialize(Archive & ar, const unsigned int version)
+    {
+        if(version>0)
+            ar & record_type & record_origin & event_type
+            & run_number & subrun_number & event_number & event_number_crate
+            & seconds & milli_seconds & micro_seconds & nano_seconds
+            & numberOfBytesInRecord & number_of_sebs;
+    }
+    
 public:
     static const uint8_t DAQ_version_number = gov::fnal::uboone::datatypes::constants::VERSION;
     ub_GlobalHeader();
 
-    void setRecordType(uint8_t type) {
-        record_type = type;
-    }
-    void setRecordOrigin(uint8_t origin) {
-        record_origin = origin;
-    }
-    void setEventType(uint8_t type) {
-        event_type = type;
-    }
-    void setRunNumber(uint32_t run) {
-        run_number = run;
-    }
-    void setSubrunNumber(uint32_t subrun) {
-        subrun_number = subrun;
-    }
-    void setEventNumber(uint32_t event) {
-        event_number = event;
-    }
-    void setEventNumberCrate(uint32_t event) {
-        event_number_crate = event;
-    }
+    void setRecordType(uint8_t const& type) noexcept;
+    void setRecordOrigin(uint8_t const& origin) noexcept;
+    void setEventType(uint8_t const& type) noexcept;
+    void setRunNumber(uint32_t const& run) noexcept;
+    void setSubrunNumber(uint32_t const& subrun) noexcept;
+    void setEventNumber(uint32_t const& event) noexcept;
+    void setEventNumberCrate(uint32_t const& event) noexcept;
+    void setSeconds(uint32_t const& s) noexcept;
+    void setMilliSeconds(uint16_t const& ms) noexcept;
+    void setMicroSeconds(uint16_t const& us) noexcept;
+    void setNanoSeconds(uint16_t const& ns) noexcept;
+    void setNumberOfBytesInRecord(uint32_t const& size) noexcept;
+    void setNumberOfSEBs(uint8_t const& s) noexcept;
 
-    void setSeconds(uint32_t s) {
-        seconds = s;
-    }
-    void setMilliSeconds(uint16_t ms) {
-        milli_seconds = ms;
-    }
-    void setMicroSeconds(uint16_t us) {
-        micro_seconds = us;
-    }
-    void setNanoSeconds(uint16_t ns) {
-        nano_seconds = ns;
-    }
-    void setNumberOfBytesInRecord(uint32_t size) {
-        numberOfBytesInRecord = size;
-    }
-
-    uint8_t getRecordType() {
-        return record_type;
-    }
-    uint8_t getRecordOrigin() {
-        return record_origin;
-    }
-    uint8_t getEventType() {
-        return event_type;
-    }
-    uint32_t getRunNumber() {
-        return run_number;
-    }
-    uint32_t getSubrunNumber() {
-        return subrun_number;
-    }
-    uint32_t getEventNumber() {
-        return event_number;
-    }
-    uint32_t getEventNumberCrate() {
-        return event_number_crate;
-    }
-
-    uint32_t getSeconds() {
-        return seconds;
-    }
-    uint16_t getMilliSeconds() {
-        return milli_seconds;
-    }
-    uint16_t getMicroSeconds() {
-        return micro_seconds;
-    }
-    uint16_t getNanoSeconds() {
-        return nano_seconds;
-    }
-    uint32_t getNumberOfBytesInRecord() {
-        return numberOfBytesInRecord;
-    }
-
-    uint8_t getNumberOfSEBs() {
-        return number_of_sebs;
-    }
-    void setNumberOfSEBs(uint8_t s) {
-        number_of_sebs = s;
-    }
+    uint8_t getRecordType() const noexcept;
+    uint8_t getRecordOrigin() const noexcept;
+    uint8_t getEventType() const noexcept;
+    uint32_t getRunNumber() const noexcept;
+    uint32_t getSubrunNumber() const noexcept;
+    uint32_t getEventNumber() const noexcept;
+    uint32_t getEventNumberCrate() const noexcept;
+    uint32_t getSeconds() const noexcept;
+    uint16_t getMilliSeconds() const noexcept;
+    uint16_t getMicroSeconds() const noexcept;
+    uint16_t getNanoSeconds() const noexcept;
+    uint32_t getNumberOfBytesInRecord() const noexcept;
+    uint8_t getNumberOfSEBs() const noexcept;
 
 private:
     uint8_t record_type;   /* From event_types.h */
@@ -124,26 +80,8 @@ private:
 
     uint8_t number_of_sebs;
 
-    friend class boost::serialization::access;
-
-    template<class Archive>
-    void serialize(Archive & ar, const unsigned int version)
-    {
-        if(version>1)
-            ar & record_type & record_origin & event_type
-            & run_number & subrun_number & event_number & event_number_crate
-            & seconds & milli_seconds & micro_seconds & nano_seconds
-            & numberOfBytesInRecord & number_of_sebs;
-
-        else if(version>0)
-            ar & record_type & record_origin & event_type
-            & run_number & subrun_number & event_number & event_number_crate
-            & numberOfBytesInRecord & number_of_sebs;
-
-    }
 
 };
-
 
 }  // end of namespace sebs
 }  // end of namespace uboone

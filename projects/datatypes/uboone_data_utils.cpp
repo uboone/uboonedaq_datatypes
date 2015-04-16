@@ -16,7 +16,7 @@ namespace fnal {
 namespace uboone {
 namespace datatypes {
 
-std::string demangle(const std::type_info  &type_info)
+std::string demangle(const std::type_info  &type_info) noexcept
 {
     int     status;
     char   *name = abi::__cxa_demangle(type_info.name(), 0, 0, &status);
@@ -25,7 +25,7 @@ std::string demangle(const std::type_info  &type_info)
     return retValue.empty()?type_info.name():retValue;
 }
 
-std::string debugInfo(ub_RawData const& data)
+std::string debugInfo(ub_RawData const& data) noexcept
 {
     std::ostringstream os;
     os <<"Buffer size is "<< std::dec << std::distance(data.begin(), data.end())  *sizeof(raw_data_type);
@@ -54,7 +54,7 @@ std::string debugInfo(ub_RawData const& data)
     return os.str();
 }
 
-std::string debugInfoRawData(raw_data_containter<raw_data_type>const& data)
+std::string debugInfoRawData(raw_data_containter<raw_data_type>const& data) noexcept
 {
     return debugInfo(ub_RawData(data.begin(),data.end()));
 }

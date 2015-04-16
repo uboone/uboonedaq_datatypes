@@ -13,13 +13,12 @@ ub_CrateHeader_v6::ub_CrateHeader_v6():
                          card_count {0},
                          event_number {0},
                          frame_number {0},
-                         gps_time {},
-                         daqClock_time {},
-                         seb_time_sec {0},
-                         seb_time_usec {0}
+                         gps_time {0,0,0},
+                         trigger_board_time {0,0,0},
+                         local_host_time {0,0}                         
 {}
 
-ub_CrateHeader_v6::ub_CrateHeader_v6(ub_TPC_CardHeader_v6 cardHeader):
+ub_CrateHeader_v6::ub_CrateHeader_v6(ub_TPC_CardHeader_v6 const& cardHeader):
     data_transmission_header {},
                          complete {0},crateBits {0},
                          size {0},
@@ -27,13 +26,12 @@ ub_CrateHeader_v6::ub_CrateHeader_v6(ub_TPC_CardHeader_v6 cardHeader):
                          card_count {0},
                          event_number {cardHeader.getEvent()},
                          frame_number {cardHeader.getFrame()},
-                         gps_time {},
-                         daqClock_time {},
-                         seb_time_sec {0},
-                         seb_time_usec {0}
+                         gps_time {0,0,0},
+                         trigger_board_time {0,0,0},
+                         local_host_time {0,0}
 {}
 
-ub_CrateHeader_v6::ub_CrateHeader_v6(ub_PMT_CardHeader_v6 cardHeader):
+ub_CrateHeader_v6::ub_CrateHeader_v6(ub_PMT_CardHeader_v6 const& cardHeader):
     data_transmission_header {},
                          complete {0},crateBits {0},
                          size {0},
@@ -41,13 +39,24 @@ ub_CrateHeader_v6::ub_CrateHeader_v6(ub_PMT_CardHeader_v6 cardHeader):
                          card_count {0},
                          event_number {cardHeader.getEvent()},
                          frame_number {cardHeader.getFrame()},
-                         gps_time {},
-                         daqClock_time {},
-                         seb_time_sec {0},
-                         seb_time_usec {0}
+                         gps_time {0,0,0},
+                         trigger_board_time {0,0,0},
+                         local_host_time {0,0}
 {}
 
-std::string ub_CrateHeader_v6::debugInfo()const
+
+void ub_CrateHeader_v6::copyIn(ub_CrateHeader_v6 const& source)  noexcept
+{
+    *this=source;
+}
+
+
+void ub_CrateHeader_v6::copyOut(ub_CrateHeader_v6&  target)  noexcept
+{
+    target=*this;
+}
+
+std::string ub_CrateHeader_v6::debugInfo()const noexcept
 {
     std::ostringstream os;
 
@@ -57,20 +66,20 @@ std::string ub_CrateHeader_v6::debugInfo()const
     os << "  Crate Number " << (unsigned int)crate_number;
     os << "  Crate Bits " << (unsigned int) crateBits;
     os << "  Crate Complete " << (unsigned int) complete;
-    os << "  Crate seb_time_sec " << (unsigned int)seb_time_sec;
-    os << "  Crate seb_time_usec " << (unsigned int) seb_time_usec;
+    os << "  Crate seb_time_sec " << (unsigned int)local_host_time.seb_time_sec;
+    os << "  Crate seb_time_usec " << (unsigned int) local_host_time.seb_time_usec;
     if(crate_number == 10) {
         os << "  \n Crate 10 gps_time (sec, micro, nano) " << gps_time.second << ",  "
         << gps_time.micro << ",  " << gps_time.nano ;
-        os << "  \n Crate 10 daqClockTime (frame, sample, div) " << (unsigned int) daqClock_time.frame
-        << ", " << (unsigned int) daqClock_time.sample << ", " << (unsigned int)daqClock_time.div;
+        os << "  \n Crate 10 daqClockTime (frame, sample, div) " << (unsigned int) trigger_board_time.frame
+        << ", " << (unsigned int) trigger_board_time.sample << ", " << (unsigned int)trigger_board_time.div;
     }
     os << "\n  Event Size " << size;
 
     return os.str();
 }
 
-void ub_CrateHeader_v6::updateDTHeader(ub_RawData const& data)
+void ub_CrateHeader_v6::updateDTHeader(ub_RawData const& data)  throw(datatypes_exception)
 {
     if(artdaq_fragment_header::num_words()>data.size())
         throw datatypes_exception("Invalid fragment: fragment is too short.");
@@ -100,8 +109,10 @@ void ub_CrateHeader_v6::updateDTHeader(ub_RawData const& data)
   
 }
 
-ub_CrateHeader_v6 const& ub_CrateHeader_v6::getHeaderFromFragment(ub_RawData const& data)
+ub_CrateHeader_v6 const& ub_CrateHeader_v6::getHeaderFromFragment(ub_RawData const& data)  throw(datatypes_exception)
 {
+  try
+  {
     if(artdaq_fragment_header::num_words()>data.size())
         throw datatypes_exception("Invalid fragment: fragment is too short.");
 
@@ -122,6 +133,12 @@ ub_CrateHeader_v6 const& ub_CrateHeader_v6::getHeaderFromFragment(ub_RawData con
         throw datatypes_exception("Invalid crate header: wrong data size.");
 
     return *crate_header;
+    
+    } catch(datatypes_exception &ex) {
+            throw;
+    } catch(...) {
+            throw datatypes_exception("Unknown exception in ub_CrateHeader_v6::getHeaderFromFragment()");
+    }
 }
 
 
@@ -157,14 +174,13 @@ bool ub_CrateHeader_v6::compare(ub_CrateHeader_v6 const& crate_header,bool do_re
         if(!gps_time.compare(crate_header.gps_time))
             throw datatypes_exception(make_compare_message("ub_CrateHeader_v6", "gps_time", gps_time,crate_header.gps_time));
 
-        if(!daqClock_time.compare(crate_header.daqClock_time))
-            throw datatypes_exception(make_compare_message("ub_CrateHeader_v6", "daqClock_time", daqClock_time,crate_header.daqClock_time));
-#endif
-        if(!seb_time_sec!=crate_header.seb_time_sec)
-            throw datatypes_exception(make_compare_message("ub_CrateHeader_v6", "seb_time_sec", seb_time_sec,crate_header.seb_time_sec));
+        if(!trigger_board_time.compare(crate_header.trigger_board_time))
+            throw datatypes_exception(make_compare_message("ub_CrateHeader_v6", "trigger_board_time", trigger_board_time,crate_header.trigger_board_time));
 
-        if(!seb_time_usec!=crate_header.seb_time_usec)
-            throw datatypes_exception(make_compare_message("ub_CrateHeader_v6", "seb_time_usec", seb_time_usec,crate_header.seb_time_usec));
+        if(!local_host_time!=crate_header.local_host_time)
+            throw datatypes_exception(make_compare_message("ub_CrateHeader_v6", "local_host_time"));
+#endif
+
 
     } catch(datatypes_exception &ex) {
         std::cerr << ex.what();
@@ -173,9 +189,9 @@ bool ub_CrateHeader_v6::compare(ub_CrateHeader_v6 const& crate_header,bool do_re
         else
             return false;
     } catch(...) {
-        std::cerr << "Unknown exception.";
+        std::cerr << "Unknown exception in ub_CrateHeader_v6::compare()";
         if(do_rethrow)
-            throw datatypes_exception("Unknown exception.");
+            throw datatypes_exception("Unknown exception in ub_CrateHeader_v6::compare()");
         else
             return false;
     }

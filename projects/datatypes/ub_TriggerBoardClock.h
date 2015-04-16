@@ -7,18 +7,26 @@ namespace uboone {
 namespace datatypes {
 
 // This struct will be a key in a map, so I must define "<".
-struct ub_TriggerBoardClock
+struct ub_TriggerBoardClock final
 {
     uint32_t frame;
     uint16_t sample;
     uint16_t div;
 
-    ub_TriggerBoardClock (uint32_t f=0, uint16_t s=0, uint16_t d=0)
+    ub_TriggerBoardClock (uint32_t f, uint16_t s, uint16_t d)
         : frame(f),sample(s),div(d) {  }
 
     bool operator<(const ub_TriggerBoardClock& mk) const {
         return (frame < mk.frame);
     }
+};
+
+
+struct HasTriggerBoardClock
+{
+  void copyOut(ub_TriggerBoardClock& target) noexcept  { target=_myValue; }
+  void copyIn(ub_TriggerBoardClock const& source) noexcept {_myValue=source;};  
+  ub_TriggerBoardClock _myValue;
 };
 
 }  // end of namespace datatypes

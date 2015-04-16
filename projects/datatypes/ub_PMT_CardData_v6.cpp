@@ -8,9 +8,8 @@ namespace uboone {
 namespace datatypes {
 
 template<>
-bool ub_MarkedRawCardData<ub_ChannelData_v6,ub_PMT_CardHeader_v6,empty_trailer>::isValid()
+bool ub_MarkedRawCardData<ub_ChannelData_v6,ub_PMT_CardHeader_v6,empty_trailer>::isValid() noexcept
 {
-    //FIXME: GAL add additional validation for the header and trailer
     return true;
 }
 
@@ -19,7 +18,7 @@ bool ub_MarkedRawCardData<ub_ChannelData_v6,ub_PMT_CardHeader_v6,empty_trailer>:
 }  // end of namespace fnal
 }
 
-uint32_t ub_PMT_CardData_v6::getTrigFrame() const throw()
+uint32_t ub_PMT_CardData_v6::getTrigFrame() const noexcept
 {
     // Attempt to resolve the rollover situation: the lower 4 bits are given by the trigger frame, which should crudely match the upper bits from the course frame.
     // Here is how I resolved it --- Nathaniel
@@ -42,13 +41,47 @@ bool ub_PMT_CardData_v6::compare(ub_PMT_CardData_v6 const& card_data,bool do_ret
         else
             return false;
     } catch(...) {
-        std::cerr << "Unknown exception.";
+        std::cerr << "Unknown exception in ub_PMT_CardData_v6::compare()";
         if(do_rethrow)
-            throw datatypes_exception("Unknown exception.");
+            throw datatypes_exception("Unknown exception in ub_PMT_CardData_v6::compare()");
         else
             return false;
     }
     return true;
 }
 
+ub_PMT_CardData_v6::ub_PMT_CardData_v6(ub_RawData const rawdata):
+    ub_MarkedRawCardData<ub_ChannelData_v6,ub_PMT_CardHeader_v6,empty_trailer>(rawdata) {}
 
+bool ub_PMT_CardData_v6::operator==(ub_PMT_CardData_v6 const& card_data) const{
+    return compare(card_data,false);
+}
+
+uint32_t const& ub_PMT_CardData_v6::getCardTrigFrameAndSampleWord() const noexcept {
+    return header().trig_frame_and_sample;
+}
+
+uint32_t ub_PMT_CardData_v6::getID() const noexcept {
+    return header().getID();
+}
+uint32_t ub_PMT_CardData_v6::getModule() const noexcept {
+    return header().getModule();
+}
+uint32_t ub_PMT_CardData_v6::getEvent() const noexcept {
+    return header().getEvent();
+}
+uint32_t ub_PMT_CardData_v6::getFrame() const noexcept {
+    return header().getFrame();
+}
+uint32_t ub_PMT_CardData_v6::getChecksum() const noexcept {
+    return header().getChecksum();
+}
+uint32_t ub_PMT_CardData_v6::getWordCount() const noexcept {
+    return header().getWordCount();
+}
+uint32_t ub_PMT_CardData_v6::getTrigFrameMod16() const noexcept {
+    return header().getTrigFrameMod16();
+}
+uint32_t ub_PMT_CardData_v6::getTrigSample() const noexcept {
+    return header().getTrigSample();
+}
