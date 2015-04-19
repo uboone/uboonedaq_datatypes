@@ -63,6 +63,8 @@ public:
     uint32_t getNumberOfBytesInRecord() const noexcept;
     uint8_t getNumberOfSEBs() const noexcept;
 
+    std::string debugInfo()const noexcept;
+
 private:
     uint8_t record_type;   /* From event_types.h */
     uint8_t record_origin; /* DATA or MC */

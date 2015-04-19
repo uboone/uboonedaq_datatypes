@@ -33,8 +33,8 @@ bool ub_PMT_CrateData_v6::compare(ub_PMT_CrateData_v6 const & crate_data, bool d
     return true;
 }
 
-ub_PMT_CrateData_v6::ub_PMT_CrateData_v6(ub_RawData const rawdata, bool createHeaderFromData):
-        ub_MarkedRawCrateData<ub_PMT_CardData_v6>(rawdata, createHeaderFromData) {
+ub_PMT_CrateData_v6::ub_PMT_CrateData_v6(ub_RawData const rawdata, bool initializeHeaderFromRawData):
+        ub_MarkedRawCrateData<ub_PMT_CardData_v6>(rawdata, initializeHeaderFromRawData) {
 }
 }  // end of namespace datatypes
 }  // end of namespace uboone

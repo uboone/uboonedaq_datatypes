@@ -9,13 +9,14 @@ namespace uboone {
 namespace datatypes {
 
 
-typedef std::size_t (* factory_constructor )(ub_RawData const rawdata, bool createHeaderFromData); 
+typedef std::size_t (* factory_constructor )(ub_RawData const rawdata, bool initializeHeaderFromRawData); 
 
 template <typename T>
 struct DissectorAdapter 
 {
-      static std::size_t getSizeOfDissectableCrateData(ub_RawData const rawdata, bool createHeaderFromData) {
-        std::unique_ptr<T> ptr{new T {rawdata, createHeaderFromData} };        
+      static std::size_t getSizeOfDissectableCrateData(ub_RawData const rawdata, bool initializeHeaderFromRawData) {
+        std::unique_ptr<T> ptr{new T {rawdata, initializeHeaderFromRawData} };
+        assert(ptr);
         return ptr->getSizeOfDissectableCrateData();		
       }
 };
@@ -29,7 +30,7 @@ public:
     ~DissectorFactory();
 
     void registerDissector(std::string const& name, uint8_t const& version, factory_constructor constructor);
-    std::size_t getSizeOfDissectableCrateData(std::string const& name, uint8_t const& version, ub_RawData const rawdata, bool createHeaderFromData);
+    std::size_t getSizeOfDissectableCrateData(std::string const& name, uint8_t const& version, ub_RawData const rawdata, bool initializeHeaderFromRawData);
 
     
     DissectorFactory ( DissectorFactory const & ) = delete;
@@ -38,7 +39,7 @@ public:
     DissectorFactory& operator= ( DissectorFactory const && ) = delete;
 
 private:
-    DissectorMap_t _dissectors;
+    DissectorMap_t _dissectors={};
 };
 
 extern "C"  DissectorFactory& getDissectorFactory();

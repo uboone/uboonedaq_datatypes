@@ -34,8 +34,8 @@ bool ub_TPC_CrateData_v6::compare(ub_TPC_CrateData_v6 const & crate_data, bool d
     return true;
 }
 
-ub_TPC_CrateData_v6::ub_TPC_CrateData_v6(ub_RawData const rawdata, bool createHeaderFromData):
-    ub_MarkedRawCrateData<ub_TPC_CardData_v6>(rawdata, createHeaderFromData)
+ub_TPC_CrateData_v6::ub_TPC_CrateData_v6(ub_RawData const rawdata, bool initializeHeaderFromRawData):
+    ub_MarkedRawCrateData<ub_TPC_CardData_v6>(rawdata, initializeHeaderFromRawData)
 {
 }
 

@@ -1,6 +1,8 @@
 #ifndef _UBOONE_DATATYPES_V6_HEADERS_H
 #define _UBOONE_DATATYPES_V6_HEADERS_H  1
 
+#include "uboone_data_common.h"
+
 #include "empty_trailer.h"
 
 #include "ub_CrateHeader_v6.h"

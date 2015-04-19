@@ -1,5 +1,5 @@
 #include "ub_GlobalHeader.h"
-
+#include "uboone_data_utils.h"
 
 using namespace gov::fnal::uboone::datatypes;
 
@@ -99,3 +99,27 @@ uint8_t ub_GlobalHeader::getNumberOfSEBs() const noexcept {
     return number_of_sebs;
 }
 
+std::string ub_GlobalHeader::debugInfo()const noexcept
+{
+    std::ostringstream os;
+    os << "Object " << demangle(typeid(this)) << ".";
+    os << "\n Event Info:" ;   
+    os << "\n  run_number=" << (int) run_number;
+    os << "\n  subrun_number=" << (int) subrun_number;
+    os << "\n  event_number=" << (int) event_number;
+    os << "\n  event_number_crate=" << (int) event_number_crate;
+    os << "\n  numberOfBytesInRecord=" << (int) numberOfBytesInRecord;
+    os << "\n  number_of_sebs=" << (int) number_of_sebs;        
+    os << "\n Event Details:" ;           
+    os << " record_type=" << (int) record_type;
+    os << " record_origin=" << (int) record_origin;
+    os << " event_type=" << (int) event_type;
+
+    os << "\n Event Time:" ;           
+    os << " seconds=" << (int) seconds;
+    os << " milli_seconds=" << (int) milli_seconds;
+    os << " micro_seconds=" << (int) micro_seconds;
+    os << " nano_seconds=" << (int) nano_seconds;
+    
+    return os.str();
+}

@@ -22,7 +22,7 @@ ub_CrateHeader_v6::ub_CrateHeader_v6(ub_TPC_CardHeader_v6 const& cardHeader):
     data_transmission_header {},
                          complete {0},crateBits {0},
                          size {0},
-                         crate_number {0},
+                         crate_number {cardHeader.getId()},
                          card_count {0},
                          event_number {cardHeader.getEvent()},
                          frame_number {cardHeader.getFrame()},
@@ -35,7 +35,7 @@ ub_CrateHeader_v6::ub_CrateHeader_v6(ub_PMT_CardHeader_v6 const& cardHeader):
     data_transmission_header {},
                          complete {0},crateBits {0},
                          size {0},
-                         crate_number {0},
+                         crate_number {cardHeader.getId()},
                          card_count {0},
                          event_number {cardHeader.getEvent()},
                          frame_number {cardHeader.getFrame()},
@@ -50,18 +50,29 @@ void ub_CrateHeader_v6::copyIn(ub_CrateHeader_v6 const& source)  noexcept
     *this=source;
 }
 
+uint64_t ub_CrateHeader_v6::sequenceID() const noexcept
+{
+    return (event_number<32) | frame_number;
+}
 
 void ub_CrateHeader_v6::copyOut(ub_CrateHeader_v6&  target)  noexcept
 {
     target=*this;
 }
 
+void ub_CrateHeader_v6::updateCrateBits() noexcept
+{
+    number=crate_number;
+    type=crate_type;
+    reserved=0;
+}
+
 std::string ub_CrateHeader_v6::debugInfo()const noexcept
 {
     std::ostringstream os;
 
-    os << "Object " << demangle(typeid(this)) << "."<< std::endl;
-    os << "\n Event Number " << event_number;
+    os << "Object " << demangle(typeid(this)) << ".";
+    os << "\n Event Number " << event_number << ", Event Size " << size;
     os << "  Frame Number " <<  frame_number;
     os << "  Crate Number " << (unsigned int)crate_number;
     os << "  Crate Bits " << (unsigned int) crateBits;
@@ -74,7 +85,6 @@ std::string ub_CrateHeader_v6::debugInfo()const noexcept
         os << "  \n Crate 10 daqClockTime (frame, sample, div) " << (unsigned int) trigger_board_time.frame
         << ", " << (unsigned int) trigger_board_time.sample << ", " << (unsigned int)trigger_board_time.div;
     }
-    os << "\n  Event Size " << size;
 
     return os.str();
 }

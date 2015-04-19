@@ -36,12 +36,12 @@ void DissectorFactory::registerDissector(std::string const& name, uint8_t const&
     _dissectors.emplace(name,std::make_pair(version,constructor));
 }
 
-std::size_t DissectorFactory::getSizeOfDissectableCrateData(std::string const& name, uint8_t const& version, ub_RawData const rawdata, bool createHeaderFromData)
+std::size_t DissectorFactory::getSizeOfDissectableCrateData(std::string const& name, uint8_t const& version, ub_RawData const rawdata, bool initializeHeaderFromRawData)
 {
     auto result = _dissectors.find(name);
     assert( result != _dissectors.end() ); 
     assert(result->second.first<=version); 
-    return result->second.second(rawdata,createHeaderFromData);
+    return result->second.second(rawdata,initializeHeaderFromRawData);
 }
 
     

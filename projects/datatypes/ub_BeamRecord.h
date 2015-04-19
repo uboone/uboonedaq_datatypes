@@ -34,6 +34,8 @@ public:
     void clearBeamDataVector() noexcept;
     void insertBeamData(ub_BeamData_t const& beam_data) noexcept;
 
+    std::string debugInfo()const noexcept;
+
 private:
     ub_BeamHeader_t  _beam_header;
     ub_BeamDataVector_t _beam_data_vector;

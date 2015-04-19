@@ -89,13 +89,12 @@ void ub_MarkedRawCardData<CHANN, HEADER,TRAILER>::dissectChannels() throw(dataty
         dissector.populateChannelDataVector(_markedRawChannelsData);
         _isFullyDissected=true;
     }
-    catch(std::exception &ex)
-    {
+    catch(datatypes_exception &ex){
         throw;
-    }
-    catch(...)
-    {
-        throw datatypes_exception("Caught unknown exception in ub_MarkedRawCardData_v6::dissectChannels().");
+    }catch(std::exception &e){
+         throw datatypes_exception(std::string("Caught std::exception in ub_MarkedRawCardData::dissectChannels(). Message:").append(e.what()));
+    }catch(...){
+        throw datatypes_exception("Caught unknown exception in ub_MarkedRawCardData::dissectChannels().");
     }
 }
 
@@ -106,11 +105,14 @@ bool ub_MarkedRawCardData<CHANN, HEADER,TRAILER>::canFullyDissect() noexcept
     {
         dissectChannels();
     }
-    catch(std::exception &ex)
-    {
+    catch(std::exception &ex){
         std::cerr << "Exception:" << ex.what() << std::endl;
         return false;
+    }catch(...){
+        std::cerr << "Caught unknown exception ub_MarkedRawCardData::canFullyDissect()" << std::endl;
+        return false;
     }
+    
     return true;
 }
 

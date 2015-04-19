@@ -1,4 +1,5 @@
 #include "ub_BeamRecord.h"
+#include "uboone_data_utils.h"
 
 using namespace gov::fnal::uboone::datatypes;
 
@@ -20,4 +21,17 @@ void ub_BeamRecord::clearBeamDataVector() noexcept{
 
 void ub_BeamRecord::insertBeamData(ub_BeamData_t const& beam_data) noexcept{
     _beam_data_vector.push_back(beam_data);
+}
+
+std::string ub_BeamRecord::debugInfo()const noexcept
+{
+      std::ostringstream os;
+      os << "Object " << demangle(typeid(this)) << "."<< std::endl;
+      os << _beam_header.debugInfo() << std::endl;
+      os << " Beam data:";
+      
+      for(auto & val: _beam_data_vector)
+	 os <<  "\n  " << val.debugInfo();
+	 
+      return os.str();
 }

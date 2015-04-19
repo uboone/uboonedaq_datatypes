@@ -16,7 +16,7 @@ namespace datatypes {
 class ub_TPC_CrateData_v6 final: public ub_MarkedRawCrateData<ub_TPC_CardData_v6> {
 public:
     typedef ub_TPC_CardData_v6::ub_CrateHeader ub_CrateHeader_t;
-    ub_TPC_CrateData_v6(ub_RawData const rawdata, bool createHeaderFromData=false);
+    ub_TPC_CrateData_v6(ub_RawData const rawdata, bool initializeHeaderFromRawData=false);
 
     bool compare(ub_TPC_CrateData_v6 const&,bool do_rethrow=false) const throw(datatypes_exception);
 
@@ -24,7 +24,8 @@ public:
     ub_TPC_CrateData_v6& operator=(ub_TPC_CrateData_v6 const &) = delete;
 
     bool updateCrateHeader(ub_MarkedRawCrateData const&) const throw(datatypes_exception);
-
+    
+    static constexpr auto typeName="PMT";
 };
 
 }  // end of namespace datatypes

@@ -42,6 +42,8 @@ class ub_BeamHeader final{
    bool operator<(ub_BeamHeader const& h ) const noexcept;
    bool operator<=(ub_BeamHeader const& h ) const noexcept;
 
+   std::string debugInfo()const noexcept;
+
  private:
    uint8_t record_type;
    std::string event_signal;
