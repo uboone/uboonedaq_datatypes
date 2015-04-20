@@ -71,6 +71,8 @@ public:
     void setTriggerData (ub_TriggerData const& trigger_data) noexcept;
     void setGPSData(ub_GPS const& gps_data) noexcept;
     void setBeamRecord(ub_BeamRecord const& beam_record) noexcept;
+    void markAsIncompleteEvent() noexcept;
+
     ub_GPS const& GPSData() const noexcept;
     ub_TriggerData const& triggerData()const noexcept;
     ub_BeamRecord const& beamRecord()const noexcept;
@@ -120,7 +122,7 @@ private:
             ar << _global_header;
             ar << _trigger_data;
             ar << _gps_data;
-            ar << _beam_record;
+            //ar << _beam_record;
         }
         //this must be the last step
         ar.save_binary(&_bookkeeping_trailer,ub_event_trailer_size);
@@ -133,9 +135,14 @@ private:
         //BEGIN SERIALIZE RAW EVENT FRAGMENT DATA
         // read bookkeeping info
         ar.load_binary(&_bookkeeping_header,ub_event_header_size);
+        
+        if(_bookkeeping_header.mark_E974!=UBOONE_EHDR)
+            throw datatypes_exception("Invalid header marker");
+            
         assert(_bookkeeping_header.mark_E974==UBOONE_EHDR);
         // write raw fragmetns with crate headers
-        for(std::size_t frag_number=0; frag_number < _bookkeeping_header.event_fragment_count; frag_number++)
+        std::size_t frag_number{_bookkeeping_header.event_fragment_count};
+        while(frag_number--)
         {
             raw_fragment_data_t fragment;
             std::size_t size;
@@ -158,11 +165,15 @@ private:
             ar >> _global_header;
             ar >> _trigger_data;
             ar >> _gps_data;
-            ar >> _beam_record;
+            //ar >> _beam_record;
         }
 
         //this must be the last step
         ar.load_binary(&_bookkeeping_trailer,ub_event_trailer_size);
+        
+        if(_bookkeeping_trailer.mark_974E!=UBOONE_ETLR)
+            throw datatypes_exception("Invalid trailer marker");
+            
         assert(_bookkeeping_trailer.mark_974E==UBOONE_ETLR);
     }
     BOOST_SERIALIZATION_SPLIT_MEMBER()

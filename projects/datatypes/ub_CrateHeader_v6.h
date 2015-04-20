@@ -38,10 +38,10 @@ struct ub_CrateHeader_v6 final
     };
 #pragma GCC diagnostic pop
 
-    std::size_t size; //bytes, needs to be uint32_t for large events
-    uint8_t crate_number; // Crate #
-    uint8_t card_count; // Card count
-    uint8_t crate_type; // crate type
+    std::size_t size;      //in uint16_t words 
+    uint8_t crate_number;  // Crate #
+    uint8_t card_count;    // Card count
+    uint8_t crate_type;    // crate type
     uint32_t event_number; // Event #
     uint32_t frame_number; // Frame #
     //time

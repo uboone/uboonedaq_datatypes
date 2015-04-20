@@ -35,11 +35,9 @@ raw_data_containter<raw_data_type> readFile(std::string const& fileName)
     return retBuff;
 }
 
-std::streamsize readfakedata( char* buffer, std::streamsize size )
+std::streamsize readfakedata(std::string const& fileName,  char* buffer, std::streamsize size )
 {
-  std::string name="/home/lukhanin/development_daq/uboonedaq-datatypes/data/tpc_v5_test_event_fragment.dat";
-  
-  auto dma_data=readFile(name);
+  auto dma_data=readFile(fileName);
   
   std::streamsize availableSize(dma_data.size()*sizeof(raw_data_type));
   

@@ -71,6 +71,10 @@ void ub_EventRecord::addFragment(raw_fragment_data_t& fragment) throw(datatypes_
         auto header=std::make_unique<ub_CrateHeader_v6>(crate_header);
         crate_data->crateHeader().swap(header);
         std::get<2>(_pmt_seb_map[crate_number]).swap(crate_data);
+        
+        getGlobalHeader().setSeconds(header->gps_time.second);
+        getGlobalHeader().setMicroSeconds(header->gps_time.micro);
+        getGlobalHeader().setNanoSeconds(header->gps_time.nano);
     }
     else
     {
@@ -91,7 +95,7 @@ void ub_EventRecord::addFragment(raw_fragment_data_t& fragment) throw(datatypes_
         std::get<2>(_tpc_seb_map[crate_number]).swap(crate_data);
     }
 
-    getGlobalHeader().setNumberOfBytesInRecord(getGlobalHeader().getNumberOfBytesInRecord()+crate_header.size);
+    getGlobalHeader().setNumberOfBytesInRecord(getGlobalHeader().getNumberOfBytesInRecord()+crate_header.size*sizeof(raw_data_type));
     getGlobalHeader().setNumberOfSEBs((uint8_t)(_tpc_seb_map.size() + _pmt_seb_map.size()));
     getGlobalHeader().setEventNumberCrate (crate_header.event_number);
     updateDTHeader();
@@ -118,6 +122,12 @@ void ub_EventRecord::getFragments(fragment_references_t& fragments) const throw(
         fragments.emplace_back(&std::get<0>(tpc.second));
     for(auto& pmt : _pmt_seb_map)
         fragments.emplace_back(&std::get<0>(pmt.second));
+}
+
+void ub_EventRecord::markAsIncompleteEvent() noexcept
+{
+    _bookkeeping_header.is_event_complete=false;
+    _global_header.markIncomplete();
 }
 
 
@@ -223,7 +233,7 @@ std::string ub_EventRecord::debugInfo()const noexcept {
 
     os << "Object " << demangle(typeid(this)) << ".";
     os << "\n TPC fragment count=" << tpcs.size();
-    os << "\n PMT fragment count=" << pmts.size();
+    os << "\n PMT fragment count=" << pmts.size() << std::endl;
     os << _global_header.debugInfo() << std::endl;
     os << _trigger_data.debugInfo() << std::endl;
     os << _gps_data.debugInfo() << std::endl;

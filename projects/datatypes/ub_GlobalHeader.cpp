@@ -16,7 +16,8 @@ ub_GlobalHeader::ub_GlobalHeader()
     micro_seconds {0xffff},
     nano_seconds {0xffff},
     numberOfBytesInRecord {0},
-    number_of_sebs {0} {
+    number_of_sebs {0},
+    is_event_complete(1) {
 }
 
 void ub_GlobalHeader::setRecordType(uint8_t const& type) noexcept {
@@ -98,12 +99,24 @@ uint32_t ub_GlobalHeader::getNumberOfBytesInRecord() const noexcept {
 uint8_t ub_GlobalHeader::getNumberOfSEBs() const noexcept {
     return number_of_sebs;
 }
+void ub_GlobalHeader::markIncomplete() noexcept{
+    is_event_complete=0;
+}
+
+void ub_GlobalHeader::markComplete() noexcept{
+    is_event_complete=1;
+}
+
+bool ub_GlobalHeader::isComplete() const noexcept{
+    return is_event_complete!=0;
+}
+
 
 std::string ub_GlobalHeader::debugInfo()const noexcept
 {
     std::ostringstream os;
     os << "Object " << demangle(typeid(this)) << ".";
-    os << "\n Event Info:" ;   
+    os << "\n Event Info:" ;
     os << "\n  run_number=" << (int) run_number;
     os << "\n  subrun_number=" << (int) subrun_number;
     os << "\n  event_number=" << (int) event_number;

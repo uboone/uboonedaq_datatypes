@@ -143,7 +143,7 @@ std::unique_ptr<typename CARD::ub_CrateHeader>& ub_MarkedRawCrateData<CARD>::cra
          assert(!getCards().empty());           
          crateHeader.reset(new typename CARD::ub_CrateHeader(getCards().begin()->header()));
          crateHeader->card_count=getCards().size();
-         crateHeader->size=rawdata().size();
+         crateHeader->size=_dissectableDataSize;
          crateHeader->crate_type=stringToSystemDesignator.at(CARD::typeName);
          HasLocalHostTime().update().copyOut(crateHeader->local_host_time);
          crateHeader->updateCrateBits();
