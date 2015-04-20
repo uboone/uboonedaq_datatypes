@@ -16,15 +16,15 @@ typedef  DissectorAdapter<ub_TPC_CrateData_v6> ub_TPC_CrateData_v6_dissector_t;
 
 DissectorFactory::DissectorFactory()
 {
-  registerDissector("tpc",6,&ub_TPC_CrateData_v6_dissector_t::getSizeOfDissectableCrateData);
-  registerDissector("pmt",6,&ub_PMT_CrateData_v6_dissector_t::getSizeOfDissectableCrateData);
+  registerDissector("tpc",6,&ub_TPC_CrateData_v6_dissector_t::buildCrateHeader);
+  registerDissector("pmt",6,&ub_PMT_CrateData_v6_dissector_t::buildCrateHeader);
 }
 
 DissectorFactory::~DissectorFactory() { 
 _dissectors.clear(); 
 }
 
-void DissectorFactory::registerDissector(std::string const& name, uint8_t const& version, factory_constructor constructor)
+void DissectorFactory::registerDissector(std::string const& name, uint8_t const& version, crate_header_builder builder)
 {
      auto result = _dissectors.find(name);
      
@@ -33,18 +33,18 @@ void DissectorFactory::registerDissector(std::string const& name, uint8_t const&
 	  return;
       }
       
-    _dissectors.emplace(name,std::make_pair(version,constructor));
+    _dissectors.emplace(name,std::make_pair(version,builder));
 }
 
-std::size_t DissectorFactory::getSizeOfDissectableCrateData(std::string const& name, uint8_t const& version, ub_RawData const rawdata, bool createHeaderFromData)
+crate_header_t DissectorFactory::buildCrateHeaderFromRawData(std::string const& name, uint8_t const& version, ub_RawData const rawdata, bool initializeHeaderFromRawData)
 {
     auto result = _dissectors.find(name);
     assert( result != _dissectors.end() ); 
     assert(result->second.first<=version); 
-    return result->second.second(rawdata,createHeaderFromData);
+    return result->second.second(rawdata,initializeHeaderFromRawData);
 }
 
-    
+   
 
 /*
 

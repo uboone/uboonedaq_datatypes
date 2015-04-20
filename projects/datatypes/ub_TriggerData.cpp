@@ -1,6 +1,7 @@
 
 #include <time.h>
 #include "ub_TriggerData.h"
+#include "uboone_data_utils.h"
 
 using namespace gov::fnal::uboone::datatypes;
 
@@ -96,3 +97,12 @@ uint64_t ub_TriggerData::getClock()           const noexcept {
     return (bt_trigger_data.word1>>4);
 }
 
+
+
+std::string ub_TriggerData::debugInfo()const noexcept {
+    std::ostringstream os;
+    os << "Object " << demangle(typeid(this)) << ".";
+    os << "\n Not implemented";
+    
+    return os.str();
+}

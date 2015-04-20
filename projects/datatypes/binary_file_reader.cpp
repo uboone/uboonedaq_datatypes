@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <stdexcept>
 #include  <iomanip>
+#include <cstring>
 
 using namespace gov::fnal::uboone::datatypes;
 
@@ -22,7 +23,7 @@ raw_data_containter<raw_data_type> readFile(std::string const& fileName)
     {
         os << ". Exception: file is missing." << std::endl;
         std::cerr <<os.str() <<std::flush;
-        throw std::runtime_error(os.str());
+        throw datatypes_exception(os.str());
     }
 
     os << ", size " << fileSize << " bytes";
@@ -30,7 +31,19 @@ raw_data_containter<raw_data_type> readFile(std::string const& fileName)
     file.read((char*)&retBuff[0], retBuff.size()*sizeof(raw_data_type));
     os << " into buffer " << std::hex <<  &retBuff << std::endl;
 
-    std::cout <<os.str()<<std::flush;
+   // std::cout <<os.str()<<std::flush;
     return retBuff;
 }
 
+std::streamsize readfakedata(std::string const& fileName,  char* buffer, std::streamsize size )
+{
+  auto dma_data=readFile(fileName);
+  
+  std::streamsize availableSize(dma_data.size()*sizeof(raw_data_type));
+  
+  if(size < availableSize )
+    return 0;
+    
+  std::memcpy ( buffer, (char*) &*dma_data.begin(),availableSize);    
+  return availableSize ;  
+}

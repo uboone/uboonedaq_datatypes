@@ -33,6 +33,8 @@ struct ub_GPS final{
     uint32_t getUpper() const noexcept;
     void setLower(uint32_t const& lower_) noexcept;
     void setUpper(uint32_t const& upper_) noexcept;
+    
+    std::string debugInfo()const noexcept;
 };
 
 
@@ -43,7 +45,9 @@ struct ub_GPS_Time final
 {
     uint32_t second; // seconds since the epoch.
     uint32_t micro;  // microseconds since the second.
-    uint32_t nano;  // nanoseconds since the second.   
+    uint32_t nano;  // nanoseconds since the second.  
+    
+    std::string debugInfo()const noexcept;
 };
 
 
@@ -51,7 +55,7 @@ struct HasGPSTime
 {
   void copyOut(ub_GPS_Time& target) noexcept  { target=_myValue; }
   void copyIn(ub_GPS_Time const& source) noexcept {_myValue=source;};  
-  ub_GPS_Time _myValue;
+  ub_GPS_Time _myValue ={0,0,0};
 };
 
 }  // end of namespace datatypes

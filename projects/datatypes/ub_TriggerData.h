@@ -57,8 +57,10 @@ public:
     uint16_t getTrigEventType() const noexcept;
     uint64_t getClock()         const noexcept;
     
+    std::string debugInfo()const noexcept;
+
 private:
-    trigger_data_t bt_trigger_data;
+    trigger_data_t bt_trigger_data={0,0,0,0,0,0,0,0};
 };
 
 

@@ -1,4 +1,5 @@
 #include "ub_BeamHeader.h"
+#include "uboone_data_utils.h"
 
 using namespace gov::fnal::uboone::datatypes;
 
@@ -64,4 +65,19 @@ bool ub_BeamHeader::operator<(ub_BeamHeader const& h ) const noexcept {
 }
 bool ub_BeamHeader::operator<=(ub_BeamHeader const& h ) const noexcept {
     return ((seconds < h.seconds) || (seconds == h.seconds && milli_seconds<=h.milli_seconds))  ;
+}
+
+
+std::string ub_BeamHeader::debugInfo()const noexcept
+{
+      std::ostringstream os;
+      os << "Object " << demangle(typeid(this)) << ".";
+      os << "\nAttributes:";
+      os << "\n  record_type=" << (int) record_type;
+      os << "\n  event_signal=" <<  event_signal ;
+      os << "\n  seconds=" << (int) seconds;
+      os << "\n  milli_seconds=" <<  milli_seconds ;
+      os << "\n  number_of_devices=" << (int) number_of_devices;
+      os << "\n  number_of_bytes_in_record=" <<  number_of_bytes_in_record ;
+      return os.str();
 }

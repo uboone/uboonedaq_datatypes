@@ -62,8 +62,7 @@ set (COMMON_PROJECT_LIBS
 # source
 add_subdirectory(share)
 add_subdirectory(datatypes)
-#add_subdirectory(datatypes_utilities)
-#add_subdirectory(gps)
+add_subdirectory(datatypes_utilities)
 
 # ups - table and config files
 add_subdirectory(ups)

@@ -29,6 +29,9 @@ public:
     uint32_t getTrigFrameMod16() const noexcept;
     uint32_t getTrigSample() const noexcept;
     uint32_t getTrigFrame() const noexcept;
+    
+    static constexpr auto typeName="TPC";
+
 };
 
 }  // end of namespace datatypes

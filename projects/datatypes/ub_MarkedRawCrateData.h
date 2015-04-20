@@ -1,6 +1,7 @@
 #ifndef _UBOONE_TYPES_MARKEDRAWCRATEDATA_H
 #define _UBOONE_TYPES_MARKEDRAWCRATEDATA_H 1
 
+#include "uboone_data_common.h"
 #include "uboone_data_utils.h"
 #include "uboone_data_internals.h"
 #include "ub_XMITEventHeaderTrailer_v0.h"
@@ -18,13 +19,17 @@ public:
 
     explicit ub_MarkedRawCrateData(ub_RawData const rawdata):
         ub_MarkedRawDataBlock<ub_XMITEventHeader,ub_XMITEventTrailer>(rawdata),
-        _markedRawCardsData {},_dissectableDataSize {0},_crateHeader {nullptr},_isValid {isValid()},
-    _isFullyDissected {canFullyDissect()},_createHeaderFromData {false} {}
+        _initializeHeaderFromRawData {false},
+        _markedRawCardsData {},_dissectableDataSize {0},
+        _crateHeader {nullptr},_isValid {isValid()},
+        _isFullyDissected {canFullyDissect()}{}
 
-    explicit ub_MarkedRawCrateData(ub_RawData const rawdata,bool createHeaderFromData):
+    explicit ub_MarkedRawCrateData(ub_RawData const rawdata,bool initializeHeaderFromRawData):
         ub_MarkedRawDataBlock<ub_XMITEventHeader,ub_XMITEventTrailer>(rawdata),
-        _markedRawCardsData {},_dissectableDataSize {0},_crateHeader {nullptr},_isValid {isValid()},
-    _isFullyDissected {canFullyDissect()},_createHeaderFromData {createHeaderFromData} {}
+        _initializeHeaderFromRawData {initializeHeaderFromRawData},
+        _markedRawCardsData {},_dissectableDataSize {0},
+        _crateHeader {nullptr},_isValid {isValid()},
+        _isFullyDissected {canFullyDissect()} {}
 
     uint32_t const& getHeaderWord() const noexcept{
         return header().raw_data;
@@ -56,24 +61,25 @@ public:
     };
 
     std::unique_ptr<typename CARD::ub_CrateHeader>& crateHeader() throw(datatypes_exception);
-    std::unique_ptr<typename CARD::ub_CrateHeader> const& crateHeader()const noexcept{	
+    std::unique_ptr<typename CARD::ub_CrateHeader> const& crateHeader()const noexcept{
+        assert(_crateHeader);
         return _crateHeader;
     };
 
     bool compare(ub_MarkedRawCrateData const&,bool do_rethrow=false) const throw(datatypes_exception);
-     bool initialize() throw(datatypes_exception);
+    
 private:
     bool isValid() noexcept;
     bool canFullyDissect() noexcept;
    
     
 private:
+    bool _initializeHeaderFromRawData;
     std::vector<CARD> _markedRawCardsData;
     size_t _dissectableDataSize;
     std::unique_ptr<typename CARD::ub_CrateHeader> _crateHeader;
     bool _isValid;
     bool _isFullyDissected;
-    bool _createHeaderFromData;
 };
 
 template <typename CARD>
@@ -91,38 +97,21 @@ void ub_MarkedRawCrateData<CARD>::dissectCards() throw(datatypes_exception)
     try
     {
         dissector_type<CARD> dissector(data());
-        dissector.populateCardDataVector(_markedRawCardsData);
+        dissector.populateCardDataVector(_markedRawCardsData);        
         _isFullyDissected=true;
         _dissectableDataSize=minsize()+dissector.getTrueDataSize();
         assert(_dissectableDataSize > minsize());
         assert(_dissectableDataSize <= rawdata().size());
+        assert(_markedRawCardsData.size()>0);
     }
-    catch(std::exception &ex){
+    catch(datatypes_exception &ex){
         throw;
+    }catch(std::exception &e){
+         throw datatypes_exception(std::string("Caught std::exception in ub_MarkedRawCrateData::dissectCards(). Message:").append(e.what()));
     }catch(...){
         throw datatypes_exception("Caught unknown exception in ub_MarkedRawCrateData::dissectCards().");
     }
 }
-
-template <typename CARD>
-bool ub_MarkedRawCrateData<CARD>::initialize() throw(datatypes_exception)
-{
-/*
-    try
-    {    if(_createHeaderFromData)
-	    return crateHeader()->initialize(rawdata());
-	 return true;
-    } catch(std::exception &ex) {
-        std::cerr << "Exception:" << ex.what() << std::endl;
-        return false;
-    } catch(...) {
-        std::cerr << "Unknown exception.";
-        return false;
-    }
-*/
-return true;
-}
-
 
 
 template <typename CARD>
@@ -148,16 +137,25 @@ std::unique_ptr<typename CARD::ub_CrateHeader>& ub_MarkedRawCrateData<CARD>::cra
     if(_crateHeader)
         return _crateHeader;
 
-    assert(!getCards().empty());
+    std::unique_ptr<typename CARD::ub_CrateHeader> crateHeader{nullptr};
 
-    std::unique_ptr<typename CARD::ub_CrateHeader> crateHeader {
-        new typename CARD::ub_CrateHeader(getCards().begin()->header())
-    };
+    if(_initializeHeaderFromRawData){
+         assert(!getCards().empty());           
+         crateHeader.reset(new typename CARD::ub_CrateHeader(getCards().begin()->header()));
+         crateHeader->card_count=getCards().size();
+         crateHeader->size=_dissectableDataSize;
+         crateHeader->crate_type=stringToSystemDesignator.at(CARD::typeName);
+         HasLocalHostTime().update().copyOut(crateHeader->local_host_time);
+         crateHeader->updateCrateBits();
+    } else {
+         crateHeader.reset(new typename CARD::ub_CrateHeader());
+    }
 
-    initialize();
-    
+    assert(crateHeader);
+        
     _crateHeader.swap(crateHeader);
-
+    
+    assert(_crateHeader);
     return _crateHeader;
 }
 

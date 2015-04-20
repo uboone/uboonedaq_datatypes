@@ -26,12 +26,12 @@ namespace datatypes {
 
 using namespace gov::fnal::uboone::datatypes;
 
-class ub_EventRecord final{
+class ub_EventRecord final {
 
 public:
     typedef raw_data_containter<raw_data_type>   raw_fragment_data_t;
     typedef raw_fragment_data_t::value_type      fragment_value_type_t;
-    
+
     typedef std::tuple<raw_fragment_data_t,
             std::unique_ptr<ub_RawData>,
             std::unique_ptr<tpc_crate_data_t>> tpc_crate_data_tuple_t;
@@ -49,31 +49,34 @@ public:
     typedef std::vector<raw_fragment_data_t const*> fragment_references_t;
 
     static const uint8_t DAQ_version_number = gov::fnal::uboone::datatypes::constants::VERSION;
-    ub_EventRecord():_global_header(),_tpc_seb_map(),_pmt_seb_map() {}
-    void setGlobalHeader (global_header_t & header) {
-        _global_header = header;
-    }
-    global_header_t& getGlobalHeader() noexcept {
-        return _global_header;
-    }
+
+    ub_EventRecord();
+    global_header_t& getGlobalHeader() noexcept;
+    void setGlobalHeader (global_header_t & header) noexcept;
 
     void addFragment(raw_fragment_data_t & fragment) throw(datatypes_exception);
+
+    std::string debugInfo()const noexcept;
+
 
     bool compare(ub_EventRecord const& event_record, bool do_rethrow) const throw(datatypes_exception);
 
     const tpc_map_t getTPCSEBMap() const throw(datatypes_exception);
     const pmt_map_t getPMTSEBMap() const throw(datatypes_exception);
+    std::size_t getFragmentCount() const noexcept;
     void updateDTHeader() throw (datatypes_exception);
-    
+
     void  getFragments(fragment_references_t& fragments) const throw(datatypes_exception);
 
-    void setTriggerData (ub_TriggerData const& trigger_data) noexcept {_trigger_data = trigger_data;}
-    void setGPSData(ub_GPS const& gps_data) noexcept { _gps_data = gps_data;}
-    void setBeamRecord(ub_BeamRecord const& beam_record) noexcept {_beam_record=beam_record;}
-    ub_GPS const& GPSData() const noexcept {return _gps_data; }    
-    ub_TriggerData const& triggerData()const noexcept {return _trigger_data; }    
-    ub_BeamRecord const& beamRecord()const noexcept {return _beam_record;}
-    ub_BeamRecord& beamRecord() noexcept {return _beam_record;}    
+    void setTriggerData (ub_TriggerData const& trigger_data) noexcept;
+    void setGPSData(ub_GPS const& gps_data) noexcept;
+    void setBeamRecord(ub_BeamRecord const& beam_record) noexcept;
+    void markAsIncompleteEvent() noexcept;
+
+    ub_GPS const& GPSData() const noexcept;
+    ub_TriggerData const& triggerData()const noexcept;
+    ub_BeamRecord const& beamRecord()const noexcept;
+    ub_BeamRecord& beamRecord() noexcept;
 
 private:
     ub_event_header    _bookkeeping_header;
@@ -86,40 +89,41 @@ private:
     ub_GPS             _gps_data;
     ub_BeamRecord      _beam_record;
 
-    #define UNUSED(x) (void)(x)
+#define UNUSED(x) (void)(x)
     friend class boost::serialization::access;
     template<class Archive>
     void save(Archive & ar, const unsigned int version) const
-    {	
-	UNUSED(version);
-	
+    {
+        UNUSED(version);
+
         //BEGIN SERIALIZE RAW EVENT FRAGMENT DATA
         fragment_references_t fragments;
         getFragments(fragments);
-	assert(_bookkeeping_header.event_fragment_count==fragments.size());
-	assert(_bookkeeping_header.raw_event_fragments_wordcount==std::accumulate(
-	  fragments.begin(),fragments.end(),0u,[](auto total, auto const& fragment){
-	      return total+fragment->size()*sizeof(fragment_value_type_t);}));
+        assert(_bookkeeping_header.event_fragment_count==fragments.size());
+        assert(_bookkeeping_header.raw_event_fragments_wordcount==std::accumulate(
+        fragments.begin(),fragments.end(),0u,[](auto total, auto const& fragment) {
+            return total+fragment->size()*sizeof(fragment_value_type_t);
+        }));
 
-	 // write bookkeeping info          
-	 ar.save_binary(&_bookkeeping_header,ub_event_header_size);
-	 
-	// write raw fragmetns with crate headers        
-        for(auto const& fragment : fragments){
-            std::size_t size{fragment->size()};
+        // write bookkeeping info
+        ar.save_binary(&_bookkeeping_header,ub_event_header_size);
+
+        // write raw fragmetns with crate headers
+        for(auto const& fragment : fragments) {
+            std::size_t size {fragment->size()};
             ar.save_binary(&size, sizeof(std::size_t)) ;
             ar.save_binary(fragment->data(),size*sizeof(fragment_value_type_t));
-        }        
-	//END SERIALIZE RAW EVENT FRAGMENT DATA
-	
+        }
+        //END SERIALIZE RAW EVENT FRAGMENT DATA
+
         // write remaining event details
         if(version>0)
         {
             ar << _global_header;
             ar << _trigger_data;
             ar << _gps_data;
-            ar << _beam_record;
-         }
+            //ar << _beam_record;
+        }
         //this must be the last step
         ar.save_binary(&_bookkeeping_trailer,ub_event_trailer_size);
     }
@@ -129,25 +133,31 @@ private:
     {
         UNUSED(version);
         //BEGIN SERIALIZE RAW EVENT FRAGMENT DATA
-        // read bookkeeping info          
+        // read bookkeeping info
         ar.load_binary(&_bookkeeping_header,ub_event_header_size);
-        assert(_bookkeeping_header.mark_E974==UBOONE_EHDR); 
-	// write raw fragmetns with crate headers        
-        for(std::size_t frag_number=0; frag_number < _bookkeeping_header.event_fragment_count; frag_number++)
+        
+        if(_bookkeeping_header.mark_E974!=UBOONE_EHDR)
+            throw datatypes_exception("Invalid header marker");
+            
+        assert(_bookkeeping_header.mark_E974==UBOONE_EHDR);
+        // write raw fragmetns with crate headers
+        std::size_t frag_number{_bookkeeping_header.event_fragment_count};
+        while(frag_number--)
         {
-            raw_fragment_data_t fragment;         
-	    std::size_t size;
+            raw_fragment_data_t fragment;
+            std::size_t size;
             ar.load_binary(&size,sizeof(std::size_t)) ;
-	    fragment.resize(size);
+            fragment.resize(size);
             ar.load_binary(fragment.data(),fragment.size()*sizeof(fragment_value_type_t));
             addFragment(fragment);
         }
         fragment_references_t fragments;
-        getFragments(fragments);        
-	assert(_bookkeeping_header.raw_event_fragments_wordcount==std::accumulate(
-	  fragments.begin(),fragments.end(),0u,[](auto total, auto const& fragment){
-	      return total+fragment->size()*sizeof(fragment_value_type_t);}));        
-	//END SERIALIZE RAW EVENT FRAGMENT DATA
+        getFragments(fragments);
+        assert(_bookkeeping_header.raw_event_fragments_wordcount==std::accumulate(
+        fragments.begin(),fragments.end(),0u,[](auto total, auto const& fragment) {
+            return total+fragment->size()*sizeof(fragment_value_type_t);
+        }));
+        //END SERIALIZE RAW EVENT FRAGMENT DATA
 
         // write remaining event details
         if(version>0)
@@ -155,14 +165,19 @@ private:
             ar >> _global_header;
             ar >> _trigger_data;
             ar >> _gps_data;
-            ar >> _beam_record;
+            //ar >> _beam_record;
         }
 
         //this must be the last step
         ar.load_binary(&_bookkeeping_trailer,ub_event_trailer_size);
-        assert(_bookkeeping_trailer.mark_974E==UBOONE_ETLR);            
+        
+        if(_bookkeeping_trailer.mark_974E!=UBOONE_ETLR)
+            throw datatypes_exception("Invalid trailer marker");
+            
+        assert(_bookkeeping_trailer.mark_974E==UBOONE_ETLR);
     }
     BOOST_SERIALIZATION_SPLIT_MEMBER()
+
 };
 
 }  // end of namespace datatypes

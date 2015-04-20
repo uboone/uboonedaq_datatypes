@@ -28,14 +28,14 @@ struct ub_TPC_CardHeader_v6 final
         };
         uint32_t id_and_module =0xDEADBEEF;
     } ;
-    uint32_t getID()const noexcept {
-        return id;
+    uint8_t getID()const noexcept {
+        return (uint8_t)id;
     }
-    uint32_t getModule()const noexcept {
-        return module;
+    uint8_t getModule()const noexcept {
+        return (uint8_t)module;
     }
-    uint32_t getMark()const noexcept {
-        return mark;
+    uint16_t getMark()const noexcept {
+        return (uint16_t)mark;
     }
 
     union {

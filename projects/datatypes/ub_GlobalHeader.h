@@ -28,7 +28,7 @@ class ub_GlobalHeader final{
             ar & record_type & record_origin & event_type
             & run_number & subrun_number & event_number & event_number_crate
             & seconds & milli_seconds & micro_seconds & nano_seconds
-            & numberOfBytesInRecord & number_of_sebs;
+            & numberOfBytesInRecord & number_of_sebs & is_event_complete;
     }
     
 public:
@@ -48,6 +48,8 @@ public:
     void setNanoSeconds(uint16_t const& ns) noexcept;
     void setNumberOfBytesInRecord(uint32_t const& size) noexcept;
     void setNumberOfSEBs(uint8_t const& s) noexcept;
+    void markIncomplete() noexcept;
+    void markComplete() noexcept;
 
     uint8_t getRecordType() const noexcept;
     uint8_t getRecordOrigin() const noexcept;
@@ -62,6 +64,9 @@ public:
     uint16_t getNanoSeconds() const noexcept;
     uint32_t getNumberOfBytesInRecord() const noexcept;
     uint8_t getNumberOfSEBs() const noexcept;
+    bool isComplete() const noexcept;
+
+    std::string debugInfo()const noexcept;
 
 private:
     uint8_t record_type;   /* From event_types.h */
@@ -79,7 +84,7 @@ private:
     uint32_t numberOfBytesInRecord;
 
     uint8_t number_of_sebs;
-
+    uint8_t is_event_complete;
 
 };
 

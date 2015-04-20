@@ -1,4 +1,5 @@
 #include "ub_BeamData.h"
+#include "uboone_data_utils.h"
 
 using namespace gov::fnal::uboone::datatypes;
 
@@ -63,4 +64,18 @@ void ub_BeamData::setData(std::vector<double> const& val) noexcept{
 
 void ub_BeamData::pushData(double const& val) noexcept{
     device_data.push_back(val);
+}
+
+
+std::string ub_BeamData::debugInfo()const noexcept
+{
+      std::ostringstream os;
+      os << "Object " << demangle(typeid(this)) << ".";
+      os << "\nAttributes:";
+      os << "\n  device_name=" <<  device_name;
+      os << "\n  units=" <<  units;
+      os << "\n  seconds=" <<  (int) seconds;
+      os << "\n  milli_seconds=" <<  (int) milli_seconds;
+
+      return os.str();
 }

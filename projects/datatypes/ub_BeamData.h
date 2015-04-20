@@ -42,6 +42,8 @@ public:
     void setData(std::vector<double> const& val) noexcept;
     void pushData(double const& val) noexcept;
 
+    std::string debugInfo()const noexcept;
+
 private:
     std::string device_name;
     std::string units;
