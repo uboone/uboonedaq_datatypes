@@ -71,7 +71,9 @@ void ub_EventRecord::addFragment(raw_fragment_data_t& fragment) throw(datatypes_
         auto header=std::make_unique<ub_CrateHeader_v6>(crate_header);
         crate_data->crateHeader().swap(header);
         std::get<2>(_pmt_seb_map[crate_number]).swap(crate_data);
-        
+        getGlobalHeader().setNumberOfBytesInRecord(getGlobalHeader().getNumberOfBytesInRecord()+crate_header.size*sizeof(raw_data_type));
+        getGlobalHeader().setEventNumberCrate (crate_header.event_number);
+            
         getGlobalHeader().setSeconds(header->gps_time.second);
         getGlobalHeader().setMicroSeconds(header->gps_time.micro);
         getGlobalHeader().setNanoSeconds(header->gps_time.nano);
@@ -93,11 +95,11 @@ void ub_EventRecord::addFragment(raw_fragment_data_t& fragment) throw(datatypes_
         auto crate_data = std::make_unique<tpc_crate_data_t>(*std::get<1>(_tpc_seb_map[crate_number]));
         auto header=std::make_unique<ub_CrateHeader_v6>(crate_header);
         std::get<2>(_tpc_seb_map[crate_number]).swap(crate_data);
+        getGlobalHeader().setNumberOfBytesInRecord(getGlobalHeader().getNumberOfBytesInRecord()+crate_header.size*sizeof(raw_data_type));
+        getGlobalHeader().setEventNumberCrate (crate_header.event_number);
     }
 
-    getGlobalHeader().setNumberOfBytesInRecord(getGlobalHeader().getNumberOfBytesInRecord()+crate_header.size*sizeof(raw_data_type));
-    getGlobalHeader().setNumberOfSEBs((uint8_t)(_tpc_seb_map.size() + _pmt_seb_map.size()));
-    getGlobalHeader().setEventNumberCrate (crate_header.event_number);
+    getGlobalHeader().setNumberOfSEBs((uint8_t)(_tpc_seb_map.size() + _pmt_seb_map.size()));    
     updateDTHeader();
 }
 

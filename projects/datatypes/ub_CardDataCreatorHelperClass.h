@@ -30,8 +30,11 @@ void ub_CardDataCreatorHelperClass<MRCD>::populateCardDataVector(std::vector<MRC
     std::vector<MRCD> retValue;
     uint32_t card_raw_data_size;
     
+    int counter{0};
+    try{
     while (curr_rawData.size() > MRCD::size_of_data_overhead())
     {   
+        counter++;
         card_raw_data_size = MRCD::size_of_data_overhead() +
                              quick_cast<typename MRCD::card_header_type>(curr_rawData.begin()).getWordCount();
                              
@@ -49,6 +52,11 @@ void ub_CardDataCreatorHelperClass<MRCD>::populateCardDataVector(std::vector<MRC
     }
     _dissectableDataSize=std::distance(_rawData.begin(),curr_rawData.begin());
     cardDataVector.swap(retValue);
+    }catch(std::exception& e){
+         std::cerr <<  "Caught exception in ub_CardDataCreatorHelperClass::populateCardDataVector() Message: " <<e.what() << std::endl;
+         std::cerr <<  debugInfoShort(curr_rawData) << std::endl;
+        throw;
+    }
 }
 
 }  // end of namespace datatypes

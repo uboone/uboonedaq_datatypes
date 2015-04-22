@@ -8,7 +8,7 @@ namespace uboone {
 namespace datatypes {
 
 template<>
-bool ub_MarkedRawCardData<ub_ChannelData_v6,ub_TPC_CardHeader_v6,empty_trailer>::isValid() noexcept
+bool ub_MarkedRawCardData<ub_TPC_ChannelData_v6,ub_TPC_CardHeader_v6,empty_trailer>::isValid() noexcept
 {
     return true;
 }
@@ -33,7 +33,7 @@ uint32_t ub_TPC_CardData_v6::getTrigFrame() const noexcept
 bool ub_TPC_CardData_v6::compare(ub_TPC_CardData_v6 const& card_data,bool do_rethrow ) const throw(datatypes_exception)
 {
     try {
-        return ub_MarkedRawCardData<ub_ChannelData_v6,ub_TPC_CardHeader_v6,empty_trailer>::compare(card_data,do_rethrow);
+        return ub_MarkedRawCardData<ub_TPC_ChannelData_v6,ub_TPC_CardHeader_v6,empty_trailer>::compare(card_data,do_rethrow);
     } catch(datatypes_exception &ex) {
         std::cerr << ex.what();
         if(do_rethrow)
@@ -52,7 +52,7 @@ bool ub_TPC_CardData_v6::compare(ub_TPC_CardData_v6 const& card_data,bool do_ret
 
 
 ub_TPC_CardData_v6::ub_TPC_CardData_v6(ub_RawData const rawdata):
-    ub_MarkedRawCardData<ub_ChannelData_v6,ub_TPC_CardHeader_v6,empty_trailer>(rawdata)
+    ub_MarkedRawCardData<ub_TPC_ChannelData_v6,ub_TPC_CardHeader_v6,empty_trailer>(rawdata)
 {
 }
 
