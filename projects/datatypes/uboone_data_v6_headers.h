@@ -9,7 +9,8 @@
 
 
 #include "ub_ChannelHeaderTrailer_v0.h"
-#include "ub_ChannelData_v6.h"
+#include "ub_PMT_ChannelData_v6.h"
+#include "ub_TPC_ChannelData_v6.h"
 
 #include "ub_TPC_CardHeader_v6.h"
 #include "ub_TPC_CardData_v6.h"

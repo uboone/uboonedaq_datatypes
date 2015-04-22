@@ -8,7 +8,7 @@ namespace uboone {
 namespace datatypes {
 
 template<>
-bool ub_MarkedRawCardData<ub_ChannelData_v6,ub_PMT_CardHeader_v6,empty_trailer>::isValid() noexcept
+bool ub_MarkedRawCardData<ub_PMT_ChannelData_v6,ub_PMT_CardHeader_v6,empty_trailer>::isValid() noexcept
 {
     return true;
 }
@@ -33,7 +33,7 @@ uint32_t ub_PMT_CardData_v6::getTrigFrame() const noexcept
 bool ub_PMT_CardData_v6::compare(ub_PMT_CardData_v6 const& card_data,bool do_rethrow ) const throw(datatypes_exception)
 {
     try {
-        return ub_MarkedRawCardData<ub_ChannelData_v6,ub_PMT_CardHeader_v6,empty_trailer>::compare(card_data,do_rethrow);
+        return ub_MarkedRawCardData<ub_PMT_ChannelData_v6,ub_PMT_CardHeader_v6,empty_trailer>::compare(card_data,do_rethrow);
     } catch(datatypes_exception &ex) {
         std::cerr << ex.what();
         if(do_rethrow)
@@ -51,7 +51,7 @@ bool ub_PMT_CardData_v6::compare(ub_PMT_CardData_v6 const& card_data,bool do_ret
 }
 
 ub_PMT_CardData_v6::ub_PMT_CardData_v6(ub_RawData const rawdata):
-    ub_MarkedRawCardData<ub_ChannelData_v6,ub_PMT_CardHeader_v6,empty_trailer>(rawdata) {}
+    ub_MarkedRawCardData<ub_PMT_ChannelData_v6,ub_PMT_CardHeader_v6,empty_trailer>(rawdata) {}
 
 bool ub_PMT_CardData_v6::operator==(ub_PMT_CardData_v6 const& card_data) const{
     return compare(card_data,false);

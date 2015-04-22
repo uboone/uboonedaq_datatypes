@@ -41,7 +41,7 @@ public:
         return std::distance(begin(), end());
     }
     bool compare(ub_RawDataBlock const&,bool do_rethrow=false) const throw(datatypes_exception);
-
+    
 private:
     ub_RawDataBlock::const_iterator _begin;
     ub_RawDataBlock::const_iterator _end;
@@ -79,6 +79,8 @@ typedef ub_RawDataBlock< raw_data_containter,raw_data_type> ub_RawData;
 
 std::string demangle(const std::type_info  &type_info) noexcept;
 std::string debugInfo(ub_RawData const& data) noexcept;
+std::string debugInfoShort(ub_RawData const& data) noexcept;
+
 std::string debugInfoRawData(raw_data_containter<raw_data_type>const& data) noexcept;
 
 

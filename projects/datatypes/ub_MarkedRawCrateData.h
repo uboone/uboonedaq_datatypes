@@ -103,6 +103,8 @@ void ub_MarkedRawCrateData<CARD>::dissectCards() throw(datatypes_exception)
         assert(_dissectableDataSize > minsize());
         assert(_dissectableDataSize <= rawdata().size());
         assert(_markedRawCardsData.size()>0);
+        
+       // std::cerr << ub_data_types::debugInfoShort(ub_RawData{rawdata().begin(),rawdata().begin()+_dissectableDataSize}) <<std::endl;
     }
     catch(datatypes_exception &ex){
         throw;

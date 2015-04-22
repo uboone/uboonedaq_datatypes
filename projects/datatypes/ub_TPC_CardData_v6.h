@@ -2,7 +2,7 @@
 #define _UBOONE_TYPES_MARKEDTPCCARDDATA_V6_H 1
 
 #include "ub_MarkedRawCardData.h"
-#include "ub_ChannelData_v6.h"
+#include "ub_TPC_ChannelData_v6.h"
 #include "ub_TPC_CardHeader_v6.h"
 #include "ub_CrateHeader_v6.h"
 
@@ -11,7 +11,7 @@ namespace fnal {
 namespace uboone {
 namespace datatypes {
 
-class ub_TPC_CardData_v6 final: public ub_MarkedRawCardData<ub_ChannelData_v6,ub_TPC_CardHeader_v6,empty_trailer> {
+class ub_TPC_CardData_v6 final: public ub_MarkedRawCardData<ub_TPC_ChannelData_v6,ub_TPC_CardHeader_v6,empty_trailer> {
 public:
     typedef ub_CrateHeader_v6 ub_CrateHeader;
 
