@@ -12,6 +12,9 @@ bool ub_MarkedRawCardData<ub_PMT_ChannelData_v6,ub_PMT_CardHeader_v6,empty_trail
 {
     return true;
 }
+template<>
+bool ub_MarkedRawCardData<ub_PMT_ChannelData_v6,ub_PMT_CardHeader_v6,empty_trailer>::_dissectChannels=true;
+
 
 }  // end of namespace datatypes
 }  // end of namespace uboone

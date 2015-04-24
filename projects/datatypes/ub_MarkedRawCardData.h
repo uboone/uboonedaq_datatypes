@@ -26,7 +26,7 @@ public:
 
     explicit ub_MarkedRawCardData(ub_RawData const rawdata):
         ub_MarkedRawDataBlock<HEADER,TRAILER>(rawdata),
-     _markedRawChannelsData {},_isValid {isValid()},_isFullyDissected {canFullyDissect()} {}
+     _markedRawChannelsData {},_isValid {isValid()},_isFullyDissected { _dissectChannels ?canFullyDissect():false } {}
     //_markedRawChannelsData{},_isValid{isValid()},_isFullyDissected{false}{}
 
     uint32_t const& getCardIDAndModuleWord() const noexcept{
@@ -61,10 +61,16 @@ public:
     void decompressChannels() throw(datatypes_exception);
     void dissectChannels() throw(datatypes_exception);
     std::string debugInfo()const noexcept;
-
+    
+    static void neverDissectChannels() {_dissectChannels=false;}
+    
 private:
     bool isValid() noexcept;
     bool canFullyDissect() noexcept;
+
+protected:    
+    static bool  _dissectChannels;   
+    
 private:
     std::vector<CHANN>  _markedRawChannelsData;
     bool _isValid;
@@ -128,14 +134,10 @@ std::string ub_MarkedRawCardData<CHANN, HEADER,TRAILER>::debugInfo()const noexce
     os << ub_MarkedRawDataBlock<HEADER,TRAILER>::trailer().debugInfo();
 
     os << " *Found " << std::dec << getChannels().size() << " channels." << std::endl;
+    
     for(auto chan : getChannels())
-    {
-        if(chan.rawdata().size() < 0x200)
-            os << chan.debugInfo();
-        else
-           os << debugInfoShort(chan.rawdata());
-    }
-
+        os << chan.debugInfo();
+         
     // os <<  ub_MarkedRawDataBlock::debugInfo();
     return os.str();
 }

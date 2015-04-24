@@ -17,11 +17,14 @@ std::string ub_MarkedRawChannelData::debugInfo()const noexcept
     os << "Object " << demangle(typeid(this)) << "."<< std::endl;
     os << header().debugInfo();
     os << trailer().debugInfo();
-    os <<  ub_MarkedRawDataBlock::debugInfo();
+    
+     if(rawdata().size() < 0x200)
+         os << ub_MarkedRawDataBlock::debugInfo();
+     else
+         os << debugInfoShort(rawdata());
+    
     return os.str();
 }
-
-
 
 ub_MarkedRawChannelData::ub_MarkedRawChannelData(ub_RawData const rawdata):
     ub_MarkedRawDataBlock<ub_ChannelHeader,ub_ChannelTrailer>(rawdata),

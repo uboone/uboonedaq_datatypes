@@ -260,12 +260,20 @@ std::string ub_EventRecord::debugInfo()const noexcept {
     os << _beam_record.debugInfo() << std::endl;
 
     os << "\nTPC fragments";
-    for(auto const& tpc: tpcs)
-        os << "\n" << tpc.second.debugInfo();
+    for(auto& tpc : _tpc_seb_map){
+        raw_fragment_data_t const& tpm_fragment=std::get<0>(tpc.second);
+        ub_RawData data(tpm_fragment.begin(),tpm_fragment.end());
+        os << "\n" <<  ub_CrateHeader_v6::getHeaderFromFragment(data).debugInfo();
+        os << "\n" <<  std::get<2>(tpc.second)->debugInfo();
+    }
 
     os << "\nPMT fragments";
-    for(auto const& pmt: pmts)
-        os << "\n" << pmt.second.debugInfo();
+    for(auto& pmt : _pmt_seb_map){
+        raw_fragment_data_t const& tpm_fragment=std::get<0>(pmt.second);
+        ub_RawData data(tpm_fragment.begin(),tpm_fragment.end());
+        os << "\n" <<  ub_CrateHeader_v6::getHeaderFromFragment(data).debugInfo();
+        os << "\n" <<  std::get<2>(pmt.second)->debugInfo();
+    }
 
     return os.str();
 }
