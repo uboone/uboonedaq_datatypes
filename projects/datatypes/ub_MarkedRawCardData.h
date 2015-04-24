@@ -26,7 +26,7 @@ public:
 
     explicit ub_MarkedRawCardData(ub_RawData const rawdata):
         ub_MarkedRawDataBlock<HEADER,TRAILER>(rawdata),
-        _markedRawChannelsData {},_isValid {isValid()},_isFullyDissected {canFullyDissect()} {}
+     _markedRawChannelsData {},_isValid {isValid()},_isFullyDissected {canFullyDissect()} {}
     //_markedRawChannelsData{},_isValid{isValid()},_isFullyDissected{false}{}
 
     uint32_t const& getCardIDAndModuleWord() const noexcept{
@@ -89,8 +89,7 @@ void ub_MarkedRawCardData<CHANN, HEADER,TRAILER>::dissectChannels() throw(dataty
         dissector.populateChannelDataVector(_markedRawChannelsData);
         _isFullyDissected=true;
     }
-    catch(datatypes_exception &ex){
-        
+    catch(datatypes_exception &ex){        
         throw;
     }catch(std::exception &e){
          throw datatypes_exception(std::string("Caught std::exception in ub_MarkedRawCardData::dissectChannels(). Message:").append(e.what()));

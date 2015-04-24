@@ -43,6 +43,8 @@ public:
     }
 
     ub_MarkedRawCrateData() = delete;
+    ~ub_MarkedRawCrateData(){_crateHeader.release(); _markedRawCardsData.clear();}
+
     //ub_MarkedRawCrateData(ub_MarkedRawCrateData const &) = delete;
     ub_MarkedRawCrateData& operator=(ub_MarkedRawCrateData const &) = delete;
     size_t getSizeOfCardsData() const noexcept{

@@ -51,6 +51,8 @@ public:
     static const uint8_t DAQ_version_number = gov::fnal::uboone::datatypes::constants::VERSION;
 
     ub_EventRecord();
+    ~ub_EventRecord();
+
     global_header_t& getGlobalHeader() noexcept;
     void setGlobalHeader (global_header_t & header) noexcept;
 
@@ -66,7 +68,6 @@ public:
     std::size_t getFragmentCount() const noexcept;
     void updateDTHeader() throw (datatypes_exception);
 
-    void  getFragments(fragment_references_t& fragments) const throw(datatypes_exception);
 
     void setTriggerData (ub_TriggerData const& trigger_data) noexcept;
     void setGPSData(ub_GPS const& gps_data) noexcept;
@@ -77,7 +78,12 @@ public:
     ub_TriggerData const& triggerData()const noexcept;
     ub_BeamRecord const& beamRecord()const noexcept;
     ub_BeamRecord& beamRecord() noexcept;
-
+    
+    //do your custom out-of-class specialization if needed
+    template <typename EVENTFRAGMENTPTR_TYPE>
+            void releaseFragmentsAs( EVENTFRAGMENTPTR_TYPE*  );
+private:
+    void  getFragments(fragment_references_t& fragments) const throw(datatypes_exception);
 private:
     ub_event_header    _bookkeeping_header;
     ub_event_trailer   _bookkeeping_trailer;

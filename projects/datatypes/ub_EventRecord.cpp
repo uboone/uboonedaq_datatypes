@@ -14,6 +14,17 @@ ub_EventRecord::ub_EventRecord()
      _beam_record() {
 }
 
+ub_EventRecord::~ub_EventRecord()
+{
+    for(auto& pmt : _pmt_seb_map)
+            std::get<0>(pmt.second).clear();
+    _pmt_seb_map.clear();
+    
+    for(auto& tpc : _tpc_seb_map)
+            std::get<0>(tpc.second).clear();
+    _tpc_seb_map.clear();
+}
+
 void ub_EventRecord::setGlobalHeader (global_header_t & header) noexcept {
     _global_header = header;
 }
@@ -53,11 +64,14 @@ void ub_EventRecord::addFragment(raw_fragment_data_t& fragment) throw(datatypes_
     int crate_number {crate_header.crate_number};
     uint8_t crate_type {crate_header.crate_type};
 
+    
     if(crate_type == 2)
     {
         _pmt_seb_map.emplace(crate_number,std::make_tuple(
-                                 std::move(fragment),std::unique_ptr<ub_RawData>(nullptr),std::unique_ptr<pmt_crate_data_t>(nullptr)));
+                                  raw_fragment_data_t(),std::unique_ptr<ub_RawData>(nullptr),std::unique_ptr<pmt_crate_data_t>(nullptr)));
 
+        std::get<0>(_pmt_seb_map[crate_number]).swap(fragment);
+        
         raw_fragment_data_t& tpm_fragment=std::get<0>(_pmt_seb_map[crate_number]);
 
         artdaq_fragment_header const* artdaq_header= reinterpret_cast<artdaq_fragment_header const*>(&* tpm_fragment.begin());
@@ -76,13 +90,15 @@ void ub_EventRecord::addFragment(raw_fragment_data_t& fragment) throw(datatypes_
             
         getGlobalHeader().setSeconds(header->gps_time.second);
         getGlobalHeader().setMicroSeconds(header->gps_time.micro);
-        getGlobalHeader().setNanoSeconds(header->gps_time.nano);
+        getGlobalHeader().setNanoSeconds(header->gps_time.nano);        
     }
     else
     {
         _tpc_seb_map.emplace(crate_number,std::make_tuple(
-                                 std::move(fragment),std::unique_ptr<ub_RawData>(nullptr),std::unique_ptr<tpc_crate_data_t>(nullptr)));
+                                 raw_fragment_data_t(),std::unique_ptr<ub_RawData>(nullptr),std::unique_ptr<tpc_crate_data_t>(nullptr)));
 
+        std::get<0>(_tpc_seb_map[crate_number]).swap(fragment);
+        
         raw_fragment_data_t& tpm_fragment=std::get<0>(_tpc_seb_map[crate_number]);
 
         artdaq_fragment_header const* artdaq_header= reinterpret_cast<artdaq_fragment_header const*>(&* tpm_fragment.begin());
@@ -97,6 +113,7 @@ void ub_EventRecord::addFragment(raw_fragment_data_t& fragment) throw(datatypes_
         std::get<2>(_tpc_seb_map[crate_number]).swap(crate_data);
         getGlobalHeader().setNumberOfBytesInRecord(getGlobalHeader().getNumberOfBytesInRecord()+crate_header.size*sizeof(raw_data_type));
         getGlobalHeader().setEventNumberCrate (crate_header.event_number);
+        
     }
 
     getGlobalHeader().setNumberOfSEBs((uint8_t)(_tpc_seb_map.size() + _pmt_seb_map.size()));    
@@ -117,6 +134,7 @@ const ub_EventRecord::pmt_map_t ub_EventRecord::getPMTSEBMap() const throw(datat
         retMap.emplace(pmt.first,*std::get<2>(pmt.second));
     return retMap;
 }
+
 
 void ub_EventRecord::getFragments(fragment_references_t& fragments) const throw(datatypes_exception)
 {

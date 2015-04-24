@@ -1,4 +1,4 @@
-#include "uboone_data_utils.h"
+      #include "uboone_data_utils.h"
 #include "uboone_data_internals.h"
 #include "ub_ChannelDataCreatorHelperClass.h"
 #include "ub_TPC_ChannelData_v6.h"
@@ -23,20 +23,18 @@ void ub_ChannelDataCreatorHelperClass<ub_TPC_ChannelData_v6>::populateChannelDat
     {
         if(*curr_rawData.begin()!=curr_header++)
         {
-             std::stringstream ss;
-             ss << "Junk data: Wrong channel header: channel, expected,received (" << std::hex<< channel<<", "
-              <<(int) curr_header-1 << ", " << (int)*curr_rawData.begin() << ")";
-             std::cerr << ss.str() << std::endl;
-             break;
-             /*
-             if( *(curr_rawData.begin()+curr_rawData.size()) == 0x503f)
-             {
+            std::stringstream ss;
+            ss << "Junk data: Wrong channel header: (channel, expected, received)=(" <<hex(4,channel) << ", ";
+            ss << hex(4,curr_header) << ", " <<hex(4,*(curr_rawData.begin()));
+            ss << "); remaining data size=" << std::dec << curr_rawData.size();
+            ss << "; channel trailer word=" << hex (4,*(curr_rawData.begin()+curr_rawData.size()));
+        
+            if( *(curr_rawData.begin()+curr_rawData.size()) == 0x503f){
                 std::cerr << ss.str() << std::endl;
                 break;
              }
              else
                 throw datatypes_exception(ss.str());
-             */       
         }
 
         for(ub_RawData::const_iterator curr_position=curr_rawData.begin(); curr_position!=curr_rawData.end(); curr_position++)
@@ -50,7 +48,7 @@ void ub_ChannelDataCreatorHelperClass<ub_TPC_ChannelData_v6>::populateChannelDat
                 curr_rawData=ub_RawData {curr_position+1,curr_rawData.end()};
                 
                 if(curr_rawData.size()!=0 && channelDataVector.back().minsize() >curr_rawData.size())
-                    throw datatypes_exception("Junk data: Corrupt channel data.");
+                    throw datatypes_exception("Junk data: Corrupt or truncated channel data");
                     
                 break;
             }
@@ -60,6 +58,8 @@ void ub_ChannelDataCreatorHelperClass<ub_TPC_ChannelData_v6>::populateChannelDat
     }catch(std::exception& e){         
          std::cerr << "Caught exception in ub_TPC_ChannelDataCreatorHelperClass::populateChannelDataVector() Message: " <<e.what() << std::endl;
          std::cerr <<  debugInfoShort(curr_rawData) << std::endl;
+        // std::cerr << "Raw Card Data"<< std::endl;         
+        // std::cerr <<  debugInfo(_rawData) << std::endl;         
         throw;
     }
     

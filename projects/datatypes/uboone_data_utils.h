@@ -14,6 +14,7 @@
 #include "uboone_data_fragment.h"
 
 #define UNUSED(x) (void)(x)
+#define hex(w,d) std::setw(w) << std::setfill('0') << std::hex << d
 
 namespace ub_data_types =gov::fnal::uboone::datatypes;
 
