@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <iterator>
 
-# define DO_STDVEC 0
+#include "releaseInfo.h"
 
 
 typedef uint16_t raw_data_type;

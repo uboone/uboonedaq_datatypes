@@ -42,7 +42,7 @@ void ub_CardDataCreatorHelperClass<MRCD>::populateCardDataVector(std::vector<MRC
             throw datatypes_exception("Junk data: Wrong word count in the card header.");
             
         ub_RawData data {curr_rawData.begin(),curr_rawData.begin()+card_raw_data_size};
-        
+                
         retValue.emplace_back( data );
         
         curr_rawData=ub_RawData {curr_rawData.begin()+card_raw_data_size,curr_rawData.end()};
@@ -54,7 +54,9 @@ void ub_CardDataCreatorHelperClass<MRCD>::populateCardDataVector(std::vector<MRC
     cardDataVector.swap(retValue);
     }catch(std::exception& e){
          std::cerr <<  "Caught exception in ub_CardDataCreatorHelperClass::populateCardDataVector() Message: " <<e.what() << std::endl;
-         std::cerr <<  debugInfoShort(curr_rawData) << std::endl;
+         std::cerr <<  "Details: Card number" << counter << std::endl;
+         std::cerr <<  quick_cast<typename MRCD::card_header_type>(curr_rawData.begin()).debugInfo() << std::endl;
+        // std::cerr <<  debugInfoShort(curr_rawData) << std::endl;
         throw;
     }
 }

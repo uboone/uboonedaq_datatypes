@@ -91,8 +91,11 @@ std::string ub_CrateHeader_v6::debugInfo()const noexcept
 
 void ub_CrateHeader_v6::updateDTHeader(ub_RawData const& data)  throw(datatypes_exception)
 {
+    assert(artdaq_fragment_header::num_words()<data.size());
+    
     if(artdaq_fragment_header::num_words()>data.size())
         throw datatypes_exception("Invalid fragment: fragment is too short.");
+        
 
     artdaq_fragment_header const* artdaq_header= reinterpret_cast<artdaq_fragment_header const*>(&*data.begin());
 
@@ -123,6 +126,8 @@ ub_CrateHeader_v6 const& ub_CrateHeader_v6::getHeaderFromFragment(ub_RawData con
 {
   try
   {
+    assert(artdaq_fragment_header::num_words()<data.size());
+    
     if(artdaq_fragment_header::num_words()>data.size())
         throw datatypes_exception("Invalid fragment: fragment is too short.");
 
@@ -145,7 +150,7 @@ ub_CrateHeader_v6 const& ub_CrateHeader_v6::getHeaderFromFragment(ub_RawData con
     return *crate_header;
     
     } catch(datatypes_exception &ex) {
-            throw;
+            throw datatypes_exception(std::string("Caught exception in ub_CrateHeader_v6::getHeaderFromFragment(). Message:").append(ex.what()));
     } catch(...) {
             throw datatypes_exception("Unknown exception in ub_CrateHeader_v6::getHeaderFromFragment()");
     }
@@ -195,7 +200,7 @@ bool ub_CrateHeader_v6::compare(ub_CrateHeader_v6 const& crate_header,bool do_re
     } catch(datatypes_exception &ex) {
         std::cerr << ex.what();
         if(do_rethrow)
-            throw;
+            throw datatypes_exception(std::string("Caught exception in ub_CrateHeader_v6::compare(). Message:").append(ex.what()));
         else
             return false;
     } catch(...) {
