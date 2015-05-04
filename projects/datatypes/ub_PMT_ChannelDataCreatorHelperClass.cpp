@@ -13,11 +13,12 @@ template<>
 void ub_ChannelDataCreatorHelperClass<ub_PMT_ChannelData_v6>::populateChannelDataVector(std::vector<ub_PMT_ChannelData_v6> & channelDataVector)
 {
     std::size_t pmt_card_channel_count = 1;
-    ub_RawData curr_rawData {_rawData};
+    ub_RawData curr_rawData {_rawData.begin(),_rawData.end()};
     uint16_t curr_header {0x4000}, curr_trailer {0xc000};
     
     std::vector<ub_PMT_ChannelData_v6> retValue;
-    retValue.reserve(pmt_card_channel_count);
+    //retValue.reserve(pmt_card_channel_count);//FIXME:GAL
+    UNUSED(pmt_card_channel_count);
     try{
     {
         if(*curr_rawData.begin()!=curr_header)
@@ -42,9 +43,9 @@ void ub_ChannelDataCreatorHelperClass<ub_PMT_ChannelData_v6>::populateChannelDat
             {
                 ub_RawData data {curr_rawData.begin(),curr_position};
                 
-                retValue.emplace_back( data );
+                retValue.push_back(data);
                 
-                curr_rawData=ub_RawData {curr_position+1,curr_rawData.end()};
+                curr_rawData=ub_RawData (curr_position+1,curr_rawData.end());
                 
                 if(curr_rawData.size() >= 2 && EVENTTRAILER != *((decltype(EVENTHEADER)*)&*(curr_rawData.begin())))
                     throw datatypes_exception("Junk data: Expecting EVENTHEADER.");                    

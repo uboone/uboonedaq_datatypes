@@ -42,8 +42,8 @@ void ub_CardDataCreatorHelperClass<MRCD>::populateCardDataVector(std::vector<MRC
             throw datatypes_exception("Junk data: Wrong word count in the card header.");
             
         ub_RawData data {curr_rawData.begin(),curr_rawData.begin()+card_raw_data_size};
-                
-        retValue.emplace_back( data );
+        //UNUSED(data);    //FIXME:GAL    
+        retValue.emplace_back(data);
         
         curr_rawData=ub_RawData {curr_rawData.begin()+card_raw_data_size,curr_rawData.end()};
         

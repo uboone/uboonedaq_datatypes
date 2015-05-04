@@ -13,12 +13,12 @@ namespace datatypes {
 
 using crate_header_t = ub_CrateHeader_v6;
 
-typedef crate_header_t (* crate_header_builder )(ub_RawData const rawdata, bool initializeHeaderFromRawData); 
+typedef crate_header_t (* crate_header_builder )(ub_RawData const& rawdata, bool initializeHeaderFromRawData); 
 
 template <typename T>
 struct DissectorAdapter 
 {
-      static crate_header_t buildCrateHeader(ub_RawData const rawdata, bool initializeHeaderFromRawData) {
+      static crate_header_t buildCrateHeader(ub_RawData const& rawdata, bool initializeHeaderFromRawData) {
         std::unique_ptr<T> ptr{new T {rawdata, initializeHeaderFromRawData} };
         assert(ptr);
         crate_header_t header;
@@ -36,12 +36,12 @@ public:
     ~DissectorFactory();
 
     void registerDissector(std::string const& name, uint8_t const& version, crate_header_builder builder);
-    crate_header_t buildCrateHeaderFromRawData(std::string const& name, uint8_t const& version, ub_RawData const rawdata, bool initializeHeaderFromRawData);
+    crate_header_t buildCrateHeaderFromRawData(std::string const& name, uint8_t const& version, ub_RawData const& rawdata, bool initializeHeaderFromRawData);
     
     DissectorFactory ( DissectorFactory const & ) = delete;
     DissectorFactory& operator= ( DissectorFactory const & ) = delete;
-    DissectorFactory ( DissectorFactory const && ) = delete;
-    DissectorFactory& operator= ( DissectorFactory const && ) = delete;
+    DissectorFactory ( DissectorFactory && ) = delete;
+    DissectorFactory& operator= ( DissectorFactory  && ) = delete;
 
 private:
     DissectorMap_t _dissectors={};

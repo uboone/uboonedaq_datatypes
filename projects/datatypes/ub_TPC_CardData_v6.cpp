@@ -54,7 +54,7 @@ bool ub_TPC_CardData_v6::compare(ub_TPC_CardData_v6 const& card_data,bool do_ret
 }
 
 
-ub_TPC_CardData_v6::ub_TPC_CardData_v6(ub_RawData const rawdata):
+ub_TPC_CardData_v6::ub_TPC_CardData_v6(ub_RawData const& rawdata):
     ub_MarkedRawCardData<ub_TPC_ChannelData_v6,ub_TPC_CardHeader_v6,empty_trailer>(rawdata)
 {
 }

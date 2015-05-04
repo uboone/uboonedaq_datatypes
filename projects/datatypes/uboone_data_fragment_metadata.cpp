@@ -36,7 +36,7 @@ void DissectorFactory::registerDissector(std::string const& name, uint8_t const&
     _dissectors.emplace(name,std::make_pair(version,builder));
 }
 
-crate_header_t DissectorFactory::buildCrateHeaderFromRawData(std::string const& name, uint8_t const& version, ub_RawData const rawdata, bool initializeHeaderFromRawData)
+crate_header_t DissectorFactory::buildCrateHeaderFromRawData(std::string const& name, uint8_t const& version, ub_RawData const& rawdata, bool initializeHeaderFromRawData)
 {
     auto result = _dissectors.find(name);
     assert( result != _dissectors.end() ); 
