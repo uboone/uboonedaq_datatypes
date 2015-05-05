@@ -19,7 +19,4 @@ int main(int argc, char **argv)
     
     ub_TPC_CrateData_v6 crate(raw_data);    
     std::cout <<std::endl <<crate.debugInfo();
-
-    std::vector<int> aa;
-    aa.swap(aa);
 }
