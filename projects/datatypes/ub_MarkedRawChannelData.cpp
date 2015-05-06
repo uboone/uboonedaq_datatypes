@@ -26,7 +26,7 @@ std::string ub_MarkedRawChannelData::debugInfo()const noexcept
     return os.str();
 }
 
-ub_MarkedRawChannelData::ub_MarkedRawChannelData(ub_RawData const rawdata):
+ub_MarkedRawChannelData::ub_MarkedRawChannelData(ub_RawData const& rawdata):
     ub_MarkedRawDataBlock<ub_ChannelHeader,ub_ChannelTrailer>(rawdata),
     _isValid {isValid()},_isFullyDissected {canFullyDissect()}
 {

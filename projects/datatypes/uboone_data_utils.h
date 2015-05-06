@@ -30,7 +30,8 @@ public:
     explicit ub_RawDataBlock(ub_RawDataBlock::const_iterator begin,
                              ub_RawDataBlock::const_iterator end)
         :_begin {begin},_end {end} {}
-
+        
+    
     ub_RawDataBlock::const_iterator begin() const noexcept{
         return _begin;
     }

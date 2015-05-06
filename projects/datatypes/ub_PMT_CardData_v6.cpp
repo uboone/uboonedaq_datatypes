@@ -53,7 +53,7 @@ bool ub_PMT_CardData_v6::compare(ub_PMT_CardData_v6 const& card_data,bool do_ret
     return true;
 }
 
-ub_PMT_CardData_v6::ub_PMT_CardData_v6(ub_RawData const rawdata):
+ub_PMT_CardData_v6::ub_PMT_CardData_v6(ub_RawData const& rawdata):
     ub_MarkedRawCardData<ub_PMT_ChannelData_v6,ub_PMT_CardHeader_v6,empty_trailer>(rawdata) {}
 
 bool ub_PMT_CardData_v6::operator==(ub_PMT_CardData_v6 const& card_data) const{

@@ -13,10 +13,9 @@ namespace datatypes {
 class ub_PMT_ChannelData_v6 final: public ub_MarkedRawChannelData
 {
 public:
-    ub_PMT_ChannelData_v6(ub_RawData const rawdata);
-    
-    ub_PMT_ChannelData_v6() = delete;
-    ub_PMT_ChannelData_v6& operator=(ub_PMT_ChannelData_v6 const &) = delete;
+    ub_PMT_ChannelData_v6(ub_RawData const& rawdata); 
+    ub_PMT_ChannelData_v6 ( ub_PMT_ChannelData_v6 && ) = default;
+
 };
 
 }  // end of namespace datatypes

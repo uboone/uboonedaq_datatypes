@@ -50,7 +50,7 @@ std::ostream & operator<<(std::ostream &os, const gov::fnal::uboone::datatypes::
 
 // This MACRO must be outside any namespaces.
 
-BOOST_CLASS_VERSION(gov::fnal::uboone::datatypes::ub_BeamRecord, gov::fnal::uboone::datatypes::constants::VERSION)
+BOOST_CLASS_VERSION(gov::fnal::uboone::datatypes::ub_BeamRecord, gov::fnal::uboone::datatypes::constants::DATATYPES_VERSION)
 
 
 #endif /* #ifndef BOONETYPES_H */

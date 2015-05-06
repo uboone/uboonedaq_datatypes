@@ -108,7 +108,7 @@ void ub_CrateHeader_v6::updateDTHeader(ub_RawData const& data)  throw(datatypes_
     data_transmission_header.total_fragment_wordcount=artdaq_header->word_count;
     data_transmission_header.is_fragment_complete=complete;
     
-    data_transmission_header.fragment_format_version= gov::fnal::uboone::datatypes::constants::VERSION;
+    data_transmission_header.fragment_format_version= gov::fnal::uboone::datatypes::constants::DATATYPES_VERSION;
     
     data_transmission_header.raw_fragment_beginning_word_offset=
       artdaq_fragment_header::num_words()+

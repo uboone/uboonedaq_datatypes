@@ -9,7 +9,7 @@
 
 using namespace gov::fnal::uboone::datatypes;
 
-raw_data_containter<raw_data_type> readFile(std::string const& fileName)
+bool readFile(std::string const& fileName,raw_data_containter<raw_data_type> & retBuff)
 {
     std::ostringstream os;
 
@@ -23,21 +23,24 @@ raw_data_containter<raw_data_type> readFile(std::string const& fileName)
     {
         os << ". Exception: file is missing." << std::endl;
         std::cerr <<os.str() <<std::flush;
-        throw datatypes_exception(os.str());
+        return false;
     }
 
     os << ", size " << fileSize << " bytes";
-    raw_data_containter<raw_data_type> retBuff(fileSize/sizeof(raw_data_type));
+    retBuff.resize(fileSize/sizeof(raw_data_type));
     file.read((char*)&retBuff[0], retBuff.size()*sizeof(raw_data_type));
     os << " into buffer " << std::hex <<  &retBuff << std::endl;
 
    // std::cout <<os.str()<<std::flush;
-    return retBuff;
+    return true;
 }
 
 std::streamsize readfakedata(std::string const& fileName,  char* buffer, std::streamsize size )
 {
-  auto dma_data=readFile(fileName);
+  raw_data_containter<raw_data_type> dma_data(0);
+  
+   if(!readFile(fileName,dma_data))
+        return 0;
   
   std::streamsize availableSize(dma_data.size()*sizeof(raw_data_type));
   

@@ -24,7 +24,7 @@ public:
 
     template <typename MRCD> using dissector_type = ub_ChannelDataCreatorHelperClass<MRCD>;
 
-    explicit ub_MarkedRawCardData(ub_RawData const rawdata):
+    explicit ub_MarkedRawCardData(ub_RawData const& rawdata):
         ub_MarkedRawDataBlock<HEADER,TRAILER>(rawdata),
      _markedRawChannelsData {},_isValid {isValid()},_isFullyDissected { _dissectChannels ?canFullyDissect():false } {}
     //_markedRawChannelsData{},_isValid{isValid()},_isFullyDissected{false}{}
@@ -56,7 +56,12 @@ public:
     };
 
     ub_MarkedRawCardData() = delete;
-    ub_MarkedRawCardData& operator=(ub_MarkedRawCardData const &) = delete;
+    
+    ub_MarkedRawCardData ( ub_MarkedRawCardData const& ) = delete;
+    ub_MarkedRawCardData ( ub_MarkedRawCardData && ) = default;
+    ub_MarkedRawCardData& operator= ( ub_MarkedRawCardData const& ) = delete;
+    ub_MarkedRawCardData& operator= ( ub_MarkedRawCardData  && ) = delete;
+
 
     void decompressChannels() throw(datatypes_exception);
     void dissectChannels() throw(datatypes_exception);
@@ -135,7 +140,7 @@ std::string ub_MarkedRawCardData<CHANN, HEADER,TRAILER>::debugInfo()const noexce
 
     os << " *Found " << std::dec << getChannels().size() << " channels." << std::endl;
     
-    for(auto chan : getChannels())
+    for(auto const& chan : getChannels())
         os << chan.debugInfo();
          
     // os <<  ub_MarkedRawDataBlock::debugInfo();

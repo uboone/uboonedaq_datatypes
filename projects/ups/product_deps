@@ -3,7 +3,7 @@
 
 # note that major version number should match VERSION in products/datatypes/constants.h
 
-parent uboonedaq_datatypes   v6_04_00
+parent uboonedaq_datatypes   v6_05_00
 defaultqual     e6
 
 # These optional lines define the installed directories where headers,                                                                                                                                                                       

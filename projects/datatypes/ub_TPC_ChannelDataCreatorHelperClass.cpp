@@ -13,11 +13,11 @@ template<>
 void ub_ChannelDataCreatorHelperClass<ub_TPC_ChannelData_v6>::populateChannelDataVector(std::vector<ub_TPC_ChannelData_v6> & channelDataVector)
 {
     std::size_t tpc_card_channel_count = 64;
-    ub_RawData curr_rawData {_rawData};
+    ub_RawData curr_rawData {_rawData.begin(),_rawData.end()};
     uint16_t curr_header {0x4000},curr_trailer {0x5000};
     
     std::vector<ub_TPC_ChannelData_v6> retValue;
-    retValue.reserve(tpc_card_channel_count);
+    //retValue.reserve(tpc_card_channel_count); //FIXME:GAL
     try{
     for(size_t channel=0; channel < tpc_card_channel_count; channel++,curr_trailer++)
     {
@@ -43,7 +43,7 @@ void ub_ChannelDataCreatorHelperClass<ub_TPC_ChannelData_v6>::populateChannelDat
             {
                 ub_RawData data {curr_rawData.begin(),curr_position+1};
                 
-                retValue.emplace_back( data );
+                retValue.push_back(data);
                 
                 curr_rawData=ub_RawData {curr_position+1,curr_rawData.end()};
                 

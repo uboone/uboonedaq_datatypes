@@ -15,7 +15,7 @@ class ub_PMT_CardData_v6 final: public ub_MarkedRawCardData<ub_PMT_ChannelData_v
 public:
     typedef ub_CrateHeader_v6 ub_CrateHeader;
 
-    ub_PMT_CardData_v6(ub_RawData const rawdata);
+    ub_PMT_CardData_v6(ub_RawData const& rawdata);
 
     bool compare(ub_PMT_CardData_v6 const& card_data,bool do_rethrow=false) const throw(datatypes_exception);
     bool operator==(ub_PMT_CardData_v6 const& card_data) const;
@@ -31,6 +31,8 @@ public:
     uint32_t getTrigFrameMod16() const noexcept;
     uint32_t getTrigSample() const noexcept;
     uint32_t getTrigFrame() const noexcept;
+
+    ub_PMT_CardData_v6 ( ub_PMT_CardData_v6  && ) = default;
     
     static constexpr auto typeName="PMT";
 };

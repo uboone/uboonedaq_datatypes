@@ -12,10 +12,8 @@ namespace datatypes {
 class ub_TPC_ChannelData_v6 final: public ub_MarkedRawChannelData
 {
 public:
-    ub_TPC_ChannelData_v6(ub_RawData const rawdata);
-    
-    ub_TPC_ChannelData_v6() = delete;
-    ub_TPC_ChannelData_v6& operator=(ub_TPC_ChannelData_v6 const &) = delete;
+    ub_TPC_ChannelData_v6(ub_RawData const& rawdata);
+    ub_TPC_ChannelData_v6 ( ub_TPC_ChannelData_v6 && ) = default;
 };
 
 }  // end of namespace datatypes

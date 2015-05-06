@@ -17,14 +17,14 @@ template <typename CARD> class ub_MarkedRawCrateData :
 public:
     template <typename MRCD> using dissector_type = ub_CardDataCreatorHelperClass<MRCD>;
 
-    explicit ub_MarkedRawCrateData(ub_RawData const rawdata):
+    explicit ub_MarkedRawCrateData(ub_RawData const& rawdata):
         ub_MarkedRawDataBlock<ub_XMITEventHeader,ub_XMITEventTrailer>(rawdata),
         _initializeHeaderFromRawData {false},
         _markedRawCardsData {},_dissectableDataSize {0},
         _crateHeader {nullptr},_isValid {isValid()},
         _isFullyDissected {canFullyDissect()}{}
 
-    explicit ub_MarkedRawCrateData(ub_RawData const rawdata,bool initializeHeaderFromRawData):
+    explicit ub_MarkedRawCrateData(ub_RawData const& rawdata,bool initializeHeaderFromRawData):
         ub_MarkedRawDataBlock<ub_XMITEventHeader,ub_XMITEventTrailer>(rawdata),
         _initializeHeaderFromRawData {initializeHeaderFromRawData},
         _markedRawCardsData {},_dissectableDataSize {0},
@@ -43,10 +43,13 @@ public:
     }
 
     ub_MarkedRawCrateData() = delete;
+    ub_MarkedRawCrateData ( ub_MarkedRawCrateData const& ) = delete;
+    ub_MarkedRawCrateData ( ub_MarkedRawCrateData && ) = default;
+    ub_MarkedRawCrateData& operator= ( ub_MarkedRawCrateData const& ) = delete;
+    ub_MarkedRawCrateData& operator= ( ub_MarkedRawCrateData && ) = delete;
+    
     ~ub_MarkedRawCrateData(){_crateHeader.release(); _markedRawCardsData.clear();}
 
-    //ub_MarkedRawCrateData(ub_MarkedRawCrateData const &) = delete;
-    ub_MarkedRawCrateData& operator=(ub_MarkedRawCrateData const &) = delete;
     size_t getSizeOfCardsData() const noexcept{
         return data().size();
     };
@@ -210,7 +213,7 @@ std::string ub_MarkedRawCrateData<CARD>::debugInfo()const noexcept
 
     os << " *Found " << std::dec << getCards().size() << " cards." << std::endl;  
     
-    for(auto card : getCards())
+    for(auto const& card : getCards())
 	os << "Card " << ++idx << std::endl << card.debugInfo();
 
     //os <<  ub_MarkedRawDataBlock::debugInfo();

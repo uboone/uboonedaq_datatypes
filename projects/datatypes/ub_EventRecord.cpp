@@ -59,7 +59,7 @@ std::size_t ub_EventRecord::getFragmentCount() const noexcept
 
 void ub_EventRecord::addFragment(raw_fragment_data_t& fragment) throw(datatypes_exception)
 {
-    ub_CrateHeader_v6 const & crate_header= ub_CrateHeader_v6::getHeaderFromFragment(ub_RawData(fragment.begin(),fragment.end()));
+    crate_header_t const & crate_header= crate_header_t::getHeaderFromFragment(ub_RawData(fragment.begin(),fragment.end()));
 
     int crate_number {crate_header.crate_number};
     uint8_t crate_type {crate_header.crate_type};
@@ -67,8 +67,10 @@ void ub_EventRecord::addFragment(raw_fragment_data_t& fragment) throw(datatypes_
     
     if(crate_type == 2)
     {
-        _pmt_seb_map.emplace(crate_number,std::make_tuple(
-                                  raw_fragment_data_t(),std::unique_ptr<ub_RawData>(nullptr),std::unique_ptr<pmt_crate_data_t>(nullptr)));
+        _pmt_seb_map.emplace( crate_number,std::make_tuple(
+                                  raw_fragment_data_t(),
+                                  std::unique_ptr<ub_RawData>(nullptr),
+                                  std::unique_ptr<pmt_crate_data_t>(nullptr)));
 
         std::get<0>(_pmt_seb_map[crate_number]).swap(fragment);
         
@@ -76,13 +78,13 @@ void ub_EventRecord::addFragment(raw_fragment_data_t& fragment) throw(datatypes_
 
         artdaq_fragment_header const* artdaq_header= reinterpret_cast<artdaq_fragment_header const*>(&* tpm_fragment.begin());
         ub_RawData data(tpm_fragment.begin(),tpm_fragment.end());
-        ub_CrateHeader_v6 const & crate_header= ub_CrateHeader_v6::getHeaderFromFragment(data);
+        crate_header_t const & crate_header= crate_header_t::getHeaderFromFragment(data);
 
         auto raw_data = std::make_unique<ub_RawData>(tpm_fragment.begin()+artdaq_header->metadata_word_count+
                         artdaq_fragment_header::num_words(),tpm_fragment.end());
         std::get<1>(_pmt_seb_map[crate_number]).swap(raw_data);
         auto crate_data = std::make_unique<pmt_crate_data_t>(*std::get<1>(_pmt_seb_map[crate_number]));
-        auto header=std::make_unique<ub_CrateHeader_v6>(crate_header);
+        auto header=std::make_unique<crate_header_t>(crate_header);
         crate_data->crateHeader().swap(header);
         std::get<2>(_pmt_seb_map[crate_number]).swap(crate_data);
         getGlobalHeader().setNumberOfBytesInRecord(getGlobalHeader().getNumberOfBytesInRecord()+crate_header.size*sizeof(raw_data_type));
@@ -95,7 +97,9 @@ void ub_EventRecord::addFragment(raw_fragment_data_t& fragment) throw(datatypes_
     else
     {
         _tpc_seb_map.emplace(crate_number,std::make_tuple(
-                                 raw_fragment_data_t(),std::unique_ptr<ub_RawData>(nullptr),std::unique_ptr<tpc_crate_data_t>(nullptr)));
+                                 raw_fragment_data_t(),
+                                 std::unique_ptr<ub_RawData>(nullptr),
+                                 std::unique_ptr<tpc_crate_data_t>(nullptr)));
 
         std::get<0>(_tpc_seb_map[crate_number]).swap(fragment);
         
@@ -103,13 +107,13 @@ void ub_EventRecord::addFragment(raw_fragment_data_t& fragment) throw(datatypes_
 
         artdaq_fragment_header const* artdaq_header= reinterpret_cast<artdaq_fragment_header const*>(&* tpm_fragment.begin());
         ub_RawData data(tpm_fragment.begin(),tpm_fragment.end());
-        ub_CrateHeader_v6 const & crate_header= ub_CrateHeader_v6::getHeaderFromFragment(data);
+        crate_header_t const & crate_header= crate_header_t::getHeaderFromFragment(data);
 
         auto raw_data = std::make_unique<ub_RawData>(tpm_fragment.begin()+artdaq_header->metadata_word_count+
                         artdaq_fragment_header::num_words(),tpm_fragment.end());
         std::get<1>(_tpc_seb_map[crate_number]).swap(raw_data);
         auto crate_data = std::make_unique<tpc_crate_data_t>(*std::get<1>(_tpc_seb_map[crate_number]));
-        auto header=std::make_unique<ub_CrateHeader_v6>(crate_header);
+        auto header=std::make_unique<crate_header_t>(crate_header);
         std::get<2>(_tpc_seb_map[crate_number]).swap(crate_data);
         getGlobalHeader().setNumberOfBytesInRecord(getGlobalHeader().getNumberOfBytesInRecord()+crate_header.size*sizeof(raw_data_type));
         getGlobalHeader().setEventNumberCrate (crate_header.event_number);
@@ -139,9 +143,9 @@ const ub_EventRecord::pmt_map_t ub_EventRecord::getPMTSEBMap() const throw(datat
 void ub_EventRecord::getFragments(fragment_references_t& fragments) const throw(datatypes_exception)
 {
     for(auto& tpc : _tpc_seb_map)
-        fragments.emplace_back(&std::get<0>(tpc.second));
+        fragments.emplace_back(&std::get<raw_fragment_data_t>(tpc.second));
     for(auto& pmt : _pmt_seb_map)
-        fragments.emplace_back(&std::get<0>(pmt.second));
+        fragments.emplace_back(&std::get<raw_fragment_data_t>(pmt.second));
 }
 
 void ub_EventRecord::markAsIncompleteEvent() noexcept
@@ -174,7 +178,7 @@ void ub_EventRecord::updateDTHeader() throw (datatypes_exception)
                 //+ ADD GLOBAL HEADER SIZES
                 +ub_event_trailer_wordcount;
 
-        _bookkeeping_header.event_format_version= gov::fnal::uboone::datatypes::constants::VERSION;
+        _bookkeeping_header.event_format_version= gov::fnal::uboone::datatypes::constants::DATATYPES_VERSION;
 
         _bookkeeping_header.is_event_complete=true;
     } catch(datatypes_exception &ex) {
@@ -260,19 +264,19 @@ std::string ub_EventRecord::debugInfo()const noexcept {
     os << _beam_record.debugInfo() << std::endl;
 
     os << "\nTPC fragments";
-    for(auto& tpc : _tpc_seb_map){
-        raw_fragment_data_t const& tpm_fragment=std::get<0>(tpc.second);
+    for(auto const& tpc : _tpc_seb_map){
+        raw_fragment_data_t const& tpm_fragment=std::get<raw_fragment_data_t>(tpc.second);
         ub_RawData data(tpm_fragment.begin(),tpm_fragment.end());
-        os << "\n" <<  ub_CrateHeader_v6::getHeaderFromFragment(data).debugInfo();
-        os << "\n" <<  std::get<2>(tpc.second)->debugInfo();
+        os << "\n" <<  crate_header_t::getHeaderFromFragment(data).debugInfo();
+        os << "\n" <<  std::get<std::unique_ptr<tpc_crate_data_t>>(tpc.second)->debugInfo();
     }
 
     os << "\nPMT fragments";
-    for(auto& pmt : _pmt_seb_map){
-        raw_fragment_data_t const& tpm_fragment=std::get<0>(pmt.second);
+    for(auto const& pmt : _pmt_seb_map){
+        raw_fragment_data_t const& tpm_fragment=std::get<raw_fragment_data_t>(pmt.second);
         ub_RawData data(tpm_fragment.begin(),tpm_fragment.end());
-        os << "\n" <<  ub_CrateHeader_v6::getHeaderFromFragment(data).debugInfo();
-        os << "\n" <<  std::get<2>(pmt.second)->debugInfo();
+        os << "\n" <<  crate_header_t::getHeaderFromFragment(data).debugInfo();
+        os << "\n" <<  std::get<std::unique_ptr<pmt_crate_data_t>>(pmt.second)->debugInfo();
     }
 
     return os.str();
