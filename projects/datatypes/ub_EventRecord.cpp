@@ -135,6 +135,52 @@ const ub_EventRecord::pmt_map_t ub_EventRecord::getPMTSEBMap() const throw(datat
     return retMap;
 }
 
+void ub_EventRecord::clearPMTSEBMap(int cratemask) 
+{
+  ///
+  /// Deletes crates from memory based on cratemask
+  ///
+  /// E.g. cratemask = 0 -> Delete all crates
+  ///      cratemask = 0x03 -> Keep crates zero and 1  (b0000011)
+  auto itr = _pmt_seb_map.begin();
+  while(itr != _pmt_seb_map.end())
+  {
+    int crate = itr->first;
+    int cratebit = (1<<crate);
+    if(!(cratebit & cratemask)) {
+      // Erase it.  Fiddle itr before erasing.
+      auto toErase = itr;
+      ++itr;
+      _pmt_seb_map.erase(toErase);
+    } else {
+      ++itr;
+    }
+  }
+}
+
+void ub_EventRecord::clearTPCSEBMap(int cratemask) 
+{
+  ///
+  /// Deletes crates from memory based on cratemask
+  ///
+  /// E.g. cratemask = 0 -> Delete all crates
+  ///      cratemask = 0x03 -> Keep crates zero and 1  (b0000011)
+  auto itr = _tpc_seb_map.begin();
+  while(itr != _tpc_seb_map.end())
+  {
+    int crate = itr->first;
+    int cratebit = (1<<crate);
+    if(!(cratebit & cratemask)) {
+      // Erase it.  Fiddle itr before erasing.
+      auto toErase = itr;
+      ++itr;
+      _tpc_seb_map.erase(toErase);
+    } else {
+      ++itr;
+    }
+  }
+}
+
 
 void ub_EventRecord::getFragments(fragment_references_t& fragments) const throw(datatypes_exception)
 {
@@ -245,6 +291,32 @@ bool ub_EventRecord::compare(ub_EventRecord const& event_record, bool do_rethrow
     return true;
 }
 
+#ifdef __GNUG__
+#include <cstdlib>
+#include <memory>
+#include <cxxabi.h>
+
+std::string demangle(const char* name) {
+
+    int status = -4; // some arbitrary value to eliminate the compiler warning
+
+    // enable c++11 by passing the flag -std=c++11 to g++
+    std::unique_ptr<char, void(*)(void*)> res {
+        abi::__cxa_demangle(name, NULL, NULL, &status),
+        std::free
+    };
+
+    return (status==0) ? res.get() : name ;
+}
+
+#else
+
+// does nothing if not g++
+std::string demangle(const char* name) {
+    return name;
+}
+
+#endif
 
 std::string ub_EventRecord::debugInfo()const noexcept {
     std::ostringstream os;
@@ -262,6 +334,12 @@ std::string ub_EventRecord::debugInfo()const noexcept {
     os << "\nTPC fragments";
     for(auto& tpc : _tpc_seb_map){
         raw_fragment_data_t const& tpm_fragment=std::get<0>(tpc.second);
+        os << "tpc.second is type ";
+        os  << demangle(typeid(tpc.second));
+        os << "\n";
+        os << "get(tpc.second) is type ";
+        os << demangle(typeid(tpc.second));
+        os << "\n";
         ub_RawData data(tpm_fragment.begin(),tpm_fragment.end());
         os << "\n" <<  ub_CrateHeader_v6::getHeaderFromFragment(data).debugInfo();
         os << "\n" <<  std::get<2>(tpc.second)->debugInfo();

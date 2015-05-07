@@ -82,6 +82,10 @@ public:
     //do your custom out-of-class specialization if needed
     template <typename EVENTFRAGMENTPTR_TYPE>
             void releaseFragmentsAs( EVENTFRAGMENTPTR_TYPE*  );
+    
+    // For special case only; use with caution
+    void clearTPCSEBMap(int crateMask=0);
+    void clearPMTSEBMap(int crateMask=0);
 private:
     void  getFragments(fragment_references_t& fragments) const throw(datatypes_exception);
 private:
