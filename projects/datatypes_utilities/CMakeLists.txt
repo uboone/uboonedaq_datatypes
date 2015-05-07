@@ -2,7 +2,7 @@
 project(udata_utilities)
 
 #this is just so we have a nice sample code
-set_source_files_properties(eventReader.cc PROPERTIES COMPILE_FLAGS "-Wno-unused-variable")
+set_source_files_properties(eventReader.cc PROPERTIES COMPILE_FLAGS "-Wno-unused-variable -Wno-unused-but-set-variable")
 
 add_executable(dumpEvents dumpEvents.cc)
 

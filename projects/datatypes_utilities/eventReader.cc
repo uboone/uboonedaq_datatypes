@@ -30,8 +30,11 @@ int main(int argc, char **argv)
   
   std::ifstream is ( fileName , std::ios::binary | std::ios::in);
   int i{0};
-  try{while(true){
+  //try{
+  while(true){
 
+
+      std::cout << "Test..." << std::endl;
       
     /*
       Boost Readin:
@@ -43,8 +46,11 @@ int main(int argc, char **argv)
       be contained within it.
     */
     boost::archive::binary_iarchive ia ( is );      
+      std::cout << "Test..." << std::endl;
     ub_EventRecord  eventRecord;
+      std::cout << "Test..." << std::endl;
     ia >> eventRecord;
+      std::cout << "Test..." << std::endl;
     std::cout << "+++++ Event: " << ++i << "\n";
 
     /*
@@ -85,10 +91,10 @@ int main(int argc, char **argv)
     */
 
     //This is a range based for loop, where we loop over the elements of the map.
-    for(auto const& tpc : eventRecord.getTPCSEBMap()){
+    for(auto const& seb : eventRecord.getTPCSEBMap()){
 
-      int tpc_crate_num = tpc.first;
-      tpc_crate_data_t const& tpc_crate = tpc.second;
+      int tpc_seb_num = seb.first;
+      tpc_crate_data_t const& tpc_crate = seb.second;
 
       //Note, you can print out the info for that tpc crate!
       std::cout << tpc_crate.debugInfo();
@@ -100,6 +106,12 @@ int main(int argc, char **argv)
       auto const& tpc_crate_header = tpc_crate.header();
       auto const& tpc_crate_trailer = tpc_crate.trailer();
 
+      //Special to the crate, there is a special header that the DAQ attaches. You can access this
+      //like so. The type here is a unique ptr to a ub_CrateHeader_v6 struct. That has useful info
+      //like the local host time, which may or may not be set properly right now...
+      auto const& tpc_crate_DAQ_header = tpc_crate.crateHeader();
+      ub_LocalHostTime this_time = tpc_crate_DAQ_header->local_host_time;
+      
       //The Crate Data is split up into Cards. You use the "getCards()" command to get access to
       //each of those. Note that calling this function will dissect the data if it has not already
       //been dissected (debugInfo() calls getCards()). You can do a look over the cards like so:
@@ -146,7 +158,8 @@ int main(int argc, char **argv)
     
 
     
-  }}catch(...){
-  std::cout << "Done.";
   }
+  //}catch(...){
+  //std::cout << "Done.";
+  //}
 }
