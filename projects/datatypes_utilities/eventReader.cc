@@ -30,12 +30,10 @@ int main(int argc, char **argv)
   
   std::ifstream is ( fileName , std::ios::binary | std::ios::in);
   int i{0};
-  //try{
+  try{
   while(true){
 
 
-      std::cout << "Test..." << std::endl;
-      
     /*
       Boost Readin:
       This is how you read in an event from a file. Note, you MUST make a 
@@ -46,11 +44,8 @@ int main(int argc, char **argv)
       be contained within it.
     */
     boost::archive::binary_iarchive ia ( is );      
-      std::cout << "Test..." << std::endl;
     ub_EventRecord  eventRecord;
-      std::cout << "Test..." << std::endl;
     ia >> eventRecord;
-      std::cout << "Test..." << std::endl;
     std::cout << "+++++ Event: " << ++i << "\n";
 
     /*
@@ -159,7 +154,8 @@ int main(int argc, char **argv)
 
     
   }
-  //}catch(...){
-  //std::cout << "Done.";
-  //}
+  }
+  catch(...){
+    std::cout << "Done.";
+  }
 }
