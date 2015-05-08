@@ -32,16 +32,12 @@ cet_cmake_env()
 
 cet_set_compiler_flags(DIAGS VIGILANT WERROR NO_UNDEFINED EXTRA_FLAGS -pedantic)
 
-cet_have_qual( e6 )
-
-if ( ${CET_HAVE_QUAL} )
-  cet_add_compiler_flags(CXX -std=c++1y -D_GLIBCXX_USE_NANOSLEEP)
-endif()
+cet_add_compiler_flags(CXX -std=c++1y -D_GLIBCXX_USE_NANOSLEEP)
 
 cet_report_compiler_flags()
 
 # these are minimum required versions, not the actual product versions
-find_ups_product( cetbuildtools v4_04_01 )
+find_ups_product( cetbuildtools v4_09_02 )
 
 find_ups_boost( v1_56_0  serialization )
 

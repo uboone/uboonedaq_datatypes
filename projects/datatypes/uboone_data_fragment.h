@@ -13,24 +13,24 @@
 typedef uint16_t raw_data_type;
 
 template<typename TYPE, template<typename,typename> class CONTAINER,  typename ALLOC> 
-class data_containter_wrap final: public CONTAINER<TYPE,ALLOC> {
+class data_container_wrap final: public CONTAINER<TYPE,ALLOC> {
 public:
-explicit data_containter_wrap():CONTAINER<TYPE,ALLOC>(0){}
-explicit data_containter_wrap(std::size_t size):CONTAINER<TYPE,ALLOC>(size){}
-explicit data_containter_wrap(std::size_t size, const TYPE& value):CONTAINER<TYPE,ALLOC>(size,value){}
+explicit data_container_wrap():CONTAINER<TYPE,ALLOC>(0){}
+explicit data_container_wrap(std::size_t size):CONTAINER<TYPE,ALLOC>(size){}
+explicit data_container_wrap(std::size_t size, const TYPE& value):CONTAINER<TYPE,ALLOC>(size,value){}
 
-data_containter_wrap(const data_containter_wrap&) = delete;
-data_containter_wrap(data_containter_wrap&&) = default;
-data_containter_wrap& operator=(const data_containter_wrap&) & = delete;
-data_containter_wrap& operator=(data_containter_wrap&&) & = delete;
+data_container_wrap(const data_container_wrap&) = delete;
+data_container_wrap(data_container_wrap&&) = default;
+data_container_wrap& operator=(const data_container_wrap&) & = delete;
+data_container_wrap& operator=(data_container_wrap&&) & = delete;
 
 };
 
 #if DO_STDVEC == 1
-template <class TYPE,class ALLOC = std::allocator<TYPE>> using raw_data_containter = data_containter_wrap<TYPE, std::vector, ALLOC>;
+template <class TYPE,class ALLOC = std::allocator<TYPE>> using raw_data_container = data_container_wrap<TYPE, std::vector, ALLOC>;
 #else
 #include "share/QuickVec.hh"
-template <class TYPE,class ALLOC = std::allocator<TYPE>> using raw_data_containter = data_containter_wrap<TYPE, QuickVec, ALLOC>;
+template <class TYPE,class ALLOC = std::allocator<TYPE>> using raw_data_container = data_container_wrap<TYPE, QuickVec, ALLOC>;
 #endif
 
 
@@ -48,7 +48,7 @@ constexpr uint32_t UBOONE_ETLR={0x974E974E};
 
 
 
-typedef raw_data_containter<raw_data_type> raw_fragment_t;
+typedef raw_data_container<raw_data_type> raw_fragment_t;
 
 class datatypes_exception : public std::exception
 {

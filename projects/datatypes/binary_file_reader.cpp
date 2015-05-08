@@ -9,7 +9,7 @@
 
 using namespace gov::fnal::uboone::datatypes;
 
-bool readFile(std::string const& fileName,raw_data_containter<raw_data_type> & retBuff)
+bool readFile(std::string const& fileName,raw_data_container<raw_data_type> & retBuff)
 {
     std::ostringstream os;
 
@@ -37,7 +37,7 @@ bool readFile(std::string const& fileName,raw_data_containter<raw_data_type> & r
 
 std::streamsize readfakedata(std::string const& fileName,  char* buffer, std::streamsize size )
 {
-  raw_data_containter<raw_data_type> dma_data(0);
+  raw_data_container<raw_data_type> dma_data(0);
   
    if(!readFile(fileName,dma_data))
         return 0;
