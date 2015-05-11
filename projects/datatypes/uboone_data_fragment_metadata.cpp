@@ -38,6 +38,7 @@ void DissectorFactory::registerDissector(std::string const& name, uint8_t const&
 
 crate_header_t DissectorFactory::buildCrateHeaderFromRawData(std::string const& name, uint8_t const& version, ub_RawData const& rawdata, bool initializeHeaderFromRawData)
 {
+    UNUSED(version);
     auto result = _dissectors.find(name);
     assert( result != _dissectors.end() ); 
     assert(result->second.first<=version); 

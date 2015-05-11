@@ -18,6 +18,9 @@ typedef ub_TPC_CardHeader_v6  card_header_t;
 typedef ub_PMT_CrateData_v6   pmt_crate_data_t;
 typedef ub_TPC_CrateData_v6   tpc_crate_data_t;
 
+typedef ub_PMT_CardData_v6   pmt_card_data_t;
+typedef ub_TPC_CardData_v6   tpc_card_data_t;
+
 typedef ub_TPC_CrateData_v6   crate_data_t;
 
 typedef ub_CrateHeader_v6     crate_header_t;

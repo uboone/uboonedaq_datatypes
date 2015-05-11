@@ -17,10 +17,9 @@ void ub_ChannelDataCreatorHelperClass<ub_PMT_ChannelData_v6>::populateChannelDat
     uint16_t curr_header {0x4000}, curr_trailer {0xc000};
     
     std::vector<ub_PMT_ChannelData_v6> retValue;
-    //retValue.reserve(pmt_card_channel_count);//FIXME:GAL
-    UNUSED(pmt_card_channel_count);
+    retValue.reserve(pmt_card_channel_count);
+    
     try{
-    {
         if(*curr_rawData.begin()!=curr_header)
         {
             std::stringstream ss;
@@ -52,7 +51,6 @@ void ub_ChannelDataCreatorHelperClass<ub_PMT_ChannelData_v6>::populateChannelDat
                 break;
             }
         }
-    }
     channelDataVector.swap(retValue);
     }catch(std::exception& e){
          std::cerr << "Caught exception in ub_PMT_ChannelDataCreatorHelperClass::populateChannelDataVector() Message: " <<e.what() << std::endl;

@@ -14,6 +14,11 @@ ub_EventRecord::ub_EventRecord()
      _beam_record() {
 }
 
+void ub_EventRecord::setCrateSerializationMask(uint16_t mask) noexcept
+{
+    _crate_serialization_mask.store(mask);
+}
+
 ub_EventRecord::~ub_EventRecord()
 {
     for(auto& pmt : _pmt_seb_map)
@@ -139,13 +144,23 @@ const ub_EventRecord::pmt_map_t ub_EventRecord::getPMTSEBMap() const throw(datat
     return retMap;
 }
 
+#define CHECK_BIT(var,pos) ((var) & (1<<(pos)))
 
 void ub_EventRecord::getFragments(fragment_references_t& fragments) const throw(datatypes_exception)
 {
+    uint16_t serialization_mask=_crate_serialization_mask.load();
+
     for(auto& tpc : _tpc_seb_map)
-        fragments.emplace_back(&std::get<raw_fragment_data_t>(tpc.second));
+    {
+        if(CHECK_BIT(serialization_mask,tpc.first))
+            fragments.emplace_back(&std::get<raw_fragment_data_t>(tpc.second));
+    }
+    
     for(auto& pmt : _pmt_seb_map)
-        fragments.emplace_back(&std::get<raw_fragment_data_t>(pmt.second));
+    {
+        if(CHECK_BIT(serialization_mask,pmt.first))
+            fragments.emplace_back(&std::get<raw_fragment_data_t>(pmt.second));
+    }    
 }
 
 void ub_EventRecord::markAsIncompleteEvent() noexcept

@@ -3,6 +3,7 @@
 
 
 #include <assert.h>
+#include <atomic>
 #include "evttypes.h"
 #include "constants.h"
 #include "boostSerialization.h"
@@ -29,7 +30,7 @@ using namespace gov::fnal::uboone::datatypes;
 class ub_EventRecord final {
 
 public:
-    typedef raw_data_containter<raw_data_type>   raw_fragment_data_t;
+    typedef raw_data_container<raw_data_type>   raw_fragment_data_t;
     typedef raw_fragment_data_t::value_type      fragment_value_type_t;
 
     typedef std::tuple<raw_fragment_data_t,
@@ -60,6 +61,7 @@ public:
 
     std::string debugInfo()const noexcept;
 
+    
 
     bool compare(ub_EventRecord const& event_record, bool do_rethrow) const throw(datatypes_exception);
 
@@ -73,7 +75,8 @@ public:
     void setGPSData(ub_GPS const& gps_data) noexcept;
     void setBeamRecord(ub_BeamRecord const& beam_record) noexcept;
     void markAsIncompleteEvent() noexcept;
-
+    void setCrateSerializationMask(uint16_t mask) noexcept;
+    
     ub_GPS const& GPSData() const noexcept;
     ub_TriggerData const& triggerData()const noexcept;
     ub_BeamRecord const& beamRecord()const noexcept;
@@ -94,25 +97,34 @@ private:
     ub_TriggerData     _trigger_data;
     ub_GPS             _gps_data;
     ub_BeamRecord      _beam_record;
-
+    
+    mutable std::atomic<uint16_t> _crate_serialization_mask={0xFFFF};
+    
 #define UNUSED(x) (void)(x)
     friend class boost::serialization::access;
     template<class Archive>
     void save(Archive & ar, const unsigned int version) const
     {
         UNUSED(version);
-
         //BEGIN SERIALIZE RAW EVENT FRAGMENT DATA
         fragment_references_t fragments;
         getFragments(fragments);
-        assert(_bookkeeping_header.event_fragment_count==fragments.size());
-        assert(_bookkeeping_header.raw_event_fragments_wordcount==std::accumulate(
+        
+        auto bookkeeping_header=_bookkeeping_header;
+        
+        if(_bookkeeping_header.event_fragment_count!=fragments.size()){
+            bookkeeping_header.is_event_complete=false;
+            bookkeeping_header.event_fragment_count=fragments.size();
+        }
+        
+        assert(bookkeeping_header.event_fragment_count==fragments.size());
+        assert(bookkeeping_header.raw_event_fragments_wordcount==std::accumulate(
         fragments.begin(),fragments.end(),0u,[](auto total, auto const& fragment) {
             return total+fragment->size()*sizeof(fragment_value_type_t);
         }));
 
         // write bookkeeping info
-        ar.save_binary(&_bookkeeping_header,ub_event_header_size);
+        ar.save_binary(&bookkeeping_header,ub_event_header_size);
 
         // write raw fragmetns with crate headers
         for(auto const& fragment : fragments) {
@@ -141,7 +153,6 @@ private:
         //BEGIN SERIALIZE RAW EVENT FRAGMENT DATA
         // read bookkeeping info
         ar.load_binary(&_bookkeeping_header,ub_event_header_size);
-        
         if(_bookkeeping_header.mark_E974!=UBOONE_EHDR)
             throw datatypes_exception("Invalid header marker");
             

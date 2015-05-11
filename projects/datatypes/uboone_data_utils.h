@@ -75,7 +75,7 @@ bool ub_RawDataBlock< CONTAINER,  TYPE>::compare(ub_RawDataBlock const& data_blo
 
 }
 
-typedef ub_RawDataBlock< raw_data_containter,raw_data_type> ub_RawData;
+typedef ub_RawDataBlock< raw_data_container,raw_data_type> ub_RawData;
 
 #define STRTAB "            "
 
@@ -83,7 +83,7 @@ std::string demangle(const std::type_info  &type_info) noexcept;
 std::string debugInfo(ub_RawData const& data) noexcept;
 std::string debugInfoShort(ub_RawData const& data) noexcept;
 
-std::string debugInfoRawData(raw_data_containter<raw_data_type>const& data) noexcept;
+std::string debugInfoRawData(raw_data_container<raw_data_type>const& data) noexcept;
 
 
 template <typename T>
