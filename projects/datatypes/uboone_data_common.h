@@ -2,8 +2,6 @@
 #define _UBOONE_DATATYPES_COMMON_H  1
 
 #include <map>
-#include <cstring>
-#include <sys/time.h>
 
 
 /* These and the following string definitions are crate-type, also
@@ -38,29 +36,6 @@ const std::map<const std::string, SystemDesignator> stringToSystemDesignator
 
 typedef SystemDesignator SystemDesignator_t;
 
-
-struct ub_LocalHostTime
-{
-    uint32_t seb_time_sec;  // Read time on SEB. Added v4. Seconds since the epoch.
-    uint32_t seb_time_usec; //                             Microseconds since the second
-};
-
-struct HasLocalHostTime
-{
-  void copyOut(ub_LocalHostTime& target) noexcept  {update(); target=_myValue; }
-  void copyIn(ub_LocalHostTime const& source) noexcept {_myValue=source;};
-  
-  HasLocalHostTime& update() noexcept {
-     struct timeval t_end;        
-   //update crate header   
-   gettimeofday(&t_end,NULL);
-   _myValue.seb_time_sec=t_end.tv_sec;
-   _myValue.seb_time_usec=t_end.tv_usec;
-   return *this;
-  }
-  
-  ub_LocalHostTime _myValue;
-};
 
 #endif //_UBOONE_DATATYPES_COMMON_H
 

@@ -10,7 +10,6 @@ ub_EventRecord::ub_EventRecord()
      _tpc_seb_map(),
      _pmt_seb_map(),
      _trigger_data(),
-     _gps_data(),
      _beam_record() {
 }
 
@@ -38,27 +37,49 @@ global_header_t& ub_EventRecord::getGlobalHeader() noexcept {
     return _global_header;
 }
 void ub_EventRecord::setTriggerData (ub_TriggerData const& trigger_data) noexcept {
-    _trigger_data = trigger_data;
+     _trigger_data = trigger_data;
 }
-void ub_EventRecord::setGPSData(ub_GPS const& gps_data) noexcept {
-    _gps_data = gps_data;
+
+
+void ub_EventRecord::setGPSTime(ub_GPS_Time const& gps_time) noexcept{
+    _global_header.setGPSTime(gps_time);
 }
+
+void ub_EventRecord::setTriggerBoardClock(ub_TriggerBoardClock const& trigger_board_time) noexcept{
+    _global_header.setTriggerBoardClock(trigger_board_time);
+}
+
+void ub_EventRecord::setLocalHostTime(ub_LocalHostTime const& localhost_time) noexcept{
+    _global_header.setLocalHostTime(localhost_time);
+}
+
 void ub_EventRecord::setBeamRecord(ub_BeamRecord const& beam_record) noexcept {
     _beam_record=beam_record;
 }
-ub_GPS const& ub_EventRecord::GPSData() const noexcept {
-    return _gps_data;
+
+ub_GPS_Time const& ub_EventRecord::GPSTime() const noexcept {
+    return _global_header.getGPSTime();
 }
+
+ub_TriggerBoardClock const& ub_EventRecord::TriggerBoardClock() const noexcept{
+    return _global_header.getTriggerBoardClock();
+}
+
+ub_LocalHostTime const& ub_EventRecord::LocalHostTime() const noexcept{
+    return _global_header.getLocalHostTime();
+}
+    
 ub_TriggerData const& ub_EventRecord::triggerData()const noexcept {
     return _trigger_data;
 }
+
 ub_BeamRecord const& ub_EventRecord::beamRecord()const noexcept {
     return _beam_record;
 }
+
 ub_BeamRecord& ub_EventRecord::beamRecord() noexcept {return _beam_record;}
 
-std::size_t ub_EventRecord::getFragmentCount() const noexcept
-{
+std::size_t ub_EventRecord::getFragmentCount() const noexcept{
   return _pmt_seb_map.size()+_tpc_seb_map.size();
 }
 
@@ -95,9 +116,12 @@ void ub_EventRecord::addFragment(raw_fragment_data_t& fragment) throw(datatypes_
         getGlobalHeader().setNumberOfBytesInRecord(getGlobalHeader().getNumberOfBytesInRecord()+crate_header.size*sizeof(raw_data_type));
         getGlobalHeader().setEventNumberCrate (crate_header.event_number);
             
-        getGlobalHeader().setSeconds(header->gps_time.second);
-        getGlobalHeader().setMicroSeconds(header->gps_time.micro);
-        getGlobalHeader().setNanoSeconds(header->gps_time.nano);        
+        //getGlobalHeader().setSeconds(header->gps_time.second);
+        //getGlobalHeader().setMicroSeconds(header->gps_time.micro);
+        //getGlobalHeader().setNanoSeconds(header->gps_time.nano);
+        getGlobalHeader().setLocalHostTime(header->local_host_time);
+        getGlobalHeader().setTriggerBoardClock(header->trigger_board_time);
+        getGlobalHeader().setGPSTime(header->gps_time);
     }
     else
     {
@@ -274,8 +298,7 @@ std::string ub_EventRecord::debugInfo()const noexcept {
     os << "\n TPC fragment count=" << tpcs.size();
     os << "\n PMT fragment count=" << pmts.size() << std::endl;
     os << _global_header.debugInfo() << std::endl;
-    os << _trigger_data.debugInfo() << std::endl;
-    os << _gps_data.debugInfo() << std::endl;
+    os << _trigger_data.debugInfo() << std::endl;    
     os << _beam_record.debugInfo() << std::endl;
 
     os << "\nTPC fragments";

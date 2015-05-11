@@ -3,7 +3,9 @@
 
 #include <sstream> 
 #include <iostream> 
-#include "uboone_data_utils.h"
+
+#include "constants.h"
+#include "boostSerialization.h"
 
 namespace gov {
 namespace fnal {
@@ -11,33 +13,33 @@ namespace uboone {
 namespace datatypes {
 
 // This struct will be a key in a map, so I must define "<".
-struct ub_TriggerBoardClock final
+class ub_TriggerBoardClock final
 {
+    friend class boost::serialization::access;
+
+    template<class Archive>
+    void serialize(Archive & ar, const unsigned int version){
+        if(version>0)
+            ar & frame & sample & div;
+    }
+    
+public:
+    ub_TriggerBoardClock (uint32_t f, uint16_t s, uint16_t d);
+    bool operator<(const ub_TriggerBoardClock& mk) const;    
+    std::string debugInfo()const noexcept;
+    
+public:
     uint32_t frame=0;
     uint16_t sample=0;
     uint16_t div=0;
-
-    ub_TriggerBoardClock (uint32_t f, uint16_t s, uint16_t d)
-        : frame(f),sample(s),div(d) {  }
-
-    bool operator<(const ub_TriggerBoardClock& mk) const {
-        return (frame < mk.frame);
-    }
     
-    std::string debugInfo()const noexcept
-    {
-      std::ostringstream os;
-      os << "Object " << demangle(typeid(this)) << ".";
-      os << "\n Trigger Clock: (frame,sample,div) " << (int) frame << ", " << (int) sample << ", " << (int) div ;   
-      return os.str();
-    }
 };
 
 
 struct HasTriggerBoardClock
 {
-  void copyOut(ub_TriggerBoardClock& target) noexcept  { target=_myValue; }
-  void copyIn(ub_TriggerBoardClock const& source) noexcept {_myValue=source;};  
+  void copyOut(ub_TriggerBoardClock& target) noexcept;
+  void copyIn(ub_TriggerBoardClock const& source) noexcept;
   ub_TriggerBoardClock _myValue = {0,0,0};
 };
 

@@ -71,16 +71,24 @@ public:
     void updateDTHeader() throw (datatypes_exception);
 
 
-    void setTriggerData (ub_TriggerData const& trigger_data) noexcept;
-    void setGPSData(ub_GPS const& gps_data) noexcept;
-    void setBeamRecord(ub_BeamRecord const& beam_record) noexcept;
-    void markAsIncompleteEvent() noexcept;
-    void setCrateSerializationMask(uint16_t mask) noexcept;
     
-    ub_GPS const& GPSData() const noexcept;
+    void setGPSTime(ub_GPS_Time const& gps_time) noexcept;
+    void setTriggerBoardClock(ub_TriggerBoardClock const& trigger_board_time) noexcept;
+    void setLocalHostTime(ub_LocalHostTime const& localhost_time) noexcept;
+    
+    void setTriggerData (ub_TriggerData const& trigger_data) noexcept;   
+    void setBeamRecord(ub_BeamRecord const& beam_record) noexcept;
+    
+    ub_GPS_Time const& GPSTime() const noexcept;    
+    ub_TriggerBoardClock const& TriggerBoardClock() const noexcept;
+    ub_LocalHostTime const& LocalHostTime() const noexcept;
+    
     ub_TriggerData const& triggerData()const noexcept;
     ub_BeamRecord const& beamRecord()const noexcept;
     ub_BeamRecord& beamRecord() noexcept;
+
+    void markAsIncompleteEvent() noexcept;
+    void setCrateSerializationMask(uint16_t mask) noexcept;
     
     //do your custom out-of-class specialization if needed
     template <typename EVENTFRAGMENTPTR_TYPE>
@@ -94,9 +102,9 @@ private:
     tpc_seb_map_t      _tpc_seb_map;
     pmt_seb_map_t      _pmt_seb_map;
 
-    ub_TriggerData     _trigger_data;
-    ub_GPS             _gps_data;
-    ub_BeamRecord      _beam_record;
+    
+    ub_TriggerData       _trigger_data;
+    ub_BeamRecord        _beam_record;
     
     mutable std::atomic<uint16_t> _crate_serialization_mask={0xFFFF};
     
@@ -138,8 +146,7 @@ private:
         if(version>0)
         {
             ar << _global_header;
-            ar << _trigger_data;
-            ar << _gps_data;
+            //ar << _trigger_data;            
             //ar << _beam_record;
         }
         //this must be the last step
@@ -180,9 +187,8 @@ private:
         if(version>0)
         {
             ar >> _global_header;
-            ar >> _trigger_data;
-            ar >> _gps_data;
-            //ar >> _beam_record;
+            //ar << _trigger_data;            
+            //ar << _beam_record;
         }
 
         //this must be the last step
