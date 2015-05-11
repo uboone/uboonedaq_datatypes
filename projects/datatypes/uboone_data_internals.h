@@ -35,7 +35,7 @@ public:
     static_assert (sizeof(HEADER)%2==0 ,   "CODING BUG: HEADER must have even byte count, fix C++ header files.");
     static_assert (sizeof(TRAILER)%2 == 0, "CODING BUG: TRAILER must have even byte count, fix C++ header files.");
 
-    explicit ub_MarkedRawDataBlock(ub_RawData const rawdata)
+    explicit ub_MarkedRawDataBlock(ub_RawData const& rawdata)
         : _data_markers {
         std::make_tuple(rawdata,
         ub_RawData(rawdata.begin()+size_of<HEADER>(),rawdata.begin()+(rawdata.size()-size_of<TRAILER>())),

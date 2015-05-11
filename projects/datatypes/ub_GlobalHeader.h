@@ -32,7 +32,7 @@ class ub_GlobalHeader final{
     }
     
 public:
-    static const uint8_t DAQ_version_number = gov::fnal::uboone::datatypes::constants::VERSION;
+    static const uint8_t DAQ_version_number = gov::fnal::uboone::datatypes::constants::DATATYPES_VERSION;
     ub_GlobalHeader();
 
     void setRecordType(uint8_t const& type) noexcept;
@@ -94,7 +94,7 @@ private:
 }  // end of namespace gov
 
 // This MACRO must be outside any namespaces.
-BOOST_CLASS_VERSION(gov::fnal::uboone::datatypes::ub_GlobalHeader, gov::fnal::uboone::datatypes::constants::VERSION)
+BOOST_CLASS_VERSION(gov::fnal::uboone::datatypes::ub_GlobalHeader, gov::fnal::uboone::datatypes::constants::DATATYPES_VERSION)
 
 #endif /* #ifndef BOONETYPES_H */
 

@@ -13,11 +13,17 @@
 typedef uint16_t raw_data_type;
 
 template<typename TYPE, template<typename,typename> class CONTAINER,  typename ALLOC> 
-class data_containter_wrap: public CONTAINER<TYPE,ALLOC> {
+class data_containter_wrap final: public CONTAINER<TYPE,ALLOC> {
 public:
 explicit data_containter_wrap():CONTAINER<TYPE,ALLOC>(0){}
 explicit data_containter_wrap(std::size_t size):CONTAINER<TYPE,ALLOC>(size){}
 explicit data_containter_wrap(std::size_t size, const TYPE& value):CONTAINER<TYPE,ALLOC>(size,value){}
+
+data_containter_wrap(const data_containter_wrap&) = delete;
+data_containter_wrap(data_containter_wrap&&) = default;
+data_containter_wrap& operator=(const data_containter_wrap&) & = delete;
+data_containter_wrap& operator=(data_containter_wrap&&) & = delete;
+
 };
 
 #if DO_STDVEC == 1

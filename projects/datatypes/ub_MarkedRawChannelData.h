@@ -13,15 +13,19 @@ namespace datatypes {
 class ub_MarkedRawChannelData : public ub_MarkedRawDataBlock<ub_ChannelHeader,ub_ChannelTrailer>
 {
 public:
-    explicit ub_MarkedRawChannelData(ub_RawData const rawdata);
+    explicit ub_MarkedRawChannelData(ub_RawData const& rawdata);
 
     uint16_t getChannelHeaderWord() const noexcept;
     uint16_t getChannelTrailerWord() const noexcept;
     uint16_t getChannelNumber() const noexcept;
 
     ub_MarkedRawChannelData() = delete;
-    ub_MarkedRawChannelData& operator=(ub_MarkedRawChannelData const &) = delete;
 
+    ub_MarkedRawChannelData ( ub_MarkedRawChannelData const& ) = delete;
+    ub_MarkedRawChannelData ( ub_MarkedRawChannelData && ) = default;
+    ub_MarkedRawChannelData& operator= ( ub_MarkedRawChannelData const& ) = delete;
+    ub_MarkedRawChannelData& operator= ( ub_MarkedRawChannelData  && ) = default;
+    
     std::string debugInfo()const noexcept;
 
 private:

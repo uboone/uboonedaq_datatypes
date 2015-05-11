@@ -65,7 +65,7 @@ struct HasGPSTime
 
 // This MACRO must be outside any namespaces.
 
-BOOST_CLASS_VERSION(gov::fnal::uboone::datatypes::ub_GPS, gov::fnal::uboone::datatypes::constants::VERSION)    
+BOOST_CLASS_VERSION(gov::fnal::uboone::datatypes::ub_GPS, gov::fnal::uboone::datatypes::constants::DATATYPES_VERSION)    
 
 
 #endif //_UBOONE_TYPES_GPSDDATA_H
