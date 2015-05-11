@@ -164,25 +164,25 @@ bool ub_CrateHeader_v6::compare(ub_CrateHeader_v6 const& crate_header,bool do_re
         if(!data_transmission_header.compare(crate_header.data_transmission_header))
             throw datatypes_exception(make_compare_message("ub_CrateHeader_v6", "data_transmission_header", "data_transmission_header","data_transmission_header"));
 
-        if(!complete!=crate_header.complete)
+        if(complete!=crate_header.complete)
             throw datatypes_exception(make_compare_message("ub_CrateHeader_v6", "complete", complete,crate_header.complete));
 
-        if(!crateBits!=crate_header.crateBits)
+        if(crateBits!=crate_header.crateBits)
             throw datatypes_exception(make_compare_message("ub_CrateHeader_v6", "crateBits", to_hex_string(crateBits),to_hex_string(crate_header.crateBits)));
 
-        if(!size!=crate_header.size)
+        if(size!=crate_header.size)
             throw datatypes_exception(make_compare_message("ub_CrateHeader_v6", "size", size,crate_header.size));
 
-        if(!crate_number!=crate_header.crate_number)
+        if(crate_number!=crate_header.crate_number)
             throw datatypes_exception(make_compare_message("ub_CrateHeader_v6", "crate_number", crate_number,crate_header.crate_number));
 
-        if(!card_count!=crate_header.card_count)
+        if(card_count!=crate_header.card_count)
             throw datatypes_exception(make_compare_message("ub_CrateHeader_v6", "card_count", card_count,crate_header.card_count));
 
-        if(!crate_type!=crate_header.crate_type)
+        if(crate_type!=crate_header.crate_type)
             throw datatypes_exception(make_compare_message("ub_CrateHeader_v6", "crate_type", crate_type,crate_header.crate_type));
 
-        if(!event_number!=crate_header.event_number)
+        if(event_number!=crate_header.event_number)
             throw datatypes_exception(make_compare_message("ub_CrateHeader_v6", "event_number", event_number,crate_header.event_number));
 
 #if 0   //FIXME:GAL implement compare memeber functions and uncomment this block         
