@@ -26,8 +26,8 @@ struct ub_GPS final{
 
 
     //public members
-    uint32_t lower;
-    uint32_t upper;
+    uint32_t lower=0;
+    uint32_t upper=0;
 
     uint32_t getLower() const noexcept;
     uint32_t getUpper() const noexcept;
@@ -41,20 +41,33 @@ struct ub_GPS final{
 /**
    This replaces tmub ../gps/symm.h
  **/
-struct ub_GPS_Time final
+class ub_GPS_Time final
 {
+    friend class boost::serialization::access;
+
+    template<class Archive>
+    void serialize(Archive & ar, const unsigned int version){
+        if(version>0)
+            ar & second & micro & nano;
+    }
+
+public:
+    ub_GPS_Time (uint32_t sec, uint32_t usec, uint32_t nano_sec);
+
+    std::string debugInfo()const noexcept;
+    
+public:
     uint32_t second; // seconds since the epoch.
     uint32_t micro;  // microseconds since the second.
     uint32_t nano;  // nanoseconds since the second.  
     
-    std::string debugInfo()const noexcept;
 };
 
 
 struct HasGPSTime 
 {
-  void copyOut(ub_GPS_Time& target) noexcept  { target=_myValue; }
-  void copyIn(ub_GPS_Time const& source) noexcept {_myValue=source;};  
+  void copyOut(ub_GPS_Time& target) noexcept;
+  void copyIn(ub_GPS_Time const& source) noexcept;
   ub_GPS_Time _myValue ={0,0,0};
 };
 
@@ -65,8 +78,8 @@ struct HasGPSTime
 
 // This MACRO must be outside any namespaces.
 
+BOOST_CLASS_VERSION(gov::fnal::uboone::datatypes::ub_GPS_Time, gov::fnal::uboone::datatypes::constants::DATATYPES_VERSION)    
 BOOST_CLASS_VERSION(gov::fnal::uboone::datatypes::ub_GPS, gov::fnal::uboone::datatypes::constants::DATATYPES_VERSION)    
-
 
 #endif //_UBOONE_TYPES_GPSDDATA_H
 

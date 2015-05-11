@@ -23,9 +23,22 @@ std::string ub_GPS::debugInfo()const noexcept {
     return os.str();
 }
 
+
+ub_GPS_Time::ub_GPS_Time (uint32_t sec, uint32_t usec, uint32_t nano_sec)
+:second(sec),micro(usec),nano(nano_sec){}
+
 std::string ub_GPS_Time::debugInfo() const noexcept {
     std::ostringstream os;
     os << "Object " << demangle(typeid(this)) << ".";
     os << "\n GPS time (second,micro,nano) " << second << ", " << micro << ", " << nano;
     return os.str();
 }
+
+
+void HasGPSTime::copyOut(ub_GPS_Time& target) noexcept  {
+target=_myValue; 
+}
+
+void HasGPSTime::copyIn(ub_GPS_Time const& source) noexcept {
+_myValue=source;
+}  
