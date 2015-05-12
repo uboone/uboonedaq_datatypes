@@ -3,6 +3,7 @@
 
 #include <map>
 #include <cstring>
+#include <string>
 #include <sys/time.h>
 
 

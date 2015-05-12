@@ -3,6 +3,7 @@
 
 
 #include <assert.h>
+#include <numeric>
 #include "evttypes.h"
 #include "constants.h"
 #include "boostSerialization.h"
