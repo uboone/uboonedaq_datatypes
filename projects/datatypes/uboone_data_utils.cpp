@@ -75,7 +75,7 @@ std::string debugInfoShort(ub_RawData const& data) noexcept
 
     return os.str();
 }
-std::string debugInfoRawData(raw_data_containter<raw_data_type>const& data) noexcept
+std::string debugInfoRawData(raw_data_container<raw_data_type>const& data) noexcept
 {
     return debugInfo(ub_RawData(data.begin(),data.end()));
 }

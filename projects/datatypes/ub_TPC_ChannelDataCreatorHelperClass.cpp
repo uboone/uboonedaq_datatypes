@@ -17,7 +17,8 @@ void ub_ChannelDataCreatorHelperClass<ub_TPC_ChannelData_v6>::populateChannelDat
     uint16_t curr_header {0x4000},curr_trailer {0x5000};
     
     std::vector<ub_TPC_ChannelData_v6> retValue;
-    //retValue.reserve(tpc_card_channel_count); //FIXME:GAL
+    retValue.reserve(tpc_card_channel_count);
+    
     try{
     for(size_t channel=0; channel < tpc_card_channel_count; channel++,curr_trailer++)
     {

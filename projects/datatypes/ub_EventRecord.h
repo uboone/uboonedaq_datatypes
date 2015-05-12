@@ -4,6 +4,7 @@
 
 #include <assert.h>
 #include <numeric>
+#include <atomic>
 #include "evttypes.h"
 #include "constants.h"
 #include "boostSerialization.h"
@@ -30,7 +31,7 @@ using namespace gov::fnal::uboone::datatypes;
 class ub_EventRecord final {
 
 public:
-    typedef raw_data_containter<raw_data_type>   raw_fragment_data_t;
+    typedef raw_data_container<raw_data_type>   raw_fragment_data_t;
     typedef raw_fragment_data_t::value_type      fragment_value_type_t;
 
     typedef std::tuple<raw_fragment_data_t,
@@ -61,6 +62,7 @@ public:
 
     std::string debugInfo()const noexcept;
 
+    
 
     bool compare(ub_EventRecord const& event_record, bool do_rethrow) const throw(datatypes_exception);
 
@@ -70,23 +72,29 @@ public:
     void updateDTHeader() throw (datatypes_exception);
 
 
-    void setTriggerData (ub_TriggerData const& trigger_data) noexcept;
-    void setGPSData(ub_GPS const& gps_data) noexcept;
+    
+    void setGPSTime(ub_GPS_Time const& gps_time) noexcept;
+    void setTriggerBoardClock(ub_TriggerBoardClock const& trigger_board_time) noexcept;
+    void setLocalHostTime(ub_LocalHostTime const& localhost_time) noexcept;
+    
+    void setTriggerData (ub_TriggerData const& trigger_data) noexcept;   
     void setBeamRecord(ub_BeamRecord const& beam_record) noexcept;
-    void markAsIncompleteEvent() noexcept;
-
-    ub_GPS const& GPSData() const noexcept;
+    
+    ub_GPS_Time const& GPSTime() const noexcept;    
+    ub_TriggerBoardClock const& TriggerBoardClock() const noexcept;
+    ub_LocalHostTime const& LocalHostTime() const noexcept;
+    
     ub_TriggerData const& triggerData()const noexcept;
     ub_BeamRecord const& beamRecord()const noexcept;
     ub_BeamRecord& beamRecord() noexcept;
+
+    void markAsIncompleteEvent() noexcept;
+    void setCrateSerializationMask(uint16_t mask) noexcept;
     
     //do your custom out-of-class specialization if needed
     template <typename EVENTFRAGMENTPTR_TYPE>
             void releaseFragmentsAs( EVENTFRAGMENTPTR_TYPE*  );
     
-    // For special case only; use with caution
-    void clearTPCSEBMap(int crateMask=0);
-    void clearPMTSEBMap(int crateMask=0);
 private:
     void  getFragments(fragment_references_t& fragments) const throw(datatypes_exception);
 private:
@@ -96,28 +104,37 @@ private:
     tpc_seb_map_t      _tpc_seb_map;
     pmt_seb_map_t      _pmt_seb_map;
 
-    ub_TriggerData     _trigger_data;
-    ub_GPS             _gps_data;
-    ub_BeamRecord      _beam_record;
-
+    
+    ub_TriggerData       _trigger_data;
+    ub_BeamRecord        _beam_record;
+    
+    mutable std::atomic<uint16_t> _crate_serialization_mask={0xFFFF};
+    
 #define UNUSED(x) (void)(x)
     friend class boost::serialization::access;
     template<class Archive>
     void save(Archive & ar, const unsigned int version) const
     {
         UNUSED(version);
-
         //BEGIN SERIALIZE RAW EVENT FRAGMENT DATA
         fragment_references_t fragments;
         getFragments(fragments);
-        assert(_bookkeeping_header.event_fragment_count==fragments.size());
-        assert(_bookkeeping_header.raw_event_fragments_wordcount==std::accumulate(
+        
+        auto bookkeeping_header=_bookkeeping_header;
+        
+        if(_bookkeeping_header.event_fragment_count!=fragments.size()){
+            bookkeeping_header.is_event_complete=false;
+            bookkeeping_header.event_fragment_count=fragments.size();
+        }
+        
+        assert(bookkeeping_header.event_fragment_count==fragments.size());
+        assert(bookkeeping_header.raw_event_fragments_wordcount==std::accumulate(
         fragments.begin(),fragments.end(),0u,[](auto total, auto const& fragment) {
             return total+fragment->size()*sizeof(fragment_value_type_t);
         }));
 
         // write bookkeeping info
-        ar.save_binary(&_bookkeeping_header,ub_event_header_size);
+        ar.save_binary(&bookkeeping_header,ub_event_header_size);
 
         // write raw fragmetns with crate headers
         for(auto const& fragment : fragments) {
@@ -131,8 +148,7 @@ private:
         if(version>0)
         {
             ar << _global_header;
-            ar << _trigger_data;
-            ar << _gps_data;
+            //ar << _trigger_data;            
             //ar << _beam_record;
         }
         //this must be the last step
@@ -146,7 +162,6 @@ private:
         //BEGIN SERIALIZE RAW EVENT FRAGMENT DATA
         // read bookkeeping info
         ar.load_binary(&_bookkeeping_header,ub_event_header_size);
-        
         if(_bookkeeping_header.mark_E974!=UBOONE_EHDR)
             throw datatypes_exception("Invalid header marker");
             
@@ -174,9 +189,8 @@ private:
         if(version>0)
         {
             ar >> _global_header;
-            ar >> _trigger_data;
-            ar >> _gps_data;
-            //ar >> _beam_record;
+            //ar << _trigger_data;            
+            //ar << _beam_record;
         }
 
         //this must be the last step

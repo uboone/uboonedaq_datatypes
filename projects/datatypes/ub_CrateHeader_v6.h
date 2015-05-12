@@ -4,6 +4,7 @@
 #include "uboone_data_common.h"       
 #include "ub_GPS_DataTypes.h"
 #include "ub_TriggerBoardClock.h"
+#include "ub_LocalHostTime.h"
 #include "ub_TPC_CardHeader_v6.h"
 #include "ub_PMT_CardHeader_v6.h"
 #include "constants.h"
