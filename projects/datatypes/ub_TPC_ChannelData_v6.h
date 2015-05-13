@@ -17,7 +17,7 @@ public:
 
     /// Huffman decompression. Available as T= uint_16, int16, uint_32, int32, float, and double. 
     template<typename T>
-     void decompress(std::vector<T>& uncompressed) const noexcept;  
+     void decompress(std::vector<T>& uncompressed) const throw(datatypes_exception);  
 
 };
 

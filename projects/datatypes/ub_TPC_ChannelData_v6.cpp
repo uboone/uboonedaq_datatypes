@@ -10,13 +10,15 @@ ub_TPC_ChannelData_v6::ub_TPC_ChannelData_v6(ub_RawData const& rawdata)
 const size_t kMaxBufferSize = 9600;
 
 template<typename T>
-void ub_TPC_ChannelData_v6::decompress(std::vector<T>& uncompressed) const noexcept
+void ub_TPC_ChannelData_v6::decompress(std::vector<T>& uncompressed) const throw(datatypes_exception)
 {
   /// 
   /// Huffman decompression.
   ///
   /// Fills the supplied vector with huffman-decompressed data.
   /// Note that the user should check the vector to make sure that the size is what is expected (e.g. size()==9600)
+  /// Won't throw if output size is wrong
+  /// WILL throw if there's an unrecognized bit pattern.
   ///
   /// Available as T= uint_16, int16, uint_32, int32, float, and double. 
   /// Why make so many types available? Because it's a needless extra expense in both memory and 
@@ -26,8 +28,6 @@ void ub_TPC_ChannelData_v6::decompress(std::vector<T>& uncompressed) const noexc
   /// 
   /// N. Tagg. May 2015
   ///
-
-  uint i_bit,i_zero; // some counters we will use
 
   // This saves a fair bit of time in the long run.
   // It's much faster to resize() and use operator[] than to reserve, but this is the safest in case of buffer overruns.
@@ -78,7 +78,7 @@ void ub_TPC_ChannelData_v6::decompress(std::vector<T>& uncompressed) const noexc
               case 6: outword = last_uncompressed_word +3; break;
               default:
               // std::cout << "Huffman decompress unrecoginized bit pattern " << (std::bitset<16>) word << std::endl;
-                throw std::runtime_error("Huffman decompress unrecoginized bit pattern");                
+                throw datatypes_exception("Huffman decompress unrecoginized bit pattern");                
             }
             // std::cout << "huff out @ " << std::dec << uncompressed_vector.size() << "  0x" << std::hex << outword << std::endl;
             uncompressed.push_back( (T)(outword) );
@@ -94,10 +94,10 @@ void ub_TPC_ChannelData_v6::decompress(std::vector<T>& uncompressed) const noexc
 } 
 
 
-template void ub_TPC_ChannelData_v6::decompress<uint16_t>(std::vector<uint16_t>&) const noexcept;
-template void ub_TPC_ChannelData_v6::decompress< int16_t>(std::vector< int16_t>&) const noexcept;
-template void ub_TPC_ChannelData_v6::decompress<uint32_t>(std::vector<uint32_t>&) const noexcept;
-template void ub_TPC_ChannelData_v6::decompress< int32_t>(std::vector< int32_t>&) const noexcept;
-template void ub_TPC_ChannelData_v6::decompress< float  >(std::vector< float  >&) const noexcept;
-template void ub_TPC_ChannelData_v6::decompress< double >(std::vector< double >&) const noexcept;
+template void ub_TPC_ChannelData_v6::decompress<uint16_t>(std::vector<uint16_t>&) const throw(datatypes_exception);
+template void ub_TPC_ChannelData_v6::decompress< int16_t>(std::vector< int16_t>&) const throw(datatypes_exception);
+template void ub_TPC_ChannelData_v6::decompress<uint32_t>(std::vector<uint32_t>&) const throw(datatypes_exception);
+template void ub_TPC_ChannelData_v6::decompress< int32_t>(std::vector< int32_t>&) const throw(datatypes_exception);
+template void ub_TPC_ChannelData_v6::decompress< float  >(std::vector< float  >&) const throw(datatypes_exception);
+template void ub_TPC_ChannelData_v6::decompress< double >(std::vector< double >&) const throw(datatypes_exception);
 
