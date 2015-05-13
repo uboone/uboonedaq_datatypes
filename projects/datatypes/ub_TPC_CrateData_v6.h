@@ -22,7 +22,7 @@ public:
     
     ub_TPC_CrateData_v6 ( ub_TPC_CrateData_v6  && ) = default;
     
-    static constexpr auto typeName="PMT";
+    static constexpr auto typeName="TPC";
 };
 
 }  // end of namespace datatypes

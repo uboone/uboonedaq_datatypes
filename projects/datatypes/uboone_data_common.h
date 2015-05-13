@@ -2,6 +2,9 @@
 #define _UBOONE_DATATYPES_COMMON_H  1
 
 #include <map>
+#include <cstring>
+#include <string>
+#include <sys/time.h>
 
 
 /* These and the following string definitions are crate-type, also

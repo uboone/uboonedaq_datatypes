@@ -16,6 +16,7 @@ namespace datatypes {
 template <typename CARD> class ub_MarkedRawCrateData :
     public ub_MarkedRawDataBlock<ub_XMITEventHeader,ub_XMITEventTrailer> {
 public:
+    typedef CARD card_t;
     template <typename MRCD> using dissector_type = ub_CardDataCreatorHelperClass<MRCD>;
 
     explicit ub_MarkedRawCrateData(ub_RawData const& rawdata):
