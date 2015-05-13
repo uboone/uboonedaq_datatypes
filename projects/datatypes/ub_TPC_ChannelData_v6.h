@@ -14,6 +14,9 @@ class ub_TPC_ChannelData_v6 final: public ub_MarkedRawChannelData
 public:
     ub_TPC_ChannelData_v6(ub_RawData const& rawdata);
     ub_TPC_ChannelData_v6 ( ub_TPC_ChannelData_v6 && ) = default;
+    
+    template<typename T>
+     std::shared_ptr< std::vector<T> > decompress() const throw(datatypes_exception); /// Huffman decompression. Available as T= uint_16, int16, uint_32, int32, float, and double. 
 };
 
 }  // end of namespace datatypes
