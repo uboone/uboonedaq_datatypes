@@ -12,51 +12,54 @@ namespace datatypes {
 template<>
 void ub_ChannelDataCreatorHelperClass<ub_PMT_WindowData_v6>::populateChannelDataVector(std::vector<ub_PMT_WindowData_v6> & channelDataVector)
 {
-    std::size_t pmt_card_channel_count = 1;
+    size_t pmt_expected_window_count = 500;
     ub_RawData curr_rawData {_rawData.begin(),_rawData.end()};
-    uint16_t curr_header {0x4000}, curr_trailer {0xc000};
     
     std::vector<ub_PMT_WindowData_v6> retValue;
-    retValue.reserve(pmt_card_channel_count);
+    retValue.reserve(pmt_expected_window_count);
     
     try{
-        if(*curr_rawData.begin()!=curr_header)
-        {
-            std::stringstream ss;
-            ss << "Junk data: Wrong channel header: (expected, received)=(";
-            ss << hex(4,curr_header) << ", " <<hex(4,*(curr_rawData.begin()));
-            ss << "); remaining data size=" << std::dec << curr_rawData.size();
-            ss << "; channel trailer word=" << hex (4,*(curr_rawData.begin()+curr_rawData.size()));
-            
-            if( *(curr_rawData.begin()+curr_rawData.size()) == curr_trailer){
-                std::cerr << ss.str() << std::endl;
-                return;
-             }
-             else
-                throw datatypes_exception(ss.str());
-        }
+      ub_RawData::const_iterator curr_position=curr_rawData.begin();
+      while(curr_position!=curr_rawData.end())
+	{
 
-        for(ub_RawData::const_iterator curr_position=curr_rawData.begin(); curr_position!=curr_rawData.end(); curr_position++)
-        {
-            if(curr_trailer==*curr_position && (EVENTTRAILER == *((decltype(EVENTTRAILER)*)&*(curr_position+1))))
-            {
-                ub_RawData data {curr_rawData.begin(),curr_position};
-                
-                retValue.push_back(data);
-                
-                curr_rawData=ub_RawData (curr_position+1,curr_rawData.end());
-                
-                if(curr_rawData.size() >= 2 && EVENTTRAILER != *((decltype(EVENTHEADER)*)&*(curr_rawData.begin())))
-                    throw datatypes_exception("Junk data: Expecting EVENTHEADER.");                    
-                break;
-            }
-        }
+	  if(curr_rawData.size() < sizeof(ub_PMT_WindowHeader_v6)){
+            std::stringstream ss;
+	    ss << "Junk data: Left with a PMT window header that is too small."; 
+	    throw datatypes_exception(ss.str());
+	  }
+	  if( ((*curr_position>>6)&0xf)!=0 || ((*curr_position>>12)&0x3)!=1 ){
+            std::stringstream ss;
+	    ss << "Junk data: Bad PMT Window Header:\n\t" 
+	       << quick_cast<ub_PMT_WindowHeader_v6>(curr_position).debugInfo();
+	    throw datatypes_exception(ss.str());
+	  }
+
+	  curr_position++;
+	  while(curr_position!=curr_rawData.end()){
+
+	    if( ((*curr_position>>6)&0xf)==0 && ((*curr_position>>12)&0x3)==1 ){
+	      ub_RawData data {curr_rawData.begin(),curr_position};
+
+	      retValue.push_back(data);
+              
+	      curr_rawData=ub_RawData {curr_position,curr_rawData.end()};
+	      break;
+	    }
+	    else{
+	      curr_position++;
+	    }
+	  }//end search for next window header
+	  
+
+	}//end for loop over raw data
+
     channelDataVector.swap(retValue);
-    }catch(std::exception& e){
+    }catch(std::exception& e){         
          std::cerr << "Caught exception in ub_PMT_WindowDataCreatorHelperClass::populateChannelDataVector() Message: " <<e.what() << std::endl;
          std::cerr <<  debugInfoShort(curr_rawData) << std::endl;
-         //std::cerr << "Raw Card Data"<< std::endl;         
-         //std::cerr <<  debugInfo(_rawData) << std::endl;
+        // std::cerr << "Raw Card Data"<< std::endl;         
+        // std::cerr <<  debugInfo(_rawData) << std::endl;         
         throw;
     }
     

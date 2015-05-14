@@ -17,6 +17,10 @@ bool ub_MarkedRawChannelData<ub_PMT_WindowHeader_v6,empty_trailer>::isValid() no
         return false;
     if( header().marker3!=2 )
         return false;
+    if( header().empty1!=0 )
+        return false;
+    if( header().empty2!=0 )
+        return false;
     return true;
 }
 
