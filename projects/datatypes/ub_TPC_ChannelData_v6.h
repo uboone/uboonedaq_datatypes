@@ -47,23 +47,30 @@ void ub_TPC_ChannelData_v6::decompress(std::vector<T>& uncompressed) const throw
   //
   const size_t kMaxBufferSize = 9600;
   
-  uncompressed.resize(0); // This doesn't free memory if the vector is already allocated. 
+  // uncompressed.resize(9600); // Set size.
+  
+  uncompressed.resize(0); // Set size.
   uncompressed.reserve(kMaxBufferSize);  // Enlarge if buffer is too small. No effect if buffer is already large.
 
   const ub_RawData& raw = data();
   ub_RawData::const_iterator it;
   uint16_t last_uncompressed_word = 0;
+  size_t   outpos = 0;
 
   
   // Dump check for debugging.
   for(it = raw.begin(); it!= raw.end(); it++) {
 
-    uint16_t word = *it;
+    const uint16_t& word = *it;
     //if it's not a compressed word, just put it on the uncompressed vector
     if( (word & 0x8000)==0 ) {
       last_uncompressed_word = word&0x7ff;
-      uncompressed.push_back(  (T)(last_uncompressed_word)  ); // explicit conversion to templated type
-    
+      // explicit conversion to templated type. Use push_back if size to small, otherwise [] is faster.
+      // if(outpos >= uncompressed.size()) uncompressed.push_back((T)(last_uncompressed_word));
+      // else uncompressed[outpos] = (  (T)(last_uncompressed_word)  );
+      // outpos++;
+      uncompressed.push_back((T)(last_uncompressed_word));
+      
     } else {  // huffman bit on.
       uint16_t outword;
       size_t zero_count = 0;
@@ -86,7 +93,12 @@ void ub_TPC_ChannelData_v6::decompress(std::vector<T>& uncompressed) const throw
               // std::cout << "Huffman decompress unrecoginized bit pattern " << (std::bitset<16>) word << std::endl;
                 throw datatypes_exception("Huffman decompress unrecoginized bit pattern");                
             }
-            uncompressed.push_back( (T)(outword) );
+            
+            // if(outpos >= uncompressed.size()) uncompressed.push_back((T)(outword));
+            // else uncompressed[outpos] = (  (T)(outword)  );
+            // outpos++;
+            uncompressed.push_back((T)(outword));
+
             last_uncompressed_word = outword;   // Activite this line is delta is from last word. Comment out this line if diff is from the last EXPLICIT word, instead of the last huffman-compressed word.
             zero_count=0;
           }
@@ -95,6 +107,9 @@ void ub_TPC_ChannelData_v6::decompress(std::vector<T>& uncompressed) const throw
       
     } //end else huffman bit on
   }//end for loop over data words
+  
+  // uncompressed.resize(outpos);
+
 
 } 
 
