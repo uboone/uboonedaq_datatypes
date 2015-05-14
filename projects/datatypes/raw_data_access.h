@@ -9,8 +9,9 @@ using namespace gov::fnal::uboone::datatypes;
 
 typedef ub_XMITEventTrailer event_trailer_t;
 typedef ub_XMITEventHeader  event_header_t;
-typedef ub_ChannelHeader channel_header_t;
-typedef ub_ChannelTrailer channel_trailer_t;
+
+typedef ub_TPC_ChannelHeader  tpc_channel_header_t;
+typedef ub_TPC_ChannelTrailer tpc_channel_trailer_t;
 
 typedef ub_PMT_CardHeader_v6  pmt_card_header_t;
 typedef ub_TPC_CardHeader_v6  tpc_card_header_t;

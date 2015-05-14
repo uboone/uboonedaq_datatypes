@@ -1,5 +1,5 @@
-#ifndef _UBOONE_TYPES_CHANELHEADERTRAILER_H
-#define _UBOONE_TYPES_CHANELHEADERTRAILER_H 1
+#ifndef _UBOONE_TYPES_TPCCHANNELHEADERTRAILER_H
+#define _UBOONE_TYPES_TPCCHANNELHEADERTRAILER_H 1
 
 #include "uboone_data_utils.h"
 
@@ -14,7 +14,7 @@ namespace datatypes {
 **/
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
-struct ub_ChannelHeader final
+struct ub_TPC_ChannelHeader final
 {
     union {
         struct {
@@ -31,9 +31,9 @@ struct ub_ChannelHeader final
     }
     std::string debugInfo()const noexcept;
 } ;
-static_assert (sizeof(ub_ChannelHeader) == 2, "ub_ChannelHeader structure size is not correct.");
+static_assert (sizeof(ub_TPC_ChannelHeader) == 2, "ub_ChannelHeader structure size is not correct.");
 
-struct ub_ChannelTrailer final
+struct ub_TPC_ChannelTrailer final
 {
     union {
         struct {
@@ -42,16 +42,17 @@ struct ub_ChannelTrailer final
         } ;
         uint16_t channel_mark=0xDEAD;
     } ;
-    std::string debugInfo()const noexcept;
+
     uint16_t getChannelNumber() const noexcept{
         return channel_number;
     }
     uint16_t getTrailerMark() const noexcept{
         return trailer_mark;
     }
+    std::string debugInfo()const noexcept;
 } ;
 
-static_assert (sizeof(ub_ChannelTrailer) == 2, "ub_ChannelTrailer structure size is not correct.");
+static_assert (sizeof(ub_TPC_ChannelTrailer) == 2, "ub_ChannelTrailer structure size is not correct.");
 #pragma GCC diagnostic pop
 
 }  // end of namespace datatypes

@@ -6,7 +6,7 @@
 #include "ub_TriggerBoardClock.h"
 #include "ub_LocalHostTime.h"
 #include "ub_TPC_CardHeader_v6.h"
-#include "ub_PMT_CardHeader_v6.h"
+#include "ub_PMT_CardHeaderTrailer_v6.h"
 #include "constants.h"
 #include <sys/time.h>
 #include "boostSerialization.h"

@@ -1,8 +1,8 @@
-#include "ub_ChannelHeaderTrailer_v0.h"
+#include "ub_TPC_ChannelHeaderTrailer_v0.h"
 
 using namespace gov::fnal::uboone::datatypes;
 
-std::string ub_ChannelHeader::debugInfo()const noexcept
+std::string ub_TPC_ChannelHeader::debugInfo()const noexcept
 {
     std::ostringstream os;
     os << "Object " << demangle(typeid(this)) << "."<< std::endl;
@@ -12,7 +12,7 @@ std::string ub_ChannelHeader::debugInfo()const noexcept
     return os.str();
 }
 
-std::string ub_ChannelTrailer::debugInfo()const noexcept
+std::string ub_TPC_ChannelTrailer::debugInfo()const noexcept
 {
     std::ostringstream os;
     os << "Object " << demangle(typeid(this))<< "."<< std::endl;

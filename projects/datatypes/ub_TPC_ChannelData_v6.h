@@ -2,18 +2,21 @@
 #define _UBOONE_TYPES_TPCCHANELDATA_V6_H 1
 
 #include "ub_MarkedRawChannelData.h"
-
+#include "ub_TPC_ChannelHeaderTrailer_v0.h"
 
 namespace gov {
 namespace fnal {
 namespace uboone {
 namespace datatypes {
 
-class ub_TPC_ChannelData_v6 final: public ub_MarkedRawChannelData
+class ub_TPC_ChannelData_v6 final: public ub_MarkedRawChannelData<ub_TPC_ChannelHeader,ub_TPC_ChannelTrailer>
 {
 public:
     ub_TPC_ChannelData_v6(ub_RawData const& rawdata);
     ub_TPC_ChannelData_v6 ( ub_TPC_ChannelData_v6 && ) = default;
+
+    uint16_t getChannelHeaderWord() const noexcept;
+    uint16_t getChannelTrailerWord() const noexcept;
 
     /// Huffman decompression. Available as T= uint_16, int16, uint_32, int32, float, and double. 
     template<typename T>

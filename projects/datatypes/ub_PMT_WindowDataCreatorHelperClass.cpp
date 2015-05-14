@@ -1,7 +1,7 @@
 #include "uboone_data_utils.h"
 #include "uboone_data_internals.h"
 #include "ub_ChannelDataCreatorHelperClass.h"
-#include "ub_PMT_ChannelData_v6.h"
+#include "ub_PMT_WindowData_v6.h"
 
 namespace gov {
 namespace fnal {
@@ -10,13 +10,13 @@ namespace datatypes {
 
 
 template<>
-void ub_ChannelDataCreatorHelperClass<ub_PMT_ChannelData_v6>::populateChannelDataVector(std::vector<ub_PMT_ChannelData_v6> & channelDataVector)
+void ub_ChannelDataCreatorHelperClass<ub_PMT_WindowData_v6>::populateChannelDataVector(std::vector<ub_PMT_WindowData_v6> & channelDataVector)
 {
     std::size_t pmt_card_channel_count = 1;
     ub_RawData curr_rawData {_rawData.begin(),_rawData.end()};
     uint16_t curr_header {0x4000}, curr_trailer {0xc000};
     
-    std::vector<ub_PMT_ChannelData_v6> retValue;
+    std::vector<ub_PMT_WindowData_v6> retValue;
     retValue.reserve(pmt_card_channel_count);
     
     try{
@@ -53,7 +53,7 @@ void ub_ChannelDataCreatorHelperClass<ub_PMT_ChannelData_v6>::populateChannelDat
         }
     channelDataVector.swap(retValue);
     }catch(std::exception& e){
-         std::cerr << "Caught exception in ub_PMT_ChannelDataCreatorHelperClass::populateChannelDataVector() Message: " <<e.what() << std::endl;
+         std::cerr << "Caught exception in ub_PMT_WindowDataCreatorHelperClass::populateChannelDataVector() Message: " <<e.what() << std::endl;
          std::cerr <<  debugInfoShort(curr_rawData) << std::endl;
          //std::cerr << "Raw Card Data"<< std::endl;         
          //std::cerr <<  debugInfo(_rawData) << std::endl;
