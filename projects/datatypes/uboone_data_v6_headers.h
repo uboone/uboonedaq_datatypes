@@ -9,6 +9,7 @@
 
 
 #include "ub_TPC_ChannelHeaderTrailer_v0.h"
+#include "ub_PMT_WindowHeader_v6.h"
 #include "ub_PMT_WindowData_v6.h"
 #include "ub_TPC_ChannelData_v6.h"
 
