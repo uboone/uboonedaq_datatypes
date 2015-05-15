@@ -8,8 +8,15 @@
 #include "ub_CrateHeader_v6.h"
 
 
+<<<<<<< nathaniel-v6-mods
 #include "ub_ChannelHeaderTrailer_v0.h"
 #include "ub_PMT_ChannelData_v6.h"
+=======
+#include "ub_TPC_ChannelHeaderTrailer_v0.h"
+#include "ub_PMT_ChannelData_v6.h"
+#include "ub_PMT_WindowHeader_v6.h"
+#include "ub_PMT_WindowData_v6.h"
+>>>>>>> local
 #include "ub_TPC_ChannelData_v6.h"
 
 #include "ub_TPC_CardHeader_v6.h"
