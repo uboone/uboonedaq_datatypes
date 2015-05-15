@@ -18,6 +18,13 @@ void ub_EventRecord::setCrateSerializationMask(uint16_t mask) noexcept
     _crate_serialization_mask.store(mask);
 }
 
+int ub_EventRecord::eventRecordVersion = constants::DATATYPES_VERSION;
+
+int ub_EventRecord::getEventRecordVersion() noexcept
+{
+    return eventRecordVersion;
+}
+
 ub_EventRecord::~ub_EventRecord()
 {
     for(auto& pmt : _pmt_seb_map)

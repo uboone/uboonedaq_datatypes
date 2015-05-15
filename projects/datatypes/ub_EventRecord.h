@@ -95,6 +95,7 @@ public:
     template <typename EVENTFRAGMENTPTR_TYPE>
             void releaseFragmentsAs( EVENTFRAGMENTPTR_TYPE*  );
     
+    static int getEventRecordVersion() noexcept;
 private:
     void  getFragments(fragment_references_t& fragments) const throw(datatypes_exception);
 private:
@@ -109,13 +110,15 @@ private:
     ub_BeamRecord        _beam_record;
     
     mutable std::atomic<uint16_t> _crate_serialization_mask={0xFFFF};
-    
+    static int eventRecordVersion;
+
 #define UNUSED(x) (void)(x)
     friend class boost::serialization::access;
     template<class Archive>
     void save(Archive & ar, const unsigned int version) const
     {
         UNUSED(version);
+        
         //BEGIN SERIALIZE RAW EVENT FRAGMENT DATA
         fragment_references_t fragments;
         getFragments(fragments);
@@ -159,6 +162,9 @@ private:
     void load(Archive & ar, const unsigned int version)
     {
         UNUSED(version);
+        
+        eventRecordVersion=version;
+        
         //BEGIN SERIALIZE RAW EVENT FRAGMENT DATA
         // read bookkeeping info
         ar.load_binary(&_bookkeeping_header,ub_event_header_size);

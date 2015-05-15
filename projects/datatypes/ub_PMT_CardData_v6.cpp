@@ -8,12 +8,12 @@ namespace uboone {
 namespace datatypes {
 
 template<>
-bool ub_MarkedRawCardData<ub_PMT_ChannelData_v6,ub_PMT_CardHeader_v6,empty_trailer>::isValid() noexcept
+bool ub_MarkedRawCardData<ub_PMT_WindowData_v6,ub_PMT_CardHeader_v6,ub_PMT_CardTrailer_v6>::isValid() noexcept
 {
     return true;
 }
 template<>
-bool ub_MarkedRawCardData<ub_PMT_ChannelData_v6,ub_PMT_CardHeader_v6,empty_trailer>::_dissectChannels=true;
+bool ub_MarkedRawCardData<ub_PMT_WindowData_v6,ub_PMT_CardHeader_v6,ub_PMT_CardTrailer_v6>::_dissectChannels=true;
 
 
 }  // end of namespace datatypes
@@ -36,7 +36,7 @@ uint32_t ub_PMT_CardData_v6::getTrigFrame() const noexcept
 bool ub_PMT_CardData_v6::compare(ub_PMT_CardData_v6 const& card_data,bool do_rethrow ) const throw(datatypes_exception)
 {
     try {
-        return ub_MarkedRawCardData<ub_PMT_ChannelData_v6,ub_PMT_CardHeader_v6,empty_trailer>::compare(card_data,do_rethrow);
+        return ub_MarkedRawCardData<ub_PMT_WindowData_v6,ub_PMT_CardHeader_v6,ub_PMT_CardTrailer_v6>::compare(card_data,do_rethrow);
     } catch(datatypes_exception &ex) {
         std::cerr << ex.what();
         if(do_rethrow)
@@ -54,13 +54,13 @@ bool ub_PMT_CardData_v6::compare(ub_PMT_CardData_v6 const& card_data,bool do_ret
 }
 
 ub_PMT_CardData_v6::ub_PMT_CardData_v6(ub_RawData const& rawdata):
-    ub_MarkedRawCardData<ub_PMT_ChannelData_v6,ub_PMT_CardHeader_v6,empty_trailer>(rawdata) {}
+    ub_MarkedRawCardData<ub_PMT_WindowData_v6,ub_PMT_CardHeader_v6,ub_PMT_CardTrailer_v6>(rawdata) {}
 
 bool ub_PMT_CardData_v6::operator==(ub_PMT_CardData_v6 const& card_data) const{
     return compare(card_data,false);
 }
 
-uint32_t const& ub_PMT_CardData_v6::getCardTrigFrameAndSampleWord() const noexcept {
+uint32_t ub_PMT_CardData_v6::getCardTrigFrameAndSampleWord() const noexcept {
     return header().trig_frame_and_sample;
 }
 
@@ -87,4 +87,10 @@ uint32_t ub_PMT_CardData_v6::getTrigFrameMod16() const noexcept {
 }
 uint32_t ub_PMT_CardData_v6::getTrigSample() const noexcept {
     return header().getTrigSample();
+}
+uint16_t ub_PMT_CardData_v6::getDataStartMarker() const noexcept {
+  return header().getDataStartMarker();
+}
+uint16_t ub_PMT_CardData_v6::getDataEndMarker() const noexcept {
+  return trailer().getDataEndMarker();
 }
