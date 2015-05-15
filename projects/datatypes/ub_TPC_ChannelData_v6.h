@@ -58,7 +58,7 @@ void ub_TPC_ChannelData_v6::decompress(std::vector<T>& uncompressed) const throw
   const ub_RawData& raw = data();
   ub_RawData::const_iterator it;
   uint16_t last_uncompressed_word = 0;
-  size_t   outpos = 0;
+  //size_t   outpos = 0;
 
   
   // Dump check for debugging.

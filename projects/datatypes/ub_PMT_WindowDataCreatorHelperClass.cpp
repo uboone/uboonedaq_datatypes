@@ -17,7 +17,7 @@ namespace datatypes {
   {
       std::vector< std::vector<ub_PMT_WindowData_v6> > channelGroups(64);
           
-      size_t pmt_expected_window_count = 500;
+      //size_t pmt_expected_window_count = 500;
       ub_RawData curr_rawData {_rawData.begin(),_rawData.end()};
     
     
@@ -67,7 +67,7 @@ namespace datatypes {
 
 
       channelDataVector.clear();
-      for(int channel=0;channel<channelGroups.size();channel++)  {
+      for(size_t channel=0;channel<channelGroups.size();channel++)  {
         channelDataVector.push_back(ub_PMT_ChannelData_v6(channel,channelGroups[channel]));
       }
 
