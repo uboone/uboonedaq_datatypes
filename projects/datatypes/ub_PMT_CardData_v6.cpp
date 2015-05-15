@@ -60,7 +60,7 @@ bool ub_PMT_CardData_v6::operator==(ub_PMT_CardData_v6 const& card_data) const{
     return compare(card_data,false);
 }
 
-uint32_t const& ub_PMT_CardData_v6::getCardTrigFrameAndSampleWord() const noexcept {
+uint32_t ub_PMT_CardData_v6::getCardTrigFrameAndSampleWord() const noexcept {
     return header().trig_frame_and_sample;
 }
 

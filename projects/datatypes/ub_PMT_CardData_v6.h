@@ -20,7 +20,7 @@ public:
     bool compare(ub_PMT_CardData_v6 const& card_data,bool do_rethrow=false) const throw(datatypes_exception);
     bool operator==(ub_PMT_CardData_v6 const& card_data) const;
 
-    uint32_t const& getCardTrigFrameAndSampleWord() const noexcept;
+    uint32_t getCardTrigFrameAndSampleWord() const noexcept;
 
     uint32_t getID() const noexcept;
     uint32_t getModule() const noexcept;

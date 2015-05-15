@@ -27,7 +27,7 @@ struct ub_PMT_CardHeader_v6 final
             uint32_t  		:4;
         };
         uint32_t id_and_module =0xDEADBEEF;
-    } ;
+    } __attribute__ ((packed));
     uint8_t getID()const noexcept {
         return (uint8_t)id;
     }
@@ -46,9 +46,9 @@ struct ub_PMT_CardHeader_v6 final
             uint32_t       		:4;
         };
         uint32_t word_count=0xDEADBEEF;
-    } ;
+    } __attribute__ ((packed));
     uint32_t getWordCount()const noexcept {
-      return (wc2<<12|(wc1 +1))-3;//subtract two for the 4000 and c000
+      return (wc2<<12|(wc1 +1))-2;//subtract two for the 4000 and c000
     }
 
     union {
@@ -59,7 +59,7 @@ struct ub_PMT_CardHeader_v6 final
             uint32_t       		:4;
         };
         uint32_t event_number=0xDEADBEEF;
-    } ;
+    } __attribute__ ((packed));
     uint32_t getEvent()const noexcept {
         return en2<<12|en1;
     }
@@ -72,7 +72,7 @@ struct ub_PMT_CardHeader_v6 final
             uint32_t       		:4;
         };
         uint32_t frame_number=0xDEADBEEF;
-    } ;
+    } __attribute__ ((packed));
     uint32_t getFrame()const noexcept {
         return fn2<<12|fn1;
     }
@@ -86,7 +86,7 @@ struct ub_PMT_CardHeader_v6 final
             uint32_t       		:4;
         };
         uint32_t checksum=0xDEADBEEF;
-    } ;
+    } __attribute__ ((packed));
     uint32_t getChecksum()const noexcept {
         return cs2<<12|cs1;
     }
@@ -101,26 +101,26 @@ struct ub_PMT_CardHeader_v6 final
             uint32_t       		:4;
         };
         uint32_t trig_frame_and_sample=0xDEADBEEF;
-    };
+    } __attribute__ ((packed));
     uint32_t getTrigSample()const noexcept {
         return tf2<<8|tf1;
     }
     uint32_t getTrigFrameMod16()const noexcept {
         return tf3;
     }
-
+    
     union {
       struct  {
 	uint16_t data_start_marker;
       };
       uint16_t raw_data_start_marker=0xDEAD;
-    };
+    } __attribute__ ((packed));
     uint16_t getDataStartMarker() const noexcept{
       return data_start_marker;
     }
-
+    
     std::string debugInfo() const noexcept;
-};
+} __attribute__ ((packed));
 
 struct ub_PMT_CardTrailer_v6 final
 {
@@ -137,7 +137,7 @@ struct ub_PMT_CardTrailer_v6 final
     std::string debugInfo() const noexcept;
 };
 
-static_assert (sizeof(ub_PMT_CardHeader_v6) == 28, "ub_PMT_CardHeader_v6 structure size is not correct.");
+static_assert (sizeof(ub_PMT_CardHeader_v6) == 26, "ub_PMT_CardHeader_v6 structure size is not correct.");
 static_assert (sizeof(ub_PMT_CardTrailer_v6) == 2, "ub_PMT_CardTrailer_v6 structure size is not correct.");
 
 #pragma GCC diagnostic pop
