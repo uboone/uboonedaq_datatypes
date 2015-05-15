@@ -48,7 +48,7 @@ struct ub_PMT_CardHeader_v6 final
         uint32_t word_count=0xDEADBEEF;
     } ;
     uint32_t getWordCount()const noexcept {
-        return wc2<<12|(wc1 +1);
+      return (wc2<<12|(wc1 +1))-3;//subtract two for the 4000 and c000
     }
 
     union {

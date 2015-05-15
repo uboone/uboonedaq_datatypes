@@ -38,9 +38,12 @@ void ub_CardDataCreatorHelperClass<MRCD>::populateCardDataVector(std::vector<MRC
         card_raw_data_size = MRCD::size_of_data_overhead() +
                              quick_cast<typename MRCD::card_header_type>(curr_rawData.begin()).getWordCount();
                              
-        if(card_raw_data_size > curr_rawData.size())
-            throw datatypes_exception("Junk data: Wrong word count in the card header.");
-            
+        if(card_raw_data_size > curr_rawData.size()){
+            std::stringstream ss;
+	    ss << "Junk data: Wrong word count in the card header.";
+	    ss << "\tCardSize=" << card_raw_data_size << " , RemainingSize=" << curr_rawData.size();
+            throw datatypes_exception(ss.str());
+	}
         ub_RawData data {curr_rawData.begin(),curr_rawData.begin()+card_raw_data_size};
 
         retValue.emplace_back(data);
