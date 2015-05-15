@@ -21,7 +21,7 @@ public:
     
     
     int getChannelNumber() const { return _channel; }
-    std::vector<ub_PMT_WindowData_v6> const& getElements() const noexcept{
+    std::vector<ub_PMT_WindowData_v6> const& getWindows() const noexcept{
       return _windows;
     };
         
