@@ -55,6 +55,11 @@ public:
         return _markedRawChannelsData;
     };
 
+    std::vector<CHANN> const& getElements() throw(datatypes_exception);
+    std::vector<CHANN> const& getElements() const noexcept{
+      return _markedRawChannelsData;
+    };
+
     ub_MarkedRawCardData() = delete;
     
     ub_MarkedRawCardData ( ub_MarkedRawCardData const& ) = delete;
@@ -84,6 +89,15 @@ private:
 
 template <typename CHANN, typename HEADER,typename TRAILER>
 std::vector<CHANN>  const&  ub_MarkedRawCardData<CHANN, HEADER,TRAILER>::getChannels() throw(datatypes_exception)
+{
+    if(!_isFullyDissected)
+        dissectChannels();
+
+    return _markedRawChannelsData;
+}
+
+template <typename CHANN, typename HEADER,typename TRAILER>
+std::vector<CHANN>  const&  ub_MarkedRawCardData<CHANN, HEADER,TRAILER>::getElements() throw(datatypes_exception)
 {
     if(!_isFullyDissected)
         dissectChannels();

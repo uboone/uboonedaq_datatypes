@@ -96,38 +96,39 @@ void ub_ChannelDataCreatorHelperClass<ub_PMT_WindowData_v6>::populateChannelData
     try{
       ub_RawData::const_iterator curr_position=curr_rawData.begin();
       while(curr_position!=curr_rawData.end())
-        {
 
-          if(curr_rawData.size() < sizeof(ub_PMT_WindowHeader_v6)){
+	{
+
+	  if(curr_rawData.size() < sizeof(ub_PMT_WindowHeader_v6)){
             std::stringstream ss;
-            ss << "Junk data: Left with a PMT window header that is too small."; 
-            throw datatypes_exception(ss.str());
-          }
-          if( ((*curr_position>>6)&0xf)!=0 || ((*curr_position>>12)&0x3)!=1 ){
+	    ss << "Junk data: Left with a PMT window header that is too small."; 
+	    throw datatypes_exception(ss.str());
+	  }
+	  if( ((*curr_position>>6)&0xf)!=0 || ((*curr_position>>12)&0x3)!=1 ){
             std::stringstream ss;
-            ss << "Junk data: Bad PMT Window Header:\n\t" 
-               << quick_cast<ub_PMT_WindowHeader_v6>(curr_position).debugInfo();
-            throw datatypes_exception(ss.str());
-          }
+	    ss << "Junk data: Bad PMT Window Header:\n\t" 
+	       << quick_cast<ub_PMT_WindowHeader_v6>(curr_position).debugInfo();
+	    throw datatypes_exception(ss.str());
+	  }
 
-          curr_position++;
-          while(curr_position!=curr_rawData.end()){
+	  curr_position++;
+	  while(curr_position!=curr_rawData.end()){
 
-            if( ((*curr_position>>6)&0xf)==0 && ((*curr_position>>12)&0x3)==1 ){
-              ub_RawData data {curr_rawData.begin(),curr_position};
+	    if( ((*curr_position>>6)&0xf)==0 && ((*curr_position>>12)&0x3)==1 ){
+	      ub_RawData data {curr_rawData.begin(),curr_position};
 
-              retValue.push_back(data);
+	      retValue.push_back(data);
               
-              curr_rawData=ub_RawData {curr_position,curr_rawData.end()};
-              break;
-            }
-            else{
-              curr_position++;
-            }
-          }//end search for next window header
-          
+	      curr_rawData=ub_RawData {curr_position,curr_rawData.end()};
+	      break;
+	    }
+	    else{
+	      curr_position++;
+	    }
+	  }//end search for next window header
+	  
 
-        }//end for loop over raw data
+	}//end for loop over raw data
 
     channelDataVector.swap(retValue);
     }catch(std::exception& e){         
@@ -139,6 +140,7 @@ void ub_ChannelDataCreatorHelperClass<ub_PMT_WindowData_v6>::populateChannelData
     }
 }
     */
+    
 }  // end of namespace datatypes
 }  // end of namespace uboone
 }  // end of namespace fnal

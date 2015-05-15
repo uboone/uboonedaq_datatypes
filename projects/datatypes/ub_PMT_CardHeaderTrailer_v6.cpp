@@ -1,4 +1,4 @@
-#include "ub_PMT_CardHeader_v6.h"
+#include "ub_PMT_CardHeaderTrailer_v6.h"
 
 using namespace gov::fnal::uboone::datatypes;
 
@@ -17,6 +17,17 @@ std::string ub_PMT_CardHeader_v6::debugInfo()const noexcept
     os << "Checksum[" << getChecksum() <<    "], RAW[0x" << checksum <<     "]" << std::endl;
     os << "TrigSample[" << getTrigSample() <<  "], RAW[0x" << trig_frame_and_sample << "]" << std::endl;
     os << "TrigFrameMod16[" << getTrigFrameMod16() <<  "], RAW[0x" << trig_frame_and_sample << "]" << std::endl;
+    os << "DataStartMarker[" << getDataStartMarker() << "], RAW[0x" << raw_data_start_marker << "]" << std::endl;
+
+    return os.str();
+}
+
+std::string ub_PMT_CardTrailer_v6::debugInfo()const noexcept
+{
+    std::ostringstream os;
+    os << "Object " << demangle(typeid(this)) << "."<< std::endl;
+    os << std::hex << std::setfill('0') << std::setw(4);
+    os << "DataEndMarker[" << getDataEndMarker() << "], RAW[0x" << raw_data_end_marker << "]" << std::endl;
 
     return os.str();
 }
