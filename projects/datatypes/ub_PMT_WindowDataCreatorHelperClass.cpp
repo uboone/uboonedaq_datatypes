@@ -15,7 +15,7 @@ namespace datatypes {
   template<>
   void ub_ChannelDataCreatorHelperClass<ub_PMT_ChannelData_v6>::populateChannelDataVector(std::vector<ub_PMT_ChannelData_v6> & channelDataVector)
   {
-      std::vector< std::vector<ub_PMT_WindowData_v6> > channelGroups(64);
+      std::vector< std::vector<ub_PMT_WindowData_v6> > channelGroups(48); // 48 of them on an FEM.
           
       //size_t pmt_expected_window_count = 500;
       ub_RawData curr_rawData {_rawData.begin(),_rawData.end()};
@@ -46,7 +46,7 @@ namespace datatypes {
 
                 ub_PMT_WindowData_v6 window(data);
                 int channel = window.getChannelNumber();
-                if((channel<0) || (channel>63)) {
+                if((channel<0) || (channel >= channelGroups.size())) {
                   std::stringstream ss;
                   ss << "Junk data: Bad PMT Window Header channel number: " << channel << "\n\t" 
                            << window.debugInfo();
