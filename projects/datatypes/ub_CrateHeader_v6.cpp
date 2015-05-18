@@ -44,6 +44,20 @@ ub_CrateHeader_v6::ub_CrateHeader_v6(ub_PMT_CardHeader_v6 const& cardHeader):
                          local_host_time {0,0}
 {}
 
+ub_CrateHeader_v6::ub_CrateHeader_v6(ub_Trigger_Header_v6 const& header):
+    data_transmission_header {},
+                         complete {0},crateBits {0},
+                         size {0},
+                         crate_number {100},
+                         card_count {0},
+                         event_number {header.getTriggerNumber()},
+                         frame_number {header.getFrame()},
+                         gps_time {0,0,0},
+                         trigger_board_time {header.getFrame(),
+			                     header.get2MHzSampleNumber(),
+			                     header.get16MHzRemainderNumber()},
+                         local_host_time {0,0}
+{}
 
 void ub_CrateHeader_v6::copyIn(ub_CrateHeader_v6 const& source)  noexcept
 {
@@ -79,7 +93,7 @@ std::string ub_CrateHeader_v6::debugInfo()const noexcept
     os << "  Crate Complete " << (unsigned int) complete;
     os << "  Crate seb_time_sec " << (unsigned int)local_host_time.seb_time_sec;
     os << "  Crate seb_time_usec " << (unsigned int) local_host_time.seb_time_usec;
-    if(crate_number == 10) {
+    if(crate_number == 100) {
         os << "  \n Crate 10 gps_time (sec, micro, nano) " << gps_time.second << ",  "
         << gps_time.micro << ",  " << gps_time.nano ;
         os << "  \n Crate 10 daqClockTime (frame, sample, div) " << (unsigned int) trigger_board_time.frame

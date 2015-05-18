@@ -4,6 +4,7 @@
 #include "uboone_data_common.h"
 
 #include "empty_trailer.h"
+#include "empty_header.h"
 
 #include "ub_CrateHeader_v6.h"
 
@@ -23,6 +24,8 @@
 #include "ub_XMITEventHeaderTrailer_v0.h"
 #include "ub_TPC_CrateData_v6.h"
 #include "ub_PMT_CrateData_v6.h"
+
+#include "ub_Trigger_DataTypes_v6.h"
 
 #include "ub_GlobalHeader.h"
 

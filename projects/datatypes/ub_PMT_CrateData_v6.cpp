@@ -8,7 +8,7 @@ namespace uboone {
 namespace datatypes {
 
 template <>
-bool  ub_MarkedRawCrateData<ub_PMT_CardData_v6>::isValid() noexcept
+bool  ub_MarkedRawCrateData<ub_PMT_CardData_v6,ub_XMITEventHeader,ub_XMITEventTrailer>::isValid() noexcept
 {
     return true;
 }
@@ -16,7 +16,7 @@ bool  ub_MarkedRawCrateData<ub_PMT_CardData_v6>::isValid() noexcept
 bool ub_PMT_CrateData_v6::compare(ub_PMT_CrateData_v6 const & crate_data, bool do_rethrow) const throw(datatypes_exception)
 {
     try {
-        return ub_MarkedRawCrateData<ub_PMT_CardData_v6>::compare(crate_data,do_rethrow);
+      return ub_MarkedRawCrateData<ub_PMT_CardData_v6,ub_XMITEventHeader,ub_XMITEventTrailer>::compare(crate_data,do_rethrow);
     } catch(datatypes_exception &ex) {
         std::cerr << ex.what();
         if(do_rethrow)
@@ -34,7 +34,7 @@ bool ub_PMT_CrateData_v6::compare(ub_PMT_CrateData_v6 const & crate_data, bool d
 }
 
 ub_PMT_CrateData_v6::ub_PMT_CrateData_v6(ub_RawData const& rawdata, bool initializeHeaderFromRawData):
-        ub_MarkedRawCrateData<ub_PMT_CardData_v6>(rawdata, initializeHeaderFromRawData) {
+  ub_MarkedRawCrateData<ub_PMT_CardData_v6,ub_XMITEventHeader,ub_XMITEventTrailer>(rawdata, initializeHeaderFromRawData) {
 }
 }  // end of namespace datatypes
 }  // end of namespace uboone

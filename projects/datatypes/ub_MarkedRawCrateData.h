@@ -4,7 +4,6 @@
 #include "uboone_data_common.h"
 #include "uboone_data_utils.h"
 #include "uboone_data_internals.h"
-#include "ub_XMITEventHeaderTrailer_v0.h"
 #include "ub_CardDataCreatorHelperClass.h"
 #include "ub_LocalHostTime.h"
 
@@ -13,32 +12,26 @@ namespace fnal {
 namespace uboone {
 namespace datatypes {
 
-template <typename CARD> class ub_MarkedRawCrateData :
-    public ub_MarkedRawDataBlock<ub_XMITEventHeader,ub_XMITEventTrailer> {
+template <typename CARD, typename HEADER, typename TRAILER> class ub_MarkedRawCrateData :
+  public ub_MarkedRawDataBlock<HEADER,TRAILER> {
 public:
     typedef CARD card_t;
     template <typename MRCD> using dissector_type = ub_CardDataCreatorHelperClass<MRCD>;
 
     explicit ub_MarkedRawCrateData(ub_RawData const& rawdata):
-        ub_MarkedRawDataBlock<ub_XMITEventHeader,ub_XMITEventTrailer>(rawdata),
+        ub_MarkedRawDataBlock<HEADER,TRAILER>(rawdata),
         _initializeHeaderFromRawData {false},
         _markedRawCardsData {},_dissectableDataSize {0},
         _crateHeader {nullptr},_isValid {isValid()},
         _isFullyDissected {canFullyDissect()}{}
 
     explicit ub_MarkedRawCrateData(ub_RawData const& rawdata,bool initializeHeaderFromRawData):
-        ub_MarkedRawDataBlock<ub_XMITEventHeader,ub_XMITEventTrailer>(rawdata),
+        ub_MarkedRawDataBlock<HEADER,TRAILER>(rawdata),
         _initializeHeaderFromRawData {initializeHeaderFromRawData},
         _markedRawCardsData {},_dissectableDataSize {0},
         _crateHeader {nullptr},_isValid {isValid()},
         _isFullyDissected {canFullyDissect()} {}
 
-    uint32_t const& getHeaderWord() const noexcept{
-        return header().raw_data;
-    }
-    uint32_t const& getTrailerWord() const noexcept{
-        return trailer().raw_data;
-    }
     std::vector<CARD> const&  getCards() throw(datatypes_exception);
     std::vector<CARD> const&  getCards() const noexcept{
         return _markedRawCardsData;
@@ -53,10 +46,10 @@ public:
     ~ub_MarkedRawCrateData(){_crateHeader.release(); _markedRawCardsData.clear();}
 
     size_t getSizeOfCardsData() const noexcept{
-        return data().size();
+        return ub_MarkedRawDataBlock<HEADER,TRAILER>::data().size();
     };
     size_t getSizeOfRAWCrateData() const noexcept{
-        return rawdata().size();
+        return ub_MarkedRawDataBlock<HEADER,TRAILER>::rawdata().size();
     };
 
     void dissectCards() throw(datatypes_exception);
@@ -89,8 +82,8 @@ private:
     bool _isFullyDissected;
 };
 
-template <typename CARD>
-std::vector<CARD> const&  ub_MarkedRawCrateData<CARD>::getCards() throw(datatypes_exception)
+template <typename CARD, typename HEADER, typename TRAILER>
+std::vector<CARD> const&  ub_MarkedRawCrateData<CARD,HEADER,TRAILER>::getCards() throw(datatypes_exception)
 {
     if(!_isFullyDissected)
         dissectCards();
@@ -98,17 +91,17 @@ std::vector<CARD> const&  ub_MarkedRawCrateData<CARD>::getCards() throw(datatype
     return _markedRawCardsData;
 }
 
-template <typename CARD>
-void ub_MarkedRawCrateData<CARD>::dissectCards() throw(datatypes_exception)
+template <typename CARD, typename HEADER, typename TRAILER>
+void ub_MarkedRawCrateData<CARD,HEADER,TRAILER>::dissectCards() throw(datatypes_exception)
 {
     try
     {
-        dissector_type<CARD> dissector(data());
+        dissector_type<CARD> dissector(ub_MarkedRawDataBlock<HEADER,TRAILER>::data());
         dissector.populateCardDataVector(_markedRawCardsData);        
         _isFullyDissected=true;
-        _dissectableDataSize=minsize()+dissector.getTrueDataSize();
-        assert(_dissectableDataSize > minsize());
-        assert(_dissectableDataSize <= rawdata().size());
+        _dissectableDataSize= ub_MarkedRawDataBlock<HEADER,TRAILER>::minsize()+dissector.getTrueDataSize();
+        assert(_dissectableDataSize > (ub_MarkedRawDataBlock<HEADER,TRAILER>::minsize()));
+        assert(_dissectableDataSize <=  (ub_MarkedRawDataBlock<HEADER,TRAILER>::rawdata().size()));
         assert(_markedRawCardsData.size()>0);
         
        // std::cerr << ub_data_types::debugInfoShort(ub_RawData{rawdata().begin(),rawdata().begin()+_dissectableDataSize}) <<std::endl;
@@ -123,8 +116,8 @@ void ub_MarkedRawCrateData<CARD>::dissectCards() throw(datatypes_exception)
 }
 
 
-template <typename CARD>
-bool ub_MarkedRawCrateData<CARD>::canFullyDissect() noexcept
+template <typename CARD, typename HEADER, typename TRAILER>
+bool ub_MarkedRawCrateData<CARD,HEADER,TRAILER>::canFullyDissect() noexcept
 {
     try
     {
@@ -140,8 +133,8 @@ bool ub_MarkedRawCrateData<CARD>::canFullyDissect() noexcept
     return true;
 }
 
-template <typename CARD>
-std::unique_ptr<typename CARD::ub_CrateHeader>& ub_MarkedRawCrateData<CARD>::crateHeader() throw(datatypes_exception)
+template <typename CARD, typename HEADER, typename TRAILER>
+std::unique_ptr<typename CARD::ub_CrateHeader>& ub_MarkedRawCrateData<CARD,HEADER,TRAILER>::crateHeader() throw(datatypes_exception)
 {
     if(_crateHeader)
         return _crateHeader;
@@ -168,8 +161,9 @@ std::unique_ptr<typename CARD::ub_CrateHeader>& ub_MarkedRawCrateData<CARD>::cra
     return _crateHeader;
 }
 
-template <typename CARD>
-bool ub_MarkedRawCrateData<CARD>::compare(ub_MarkedRawCrateData<CARD> const& marked_data,bool do_rethrow) const throw(datatypes_exception)
+template <typename CARD, typename HEADER, typename TRAILER>
+bool ub_MarkedRawCrateData<CARD,HEADER,TRAILER>::compare(ub_MarkedRawCrateData<CARD,HEADER,TRAILER> const& marked_data,bool do_rethrow) 
+  const throw(datatypes_exception)
 {
     try
     {
@@ -195,23 +189,23 @@ bool ub_MarkedRawCrateData<CARD>::compare(ub_MarkedRawCrateData<CARD> const& mar
         else
             return false;
     } catch(...) {
-        std::cerr << "Unknown exception in ub_MarkedRawCrateData<CARD>::compare()";
+        std::cerr << "Unknown exception in ub_MarkedRawCrateData<CARD,HEADER,TRAILER>::compare()";
         if(do_rethrow)
-            throw datatypes_exception("Unknown exception in ub_MarkedRawCrateData<CARD>::compare()");
+            throw datatypes_exception("Unknown exception in ub_MarkedRawCrateData<CARD,HEADER,TRAILER>::compare()");
         else
             return false;
     }
     return true;
 }
 
-template <typename CARD>
-std::string ub_MarkedRawCrateData<CARD>::debugInfo()const noexcept
+template <typename CARD, typename HEADER, typename TRAILER>
+std::string ub_MarkedRawCrateData<CARD,HEADER,TRAILER>::debugInfo()const noexcept
 {
     std::size_t idx{0};
     std::ostringstream os;
     os << "Object " << demangle(typeid(this)) << "."<< std::endl;
-    os << header().debugInfo();
-    os << trailer().debugInfo();
+    os << ub_MarkedRawDataBlock<HEADER,TRAILER>::header().debugInfo();
+    os << ub_MarkedRawDataBlock<HEADER,TRAILER>::trailer().debugInfo();
 
     os << " *Found " << std::dec << getCards().size() << " cards." << std::endl;  
     
