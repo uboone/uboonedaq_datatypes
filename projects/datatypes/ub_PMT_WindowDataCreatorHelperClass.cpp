@@ -46,7 +46,8 @@ namespace datatypes {
 
                 ub_PMT_WindowData_v6 window(data);
                 int channel = window.getChannelNumber();
-                if((channel<0) || (channel >= channelGroups.size())) {
+		// FIXME Kazu changed the following line to cast the type (else type unmatch). Someone should review.
+                if((channel<0) || ((unsigned int)channel >= channelGroups.size())) {
                   std::stringstream ss;
                   ss << "Junk data: Bad PMT Window Header channel number: " << channel << "\n\t" 
                            << window.debugInfo();
