@@ -25,6 +25,7 @@
 #include "ub_TPC_CrateData_v6.h"
 #include "ub_PMT_CrateData_v6.h"
 
+#include "ub_Trigger_CrateData_v6.h"
 #include "ub_Trigger_DataTypes_v6.h"
 
 #include "ub_GlobalHeader.h"
