@@ -30,7 +30,6 @@
 
 #include "ub_GlobalHeader.h"
 
-#include "ub_TriggerData.h"
 #include "ub_GPS_DataTypes.h"
 #include "ub_GlobalHeader.h"
 #include "ub_BeamRecord.h"

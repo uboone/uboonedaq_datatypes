@@ -84,7 +84,6 @@ public:
     void setTriggerBoardClock(ub_TriggerBoardClock const& trigger_board_time) noexcept;
     void setLocalHostTime(ub_LocalHostTime const& localhost_time) noexcept;
     
-    void setTriggerData (ub_TriggerData const& trigger_data) noexcept;   
     void setBeamRecord(ub_BeamRecord const& beam_record) noexcept;
     
     ub_GPS_Time const& GPSTime() const noexcept;    
