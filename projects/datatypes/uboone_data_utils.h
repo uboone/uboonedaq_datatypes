@@ -16,6 +16,8 @@
 #define UNUSED(x) (void)(x)
 #define hex(w,d) std::setw(w) << std::setfill('0') << std::hex << d
 
+std::string demangle(const std::type_info  &type_info) noexcept;
+
 namespace ub_data_types =gov::fnal::uboone::datatypes;
 
 namespace gov {
@@ -42,6 +44,11 @@ public:
     size_t size() const {
         return std::distance(begin(), end());
     }
+    
+    size_t size_bytes() const {
+        return std::distance(begin(), end())*sizeof(TYPE);
+    }
+    
     bool compare(ub_RawDataBlock const&,bool do_rethrow=false) const throw(datatypes_exception);
     
 private:
@@ -79,7 +86,6 @@ typedef ub_RawDataBlock< raw_data_container,raw_data_type> ub_RawData;
 
 #define STRTAB "            "
 
-std::string demangle(const std::type_info  &type_info) noexcept;
 std::string debugInfo(ub_RawData const& data) noexcept;
 std::string debugInfoShort(ub_RawData const& data) noexcept;
 

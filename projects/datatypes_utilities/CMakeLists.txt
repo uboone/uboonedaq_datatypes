@@ -10,6 +10,8 @@ add_executable(fragmentReader fragmentReader.cc)
 
 add_executable(eventReader eventReader.cc)
 
+add_executable(exportRawFragments exportRawFragments.cc)
+
 target_link_libraries(fragmentReader
     ${COMMON_PROJECT_LIBS}
     ubdata_types
@@ -24,10 +26,15 @@ target_link_libraries(eventReader
     ${COMMON_PROJECT_LIBS}
     ubdata_types
     )
+
+target_link_libraries(exportRawFragments
+    ${COMMON_PROJECT_LIBS}
+    ubdata_types
+    )
     
 install_headers()
 
 install_source()
 
-install( TARGETS dumpEvents fragmentReader eventReader
+install( TARGETS dumpEvents fragmentReader eventReader exportRawFragments
          DESTINATION ${flavorqual_dir}/bin )

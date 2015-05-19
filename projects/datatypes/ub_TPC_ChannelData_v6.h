@@ -64,10 +64,10 @@ void ub_TPC_ChannelData_v6::decompress(std::vector<T>& uncompressed) const throw
   // Dump check for debugging.
   for(it = raw.begin(); it!= raw.end(); it++) {
 
-    const uint16_t& word = *it;
+    uint16_t word = *it;
     //if it's not a compressed word, just put it on the uncompressed vector
     if( (word & 0x8000)==0 ) {
-      last_uncompressed_word = word&0x7ff;
+      last_uncompressed_word = word&0xfff;
       // explicit conversion to templated type. Use push_back if size to small, otherwise [] is faster.
       // if(outpos >= uncompressed.size()) uncompressed.push_back((T)(last_uncompressed_word));
       // else uncompressed[outpos] = (  (T)(last_uncompressed_word)  );

@@ -39,6 +39,7 @@ const std::map<const std::string, SystemDesignator> stringToSystemDesignator
 
 typedef SystemDesignator SystemDesignator_t;
 
+std::string demangle(const std::type_info  &type_info) noexcept;
 
 #endif //_UBOONE_DATATYPES_COMMON_H
 
