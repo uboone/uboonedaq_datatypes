@@ -13,11 +13,13 @@ extern "C"  DissectorFactory& getDissectorFactory()
 
 typedef  DissectorAdapter<ub_PMT_CrateData_v6> ub_PMT_CrateData_v6_dissector_t;
 typedef  DissectorAdapter<ub_TPC_CrateData_v6> ub_TPC_CrateData_v6_dissector_t;
+typedef  DissectorAdapter<ub_Trigger_CrateData_v6> ub_Trigger_CrateData_v6_dissector_t;
 
 DissectorFactory::DissectorFactory()
 {
   registerDissector("tpc",6,&ub_TPC_CrateData_v6_dissector_t::buildCrateHeader);
   registerDissector("pmt",6,&ub_PMT_CrateData_v6_dissector_t::buildCrateHeader);
+  registerDissector("trigger",6,&ub_Trigger_CrateData_v6_dissector_t::buildCrateHeader);
 }
 
 DissectorFactory::~DissectorFactory() { 

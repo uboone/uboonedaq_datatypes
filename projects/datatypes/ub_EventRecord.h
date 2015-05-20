@@ -3,6 +3,7 @@
 
 
 #include <assert.h>
+#include <numeric>
 #include <atomic>
 #include "evttypes.h"
 #include "constants.h"
@@ -47,6 +48,12 @@ public:
 
     typedef std::map<int,pmt_crate_data_t const&> pmt_map_t;
 
+    typedef std::tuple< raw_fragment_data_t,
+                        std::unique_ptr<ub_RawData>,
+                        std::unique_ptr<trig_crate_data_t> > trig_crate_data_tuple_t;
+    typedef std::map<int,trig_crate_data_tuple_t> trig_seb_map_t;
+    typedef std::map<int,trig_crate_data_t const&> trig_map_t;
+
     typedef std::vector<raw_fragment_data_t const*> fragment_references_t;
 
     static const uint8_t DAQ_version_number = gov::fnal::uboone::datatypes::constants::DATATYPES_VERSION;
@@ -65,8 +72,9 @@ public:
 
     bool compare(ub_EventRecord const& event_record, bool do_rethrow) const throw(datatypes_exception);
 
-    const tpc_map_t getTPCSEBMap() const throw(datatypes_exception);
-    const pmt_map_t getPMTSEBMap() const throw(datatypes_exception);
+    const tpc_map_t  getTPCSEBMap() const throw(datatypes_exception);
+    const pmt_map_t  getPMTSEBMap() const throw(datatypes_exception);
+    const trig_map_t getTRIGSEBMap() const throw(datatypes_exception);
     std::size_t getFragmentCount() const noexcept;
     void updateDTHeader() throw (datatypes_exception);
 
@@ -76,14 +84,12 @@ public:
     void setTriggerBoardClock(ub_TriggerBoardClock const& trigger_board_time) noexcept;
     void setLocalHostTime(ub_LocalHostTime const& localhost_time) noexcept;
     
-    void setTriggerData (ub_TriggerData const& trigger_data) noexcept;   
     void setBeamRecord(ub_BeamRecord const& beam_record) noexcept;
     
     ub_GPS_Time const& GPSTime() const noexcept;    
     ub_TriggerBoardClock const& TriggerBoardClock() const noexcept;
     ub_LocalHostTime const& LocalHostTime() const noexcept;
     
-    ub_TriggerData const& triggerData()const noexcept;
     ub_BeamRecord const& beamRecord()const noexcept;
     ub_BeamRecord& beamRecord() noexcept;
 
@@ -93,6 +99,8 @@ public:
     //do your custom out-of-class specialization if needed
     template <typename EVENTFRAGMENTPTR_TYPE>
             void releaseFragmentsAs( EVENTFRAGMENTPTR_TYPE*  );
+    
+    static int getEventRecordVersion() noexcept;
 private:
     void  getFragments(fragment_references_t& fragments) const throw(datatypes_exception);
 private:
@@ -101,19 +109,21 @@ private:
     global_header_t    _global_header;
     tpc_seb_map_t      _tpc_seb_map;
     pmt_seb_map_t      _pmt_seb_map;
-
     
-    ub_TriggerData       _trigger_data;
+    trig_seb_map_t     _trigger_seb_map;
+
     ub_BeamRecord        _beam_record;
     
     mutable std::atomic<uint16_t> _crate_serialization_mask={0xFFFF};
-    
+    static int eventRecordVersion;
+
 #define UNUSED(x) (void)(x)
     friend class boost::serialization::access;
     template<class Archive>
     void save(Archive & ar, const unsigned int version) const
     {
         UNUSED(version);
+        
         //BEGIN SERIALIZE RAW EVENT FRAGMENT DATA
         fragment_references_t fragments;
         getFragments(fragments);
@@ -146,7 +156,6 @@ private:
         if(version>0)
         {
             ar << _global_header;
-            //ar << _trigger_data;            
             //ar << _beam_record;
         }
         //this must be the last step
@@ -157,6 +166,9 @@ private:
     void load(Archive & ar, const unsigned int version)
     {
         UNUSED(version);
+        
+        eventRecordVersion=version;
+        
         //BEGIN SERIALIZE RAW EVENT FRAGMENT DATA
         // read bookkeeping info
         ar.load_binary(&_bookkeeping_header,ub_event_header_size);
@@ -187,7 +199,6 @@ private:
         if(version>0)
         {
             ar >> _global_header;
-            //ar << _trigger_data;            
             //ar << _beam_record;
         }
 

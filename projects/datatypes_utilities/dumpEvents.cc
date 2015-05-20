@@ -15,6 +15,8 @@
 
 using namespace gov::fnal::uboone::datatypes;
 
+
+
 int main(int argc, char **argv)
 {
   std::string fileName;
@@ -30,14 +32,16 @@ int main(int argc, char **argv)
   
   std::ifstream is ( fileName , std::ios::binary | std::ios::in);
   int i{0};
-  try{while(true){
+  try{
+  while(true){
     boost::archive::binary_iarchive ia ( is );      
     ub_EventRecord  eventRecord;
     ia >> eventRecord;
     std::cout << "+++++ Event: " << ++i << "\n";
     std::cout << eventRecord.debugInfo();        
   
-  }}catch(...){
+  }
+  }catch(...){
   std::cout << "Done.";
   }
 }

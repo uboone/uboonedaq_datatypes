@@ -9,13 +9,6 @@
 
 #include "uboone_data_utils.h"
 
-using namespace ub_data_types;
-
-namespace gov {
-namespace fnal {
-namespace uboone {
-namespace datatypes {
-
 std::string demangle(const std::type_info  &type_info) noexcept
 {
     int     status;
@@ -24,6 +17,13 @@ std::string demangle(const std::type_info  &type_info) noexcept
     free(name);
     return retValue.empty()?type_info.name():retValue;
 }
+
+using namespace ub_data_types;
+
+namespace gov {
+namespace fnal {
+namespace uboone {
+namespace datatypes {
 
 std::string debugInfo(ub_RawData const& data) noexcept
 {

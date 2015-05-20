@@ -9,13 +9,20 @@ ub_EventRecord::ub_EventRecord()
      _global_header(),
      _tpc_seb_map(),
      _pmt_seb_map(),
-     _trigger_data(),
+     _trigger_seb_map(),
      _beam_record() {
 }
 
 void ub_EventRecord::setCrateSerializationMask(uint16_t mask) noexcept
 {
     _crate_serialization_mask.store(mask);
+}
+
+int ub_EventRecord::eventRecordVersion = constants::DATATYPES_VERSION;
+
+int ub_EventRecord::getEventRecordVersion() noexcept
+{
+    return eventRecordVersion;
 }
 
 ub_EventRecord::~ub_EventRecord()
@@ -27,6 +34,10 @@ ub_EventRecord::~ub_EventRecord()
     for(auto& tpc : _tpc_seb_map)
             std::get<0>(tpc.second).clear();
     _tpc_seb_map.clear();
+
+    for(auto& trg : _trigger_seb_map)
+            std::get<0>(trg.second).clear();
+    _trigger_seb_map.clear();
 }
 
 void ub_EventRecord::setGlobalHeader (global_header_t & header) noexcept {
@@ -36,10 +47,6 @@ void ub_EventRecord::setGlobalHeader (global_header_t & header) noexcept {
 global_header_t& ub_EventRecord::getGlobalHeader() noexcept {
     return _global_header;
 }
-void ub_EventRecord::setTriggerData (ub_TriggerData const& trigger_data) noexcept {
-     _trigger_data = trigger_data;
-}
-
 
 void ub_EventRecord::setGPSTime(ub_GPS_Time const& gps_time) noexcept{
     _global_header.setGPSTime(gps_time);
@@ -69,10 +76,6 @@ ub_LocalHostTime const& ub_EventRecord::LocalHostTime() const noexcept{
     return _global_header.getLocalHostTime();
 }
     
-ub_TriggerData const& ub_EventRecord::triggerData()const noexcept {
-    return _trigger_data;
-}
-
 ub_BeamRecord const& ub_EventRecord::beamRecord()const noexcept {
     return _beam_record;
 }
@@ -80,7 +83,7 @@ ub_BeamRecord const& ub_EventRecord::beamRecord()const noexcept {
 ub_BeamRecord& ub_EventRecord::beamRecord() noexcept {return _beam_record;}
 
 std::size_t ub_EventRecord::getFragmentCount() const noexcept{
-  return _pmt_seb_map.size()+_tpc_seb_map.size();
+  return _pmt_seb_map.size()+_tpc_seb_map.size()+_trigger_seb_map.size();
 }
 
 void ub_EventRecord::addFragment(raw_fragment_data_t& fragment) throw(datatypes_exception)
@@ -91,7 +94,35 @@ void ub_EventRecord::addFragment(raw_fragment_data_t& fragment) throw(datatypes_
     uint8_t crate_type {crate_header.crate_type};
 
     
-    if(crate_type == 2)
+    if(crate_type == SystemDesignator::TRIGGER_SYSTEM)
+      {
+	_trigger_seb_map.emplace( crate_number,std::make_tuple(raw_fragment_data_t(),
+							       std::unique_ptr<ub_RawData>(nullptr),
+							       std::unique_ptr<trig_crate_data_t>(nullptr)));
+      
+        std::get<0>(_trigger_seb_map[crate_number]).swap(fragment);
+        
+        raw_fragment_data_t& tpm_fragment=std::get<0>(_trigger_seb_map[crate_number]);
+
+        artdaq_fragment_header const* artdaq_header= reinterpret_cast<artdaq_fragment_header const*>(&* tpm_fragment.begin());
+        ub_RawData data(tpm_fragment.begin(),tpm_fragment.end());
+        crate_header_t const & crate_header= crate_header_t::getHeaderFromFragment(data);
+
+        auto raw_data = std::make_unique<ub_RawData>(tpm_fragment.begin()+artdaq_header->metadata_word_count+
+                        artdaq_fragment_header::num_words(),tpm_fragment.end());
+        std::get<1>(_trigger_seb_map[crate_number]).swap(raw_data);
+        auto crate_data = std::make_unique<trig_crate_data_t>(*std::get<1>(_trigger_seb_map[crate_number]));
+        auto header=std::make_unique<crate_header_t>(crate_header);
+        crate_data->crateHeader().swap(header);
+        std::get<2>(_trigger_seb_map[crate_number]).swap(crate_data);
+        getGlobalHeader().setNumberOfBytesInRecord(getGlobalHeader().getNumberOfBytesInRecord()+crate_header.size*sizeof(raw_data_type));
+        getGlobalHeader().setEventNumberCrate (crate_header.event_number);
+            
+        getGlobalHeader().setLocalHostTime(header->local_host_time);
+        getGlobalHeader().setTriggerBoardClock(header->trigger_board_time);
+        getGlobalHeader().setGPSTime(header->gps_time);
+    }
+    else if(crate_type == SystemDesignator::PMT_SYSTEM)
     {
         _pmt_seb_map.emplace( crate_number,std::make_tuple(
                                   raw_fragment_data_t(),
@@ -116,14 +147,8 @@ void ub_EventRecord::addFragment(raw_fragment_data_t& fragment) throw(datatypes_
         getGlobalHeader().setNumberOfBytesInRecord(getGlobalHeader().getNumberOfBytesInRecord()+crate_header.size*sizeof(raw_data_type));
         getGlobalHeader().setEventNumberCrate (crate_header.event_number);
             
-        //getGlobalHeader().setSeconds(header->gps_time.second);
-        //getGlobalHeader().setMicroSeconds(header->gps_time.micro);
-        //getGlobalHeader().setNanoSeconds(header->gps_time.nano);
-        getGlobalHeader().setLocalHostTime(header->local_host_time);
-        getGlobalHeader().setTriggerBoardClock(header->trigger_board_time);
-        getGlobalHeader().setGPSTime(header->gps_time);
     }
-    else
+    else if(crate_type == SystemDesignator::TPC_SYSTEM)
     {
         _tpc_seb_map.emplace(crate_number,std::make_tuple(
                                  raw_fragment_data_t(),
@@ -167,6 +192,13 @@ const ub_EventRecord::pmt_map_t ub_EventRecord::getPMTSEBMap() const throw(datat
         retMap.emplace(pmt.first,*std::get<2>(pmt.second));
     return retMap;
 }
+const ub_EventRecord::trig_map_t ub_EventRecord::getTRIGSEBMap() const throw(datatypes_exception)
+{
+    trig_map_t retMap;
+    for(auto& trg : _trigger_seb_map)
+        retMap.emplace(trg.first,*std::get<2>(trg.second));
+    return retMap;
+}
 
 #define CHECK_BIT(var,pos) ((var) & (1<<(pos)))
 
@@ -185,6 +217,13 @@ void ub_EventRecord::getFragments(fragment_references_t& fragments) const throw(
         if(CHECK_BIT(serialization_mask,pmt.first))
             fragments.emplace_back(&std::get<raw_fragment_data_t>(pmt.second));
     }    
+
+    for(auto& trg : _trigger_seb_map)
+    {
+        if(CHECK_BIT(serialization_mask,trg.first))
+            fragments.emplace_back(&std::get<raw_fragment_data_t>(trg.second));
+    }    
+
 }
 
 void ub_EventRecord::markAsIncompleteEvent() noexcept
@@ -240,6 +279,9 @@ bool ub_EventRecord::compare(ub_EventRecord const& event_record, bool do_rethrow
 
         if(_pmt_seb_map.size() !=event_record._pmt_seb_map.size())
             throw datatypes_exception( make_compare_message("_pmt_seb_map", "size", _pmt_seb_map.size(),event_record._pmt_seb_map.size()));
+
+        if(_trigger_seb_map.size() !=event_record._trigger_seb_map.size())
+            throw datatypes_exception( make_compare_message("_trigger_seb_map", "size", _trigger_seb_map.size(),event_record._trigger_seb_map.size()));
 
         for(tpc_seb_map_t::value_type const& tpc : _tpc_seb_map)
         {
@@ -298,7 +340,14 @@ std::string ub_EventRecord::debugInfo()const noexcept {
     os << "\n TPC fragment count=" << tpcs.size();
     os << "\n PMT fragment count=" << pmts.size() << std::endl;
     os << _global_header.debugInfo() << std::endl;
-    os << _trigger_data.debugInfo() << std::endl;    
+
+    os << "\nTRG fragments";
+    for(auto const& trg : _trigger_seb_map){
+        raw_fragment_data_t const& tpm_fragment=std::get<raw_fragment_data_t>(trg.second);
+        ub_RawData data(tpm_fragment.begin(),tpm_fragment.end());
+	os << "\n" <<  crate_header_t::getHeaderFromFragment(data).debugInfo();
+	os << "\n" <<  std::get<std::unique_ptr<trig_crate_data_t>>(trg.second)->debugInfo();
+    }
     os << _beam_record.debugInfo() << std::endl;
 
     os << "\nTPC fragments";

@@ -44,6 +44,20 @@ ub_CrateHeader_v6::ub_CrateHeader_v6(ub_PMT_CardHeader_v6 const& cardHeader):
                          local_host_time {0,0}
 {}
 
+ub_CrateHeader_v6::ub_CrateHeader_v6(ub_Trigger_Header_v6 const& header):
+    data_transmission_header {},
+                         complete {0},crateBits {0},
+                         size {0},
+                         crate_number {100},
+                         card_count {0},
+                         event_number {header.getTriggerNumber()},
+                         frame_number {header.getFrame()},
+                         gps_time {0,0,0},
+                         trigger_board_time {header.getFrame(),
+			                     header.get2MHzSampleNumber(),
+			                     header.get16MHzRemainderNumber()},
+                         local_host_time {0,0}
+{}
 
 void ub_CrateHeader_v6::copyIn(ub_CrateHeader_v6 const& source)  noexcept
 {
@@ -79,7 +93,7 @@ std::string ub_CrateHeader_v6::debugInfo()const noexcept
     os << "  Crate Complete " << (unsigned int) complete;
     os << "  Crate seb_time_sec " << (unsigned int)local_host_time.seb_time_sec;
     os << "  Crate seb_time_usec " << (unsigned int) local_host_time.seb_time_usec;
-    if(crate_number == 10) {
+    if(crate_number == 100) {
         os << "  \n Crate 10 gps_time (sec, micro, nano) " << gps_time.second << ",  "
         << gps_time.micro << ",  " << gps_time.nano ;
         os << "  \n Crate 10 daqClockTime (frame, sample, div) " << (unsigned int) trigger_board_time.frame
@@ -164,25 +178,25 @@ bool ub_CrateHeader_v6::compare(ub_CrateHeader_v6 const& crate_header,bool do_re
         if(!data_transmission_header.compare(crate_header.data_transmission_header))
             throw datatypes_exception(make_compare_message("ub_CrateHeader_v6", "data_transmission_header", "data_transmission_header","data_transmission_header"));
 
-        if(!complete!=crate_header.complete)
+        if(complete!=crate_header.complete)
             throw datatypes_exception(make_compare_message("ub_CrateHeader_v6", "complete", complete,crate_header.complete));
 
-        if(!crateBits!=crate_header.crateBits)
+        if(crateBits!=crate_header.crateBits)
             throw datatypes_exception(make_compare_message("ub_CrateHeader_v6", "crateBits", to_hex_string(crateBits),to_hex_string(crate_header.crateBits)));
 
-        if(!size!=crate_header.size)
+        if(size!=crate_header.size)
             throw datatypes_exception(make_compare_message("ub_CrateHeader_v6", "size", size,crate_header.size));
 
-        if(!crate_number!=crate_header.crate_number)
+        if(crate_number!=crate_header.crate_number)
             throw datatypes_exception(make_compare_message("ub_CrateHeader_v6", "crate_number", crate_number,crate_header.crate_number));
 
-        if(!card_count!=crate_header.card_count)
+        if(card_count!=crate_header.card_count)
             throw datatypes_exception(make_compare_message("ub_CrateHeader_v6", "card_count", card_count,crate_header.card_count));
 
-        if(!crate_type!=crate_header.crate_type)
+        if(crate_type!=crate_header.crate_type)
             throw datatypes_exception(make_compare_message("ub_CrateHeader_v6", "crate_type", crate_type,crate_header.crate_type));
 
-        if(!event_number!=crate_header.event_number)
+        if(event_number!=crate_header.event_number)
             throw datatypes_exception(make_compare_message("ub_CrateHeader_v6", "event_number", event_number,crate_header.event_number));
 
 #if 0   //FIXME:GAL implement compare memeber functions and uncomment this block         

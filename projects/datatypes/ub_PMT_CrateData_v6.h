@@ -4,6 +4,7 @@
 
 #include "ub_MarkedRawCrateData.h"
 
+#include "ub_XMITEventHeaderTrailer_v0.h"
 #include "ub_PMT_CardData_v6.h"
 #include "uboone_data_fragment_metadata.h"
 
@@ -12,7 +13,7 @@ namespace fnal {
 namespace uboone {
 namespace datatypes {
 
-class ub_PMT_CrateData_v6 final: public ub_MarkedRawCrateData<ub_PMT_CardData_v6> {
+  class ub_PMT_CrateData_v6 final: public ub_MarkedRawCrateData<ub_PMT_CardData_v6,ub_XMITEventHeader,ub_XMITEventTrailer> {
 public:
     typedef ub_PMT_CardData_v6::ub_CrateHeader ub_CrateHeader_t;
     
@@ -21,7 +22,14 @@ public:
 
     ub_PMT_CrateData_v6 ( ub_PMT_CrateData_v6  && ) = default;
    
-    static constexpr auto typeName="TPC";
+    uint32_t const& getHeaderWord() const noexcept{
+        return header().raw_data;
+    }
+    uint32_t const& getTrailerWord() const noexcept{
+        return trailer().raw_data;
+    }
+
+    static constexpr auto typeName="PMT";
 };
 
 
