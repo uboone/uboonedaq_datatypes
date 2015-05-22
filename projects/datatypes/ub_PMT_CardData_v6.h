@@ -37,7 +37,7 @@ public:
 
     ub_PMT_CardData_v6 ( ub_PMT_CardData_v6  && ) = default;
     
-    static constexpr auto typeName="TPC";
+    static constexpr auto typeName="PMT";
 };
 
 }  // end of namespace datatypes

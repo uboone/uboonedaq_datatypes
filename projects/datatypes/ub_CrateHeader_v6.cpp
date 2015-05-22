@@ -66,7 +66,7 @@ void ub_CrateHeader_v6::copyIn(ub_CrateHeader_v6 const& source)  noexcept
 
 uint64_t ub_CrateHeader_v6::sequenceID() const noexcept
 {
-    return (event_number<32) | frame_number;
+    return frame_number;
 }
 
 void ub_CrateHeader_v6::copyOut(ub_CrateHeader_v6&  target)  noexcept
