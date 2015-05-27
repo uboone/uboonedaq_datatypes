@@ -12,15 +12,18 @@ using namespace gov::fnal::uboone::datatypes;
 bool readFile(std::string const& fileName,raw_data_container<raw_data_type> & retBuff)
 {
     std::ostringstream os;
-
+    try {
     os << "Reading event data file " << fileName;
     std::ifstream file(fileName, std::ios::binary);
+    
+    if (!file.good())
+        throw datatypes_exception(std::string("Unable to open file:").append(fileName));
+        
     file.seekg(0, std::ios::end);
     std::streampos fileSize = file.tellg();
     file.seekg(0, std::ios::beg);
 
-    if(-1 == fileSize)
-    {
+    if(-1 == fileSize) {
         os << ". Exception: file is missing." << std::endl;
         std::cerr <<os.str() <<std::flush;
         return false;
@@ -30,7 +33,11 @@ bool readFile(std::string const& fileName,raw_data_container<raw_data_type> & re
     retBuff.resize(fileSize/sizeof(raw_data_type));
     file.read((char*)&retBuff[0], retBuff.size()*sizeof(raw_data_type));
     os << " into buffer " << std::hex <<  &retBuff << std::endl;
-
+   } catch(std::exception const& e) {
+      std::cerr <<os.str()<<" Message:"<< e.what() <<std::flush;
+      throw;
+   }
+   
    // std::cout <<os.str()<<std::flush;
     return true;
 }
