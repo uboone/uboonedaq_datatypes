@@ -117,15 +117,13 @@ void ub_EventRecord::addFragment(raw_fragment_data_t& fragment) throw(datatypes_
         std::get<2>(_trigger_seb_map[crate_number]).swap(crate_data);
         getGlobalHeader().setNumberOfBytesInRecord(getGlobalHeader().getNumberOfBytesInRecord()+crate_header.size*sizeof(raw_data_type));
         getGlobalHeader().setEventNumberCrate (crate_header.event_number);
-        
-        assert(header->local_host_time.wasSet());
-        assert(header->trigger_board_time.wasSet());
-        assert(header->gps_time.wasSet());
-
-        getGlobalHeader().setLocalHostTime(header->local_host_time);
-        getGlobalHeader().setTriggerBoardClock(header->trigger_board_time);
-        getGlobalHeader().setGPSTime(header->gps_time);
-    }
+	if(crate_header.local_host_time.wasSet())
+	  getGlobalHeader().setLocalHostTime(crate_header.local_host_time);
+	if(crate_header.trigger_board_time.wasSet())
+	  getGlobalHeader().setTriggerBoardClock(crate_header.trigger_board_time);
+	if(crate_header.gps_time.wasSet())
+	  getGlobalHeader().setGPSTime(crate_header.gps_time);
+      }
     else if(crate_type == SystemDesignator::PMT_SYSTEM)
     {
         _pmt_seb_map.emplace( crate_number,std::make_tuple(
