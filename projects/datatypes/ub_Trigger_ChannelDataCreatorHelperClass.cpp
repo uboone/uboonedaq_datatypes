@@ -13,10 +13,10 @@ template<>
 void ub_ChannelDataCreatorHelperClass<ub_Trigger_ChannelData_v6>::populateChannelDataVector(std::vector<ub_Trigger_ChannelData_v6> & channelDataVector)
 {
   try{
-    if(_rawData.size() != size_of(ub_Trigger_Data_v6)){
+    if(_rawData.size() != size_of<ub_Trigger_Data_v6>()){
       std::stringstream ss;
       ss << "Junk data: Trigger Data is not right size. "; 
-      ss << _rawData.size() << " vs " << size_of(ub_Trigger_Data_v6);
+      ss << _rawData.size() << " vs " << size_of<ub_Trigger_Data_v6>();
       throw datatypes_exception(ss.str());
     }
     
