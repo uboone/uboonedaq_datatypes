@@ -32,10 +32,10 @@ void ub_CardDataCreatorHelperClass<MRCD>::populateCardDataVector(std::vector<MRC
     
     int counter{0};
     try{
-    while ( curr_rawData.size() > MRCD::size_of_data_overhead()/sizeof(raw_data_type) )
+    while ( curr_rawData.size() > MRCD::size_of_data_overhead() )
     {   
         counter++;
-        card_raw_data_size = MRCD::size_of_data_overhead()/sizeof(raw_data_type) +
+        card_raw_data_size = MRCD::size_of_data_overhead() +
                              quick_cast<typename MRCD::card_header_type>(curr_rawData.begin()).getWordCount();
                              
         if(card_raw_data_size > curr_rawData.size()){
