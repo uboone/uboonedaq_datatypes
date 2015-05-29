@@ -23,6 +23,9 @@ std::string ub_GPS::debugInfo()const noexcept {
     return os.str();
 }
 
+bool ub_GPS_Time::wasSet() const noexcept{
+  return (second != 0 || micro !=0 || nano !=0);
+}
 
 ub_GPS_Time::ub_GPS_Time (uint32_t sec, uint32_t usec, uint32_t nano_sec)
 :second(sec),micro(usec),nano(nano_sec){}
