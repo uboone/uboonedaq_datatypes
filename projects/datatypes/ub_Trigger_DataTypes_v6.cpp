@@ -36,7 +36,7 @@ std::string ub_Trigger_Header_v6::debugInfo() const noexcept
 
 size_t ub_Trigger_Header_v6::getWordCount() const noexcept
 {
-  return sizeof(ub_Trigger_Data_v6);
+  return ( sizeof(ub_Trigger_Data_v6) / sizeof(raw_data_type) );
 }
 
 std::string ub_Trigger_Data_v6::debugInfo() const noexcept
