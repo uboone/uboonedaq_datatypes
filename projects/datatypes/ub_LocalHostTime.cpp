@@ -19,6 +19,9 @@ std::string ub_LocalHostTime::debugInfo()const noexcept{
       return os.str();
 }
 
+bool ub_LocalHostTime::wasSet() const noexcept{
+  return (seb_time_sec != 0 || seb_time_usec !=0 );
+}
 void HasLocalHostTime::copyOut(ub_LocalHostTime& target) noexcept  {
 update(); target=_myValue; 
 }

@@ -55,7 +55,7 @@ public:
     ub_GPS_Time (uint32_t sec, uint32_t usec, uint32_t nano_sec);
 
     std::string debugInfo()const noexcept;
-    
+    bool wasSet() const noexcept;
 public:
     uint32_t second; // seconds since the epoch.
     uint32_t micro;  // microseconds since the second.
