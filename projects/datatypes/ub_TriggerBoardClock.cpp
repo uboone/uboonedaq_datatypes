@@ -23,6 +23,9 @@ std::string ub_TriggerBoardClock::debugInfo()const noexcept{
       return os.str();
 }
     
+bool ub_TriggerBoardClock::wasSet() const noexcept {
+return (frame!=0 || sample!=0 || div!=0 );
+}
 
 
 void HasTriggerBoardClock::copyOut(ub_TriggerBoardClock& target) noexcept  { 

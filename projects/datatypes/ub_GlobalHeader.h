@@ -7,7 +7,7 @@
 #include "ub_LocalHostTime.h"
 #include "ub_GPS_DataTypes.h"
 #include "ub_TriggerBoardClock.h"
-
+#include <string>
 
 namespace gov {
 namespace fnal {
@@ -28,11 +28,18 @@ class ub_GlobalHeader final{
     template<class Archive>
     void serialize(Archive & ar, const unsigned int version)
     {
-        if(version>0)
-            ar & record_type & record_origin & event_type
-            & run_number & subrun_number & event_number & event_number_crate
-            & numberOfBytesInRecord & number_of_sebs & is_event_complete 
-            & local_host_time & trigger_board_time & gps_time;            
+      if(version>=7)
+	ar & record_type & record_origin & event_type 
+	   & daq_version_label & daq_version_quals
+	   & run_number & subrun_number & event_number & event_number_crate
+	   & numberOfBytesInRecord & number_of_sebs & is_event_complete 
+	   & local_host_time & trigger_board_time & gps_time;            
+
+      else if(version>0)
+	ar & record_type & record_origin & event_type
+	  & run_number & subrun_number & event_number & event_number_crate
+	  & numberOfBytesInRecord & number_of_sebs & is_event_complete 
+	  & local_host_time & trigger_board_time & gps_time;            
     }
     
 public:
@@ -50,6 +57,8 @@ public:
     void setNumberOfSEBs(uint8_t const& s) noexcept;
     void markIncomplete() noexcept;
     void markComplete() noexcept;
+    void setDAQVersionLabel(std::string const& s) noexcept;
+    void setDAQVersionQualifiers(std::string const& s) noexcept;
 
     void setGPSTime(ub_GPS_Time const& gps) noexcept;
     void setTriggerBoardClock(ub_TriggerBoardClock const& trigger_board) noexcept;
@@ -68,7 +77,10 @@ public:
     uint16_t getNanoSeconds() const noexcept;
     uint32_t getNumberOfBytesInRecord() const noexcept;
     uint8_t getNumberOfSEBs() const noexcept;
-    
+    std::string getDAQVersionLabel() const noexcept;
+    std::string getDAQVersionQualifiers() const noexcept;
+
+
     ub_GPS_Time const& getGPSTime() const noexcept;    
     ub_TriggerBoardClock const& getTriggerBoardClock() const noexcept;
     ub_LocalHostTime const& getLocalHostTime() const noexcept;
@@ -94,6 +106,9 @@ private:
 
     uint8_t number_of_sebs;
     uint8_t is_event_complete;
+
+    std::string daq_version_label;
+    std::string daq_version_quals;
     
 
 };

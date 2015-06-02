@@ -29,6 +29,7 @@ class ub_LocalHostTime final
 public:    
     ub_LocalHostTime (uint32_t sec, uint32_t usec);
     std::string debugInfo()const noexcept;
+    bool wasSet() const noexcept;
 
 public:
     uint32_t seb_time_sec=0;  // Read time on SEB. Added v4. Seconds since the epoch.

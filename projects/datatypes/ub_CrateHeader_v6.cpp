@@ -66,7 +66,8 @@ void ub_CrateHeader_v6::copyIn(ub_CrateHeader_v6 const& source)  noexcept
 
 uint64_t ub_CrateHeader_v6::sequenceID() const noexcept
 {
-    return frame_number;
+  //return frame_number;
+  return event_number;
 }
 
 void ub_CrateHeader_v6::copyOut(ub_CrateHeader_v6&  target)  noexcept
@@ -149,10 +150,10 @@ ub_CrateHeader_v6 const& ub_CrateHeader_v6::getHeaderFromFragment(ub_RawData con
 
     if(artdaq_header->word_count!=data.size())
         throw datatypes_exception("Invalid fragment: fragment length doesn't match header word count.");
-
+    /*
     if(!artdaq_header->sequence_id)
         throw datatypes_exception("Invalid fragment: sequence_id is not set");
-
+    */
     if(artdaq_header->metadata_word_count !=artdaq_fragment_header::padded_wordcount_of<ub_CrateHeader_v6>() )
         throw datatypes_exception("Invalid fragment: wrong metadata_word_count, or wrong header version");
 

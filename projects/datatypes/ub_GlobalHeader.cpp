@@ -16,7 +16,10 @@ ub_GlobalHeader::ub_GlobalHeader()
     event_number_crate {0xffffffff},
     numberOfBytesInRecord {0},
     number_of_sebs {0},
-    is_event_complete(1) {
+    is_event_complete(1),
+    daq_version_label {""},
+    daq_version_quals {""}
+{
 }
 
 void ub_GlobalHeader::setRecordType(uint8_t const& type) noexcept {
@@ -45,6 +48,12 @@ void ub_GlobalHeader::setNumberOfBytesInRecord(uint32_t const& size) noexcept{
 }
 void ub_GlobalHeader::setNumberOfSEBs(uint8_t const&s) noexcept {
     number_of_sebs = s;
+}
+void ub_GlobalHeader::setDAQVersionLabel(std::string const& s) noexcept {
+  daq_version_label = s;
+}
+void ub_GlobalHeader::setDAQVersionQualifiers(std::string const& s) noexcept {
+  daq_version_quals = s;
 }
 
 uint8_t ub_GlobalHeader::getRecordType() const noexcept {
@@ -84,6 +93,13 @@ uint32_t ub_GlobalHeader::getNumberOfBytesInRecord() const noexcept {
 uint8_t ub_GlobalHeader::getNumberOfSEBs() const noexcept {
     return number_of_sebs;
 }
+std::string ub_GlobalHeader::getDAQVersionLabel() const noexcept {
+  return daq_version_label;
+}
+std::string  ub_GlobalHeader::getDAQVersionQualifiers() const noexcept {
+  return daq_version_quals;
+}
+
 void ub_GlobalHeader::markIncomplete() noexcept{
     is_event_complete=0;
 }
@@ -125,6 +141,9 @@ std::string ub_GlobalHeader::debugInfo()const noexcept
 {
     std::ostringstream os;
     os << "Object " << demangle(typeid(this)) << ".";
+    os << "\n Software Info:" ;
+    os << "\n  daq_version_label=" << getDAQVersionLabel();
+    os << "\n  daq_version_qualifiers=" << getDAQVersionQualifiers();
     os << "\n Event Info:" ;
     os << "\n  run_number=" << (int) run_number;
     os << "\n  subrun_number=" << (int) subrun_number;
