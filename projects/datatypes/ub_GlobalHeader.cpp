@@ -141,6 +141,9 @@ std::string ub_GlobalHeader::debugInfo()const noexcept
 {
     std::ostringstream os;
     os << "Object " << demangle(typeid(this)) << ".";
+    os << "\n Software Info:" ;
+    os << "\n  daq_version_label=" << getDAQVersionLabel();
+    os << "\n  daq_version_qualifiers=" << getDAQVersionQualifiers();
     os << "\n Event Info:" ;
     os << "\n  run_number=" << (int) run_number;
     os << "\n  subrun_number=" << (int) subrun_number;
