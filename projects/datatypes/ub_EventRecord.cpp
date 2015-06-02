@@ -16,6 +16,7 @@ ub_EventRecord::ub_EventRecord()
 void ub_EventRecord::setCrateSerializationMask(uint16_t mask) noexcept
 {
     _crate_serialization_mask.store(mask);
+    updateDTHeader();
 }
 
 int ub_EventRecord::eventRecordVersion = constants::DATATYPES_VERSION;
@@ -218,12 +219,12 @@ void ub_EventRecord::getFragments(fragment_references_t& fragments) const throw(
         if(CHECK_BIT(serialization_mask,pmt.first))
             fragments.emplace_back(&std::get<raw_fragment_data_t>(pmt.second));
     }    
-
+  
     for(auto& trg : _trigger_seb_map)
     {
-        if(CHECK_BIT(serialization_mask,trg.first))
+        // if(CHECK_BIT(serialization_mask,trg.first))       // NJT: Always keep trigger data!
             fragments.emplace_back(&std::get<raw_fragment_data_t>(trg.second));
-    }    
+    }
 
 }
 
