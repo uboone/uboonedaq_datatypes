@@ -13,6 +13,9 @@ bool  ub_MarkedRawCrateData<ub_Trigger_CardData_v6,empty_header,ub_Trigger_Trail
     return true;
 }
 
+template<>
+bool  ub_MarkedRawCrateData<ub_Trigger_CardData_v6,empty_header,ub_Trigger_Trailer_v6>::_do_dissect=true;
+
 bool ub_Trigger_CrateData_v6::compare(ub_Trigger_CrateData_v6 const & crate_data, bool do_rethrow) const throw(datatypes_exception)
 {
     try

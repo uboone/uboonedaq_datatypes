@@ -35,7 +35,7 @@ void ub_ChannelDataCreatorHelperClass<ub_TPC_ChannelData_v6>::populateChannelDat
                 break;
              }
              else
-                throw datatypes_exception(ss.str());
+                throw datatypes_exception(ss.str(),"datatypes_exception","tpc",-1,-1,channel);
         }
 
         for(ub_RawData::const_iterator curr_position=curr_rawData.begin(); curr_position!=curr_rawData.end(); curr_position++)
@@ -56,12 +56,15 @@ void ub_ChannelDataCreatorHelperClass<ub_TPC_ChannelData_v6>::populateChannelDat
         }
     }
     channelDataVector.swap(retValue);
-    }catch(std::exception& e){         
-         std::cerr << "Caught exception in ub_TPC_ChannelDataCreatorHelperClass::populateChannelDataVector() Message: " <<e.what() << std::endl;
-         std::cerr <<  debugInfoShort(curr_rawData) << std::endl;
-         std::cerr << "Raw Card Data"<< std::endl;         
-         std::cerr <<  debugInfo(_rawData) << std::endl;         
-        throw;
+    } catch(datatypes_exception& e) {
+      std::cerr << "Caught datatype exception in ub_TPC_ChannelDataCreatorHelperClass::populateChannelDataVector() Message: " <<e.what() << std::endl;
+      std::cerr <<  debugInfoShort(curr_rawData) << std::endl;
+      std::cerr << "Raw Card Data"<< std::endl;
+      std::cerr <<  debugInfo(_rawData) << std::endl;
+      throw e;
+    } catch(std::exception& e){         
+      std::cerr << "Caught std exception in ub_TPC_ChannelDataCreatorHelperClass::populateChannelDataVector() Message: " <<e.what() << std::endl;
+      throw e;
     }
     
 }
