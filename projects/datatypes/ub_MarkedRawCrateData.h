@@ -22,17 +22,17 @@ public:
         ub_MarkedRawDataBlock<HEADER,TRAILER>(rawdata),
         _initializeHeaderFromRawData {false},
         _markedRawCardsData {},_dissectableDataSize {0},
-        _crateHeader {nullptr},_isValid {isValid()},
-        _isFullyDissected { canFullyDissect() },
-        _dissection_exception(""){}
+        _crateHeader {nullptr},
+         _dissection_exception(""),_isValid {isValid()},
+        _isFullyDissected { canFullyDissect() } {}
 
     explicit ub_MarkedRawCrateData(ub_RawData const& rawdata,bool initializeHeaderFromRawData):
         ub_MarkedRawDataBlock<HEADER,TRAILER>(rawdata),
         _initializeHeaderFromRawData {initializeHeaderFromRawData},
         _markedRawCardsData {},_dissectableDataSize {0},
-        _crateHeader {nullptr},_isValid {isValid()},
-        _isFullyDissected { canFullyDissect() },
-        _dissection_exception("") {}
+        _crateHeader {nullptr},
+         _dissection_exception(""),_isValid {isValid()},
+        _isFullyDissected { canFullyDissect() } {}
 
     std::vector<CARD> const&  getCards() throw(datatypes_exception);
     std::vector<CARD> const&  getCards() const noexcept{
@@ -71,7 +71,7 @@ public:
     bool compare(ub_MarkedRawCrateData const&,bool do_rethrow=false) const throw(datatypes_exception);
     
     bool                wasDissected() const { return _isFullyDissected; }
-    datatypes_exception dissectionExceptions() const { return _dissection_exception; }
+    datatypes_exception dissectionException() const { return _dissection_exception; }
     
 private:
     bool isValid() noexcept;
@@ -84,9 +84,9 @@ private:
     std::vector<CARD> _markedRawCardsData;
     size_t _dissectableDataSize;
     std::unique_ptr<typename CARD::ub_CrateHeader> _crateHeader;
+    datatypes_exception _dissection_exception;
     bool _isValid;
     bool _isFullyDissected;
-    datatypes_exception _dissection_exception;
     
 };
 
