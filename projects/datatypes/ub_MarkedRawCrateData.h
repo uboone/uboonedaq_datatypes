@@ -110,15 +110,10 @@ void ub_MarkedRawCrateData<CARD,HEADER,TRAILER>::dissectCards() throw(datatypes_
        // std::cerr << ub_data_types::debugInfoShort(ub_RawData{rawdata().begin(),rawdata().begin()+_dissectableDataSize}) <<std::endl;
     }
     catch(datatypes_exception &ex){
-      std::cout << "\n\nCaught in dissectCards.  Throwing.\n\n";
         throw ex;
     }catch(std::exception &e){
-      std::cout << "\n\nCaught in dissectCards.  Throwing.\n\n";
-      
          throw datatypes_exception(std::string("Caught std::exception in ub_MarkedRawCrateData::dissectCards(). Message:").append(e.what()));
     }catch(...){
-      std::cout << "\n\nCaught in dissectCards.  Throwing.\n\n";
-      
         throw datatypes_exception("Caught unknown exception in ub_MarkedRawCrateData::dissectCards().");
     }
 }
