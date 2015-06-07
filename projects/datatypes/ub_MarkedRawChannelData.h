@@ -39,6 +39,7 @@ public:
     ub_MarkedRawChannelData& operator= ( ub_MarkedRawChannelData  && ) = default;
     
     std::string debugInfo()const noexcept;
+    bool        wasDissected() const { return _isFullyDissected; }
 
 private:
     bool isValid() noexcept;

@@ -5,6 +5,7 @@ project(udata_utilities)
 set_source_files_properties(eventReader.cc PROPERTIES COMPILE_FLAGS "-Wno-unused-variable -Wno-unused-but-set-variable")
 
 add_executable(dumpEvents dumpEvents.cc)
+add_executable(dumpEventHeaders dumpEventHeaders.cc)
 
 add_executable(fragmentReader fragmentReader.cc)
 
@@ -18,6 +19,11 @@ target_link_libraries(fragmentReader
     )
     
 target_link_libraries(dumpEvents
+    ${COMMON_PROJECT_LIBS}
+    ubdata_types
+    )
+
+target_link_libraries(dumpEventHeaders
     ${COMMON_PROJECT_LIBS}
     ubdata_types
     )

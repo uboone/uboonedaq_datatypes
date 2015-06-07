@@ -53,12 +53,22 @@ typedef raw_data_container<raw_data_type> raw_fragment_t;
 class datatypes_exception : public std::exception
 {
 public:
-    datatypes_exception(std::string const& message, std::string const& name="datatypes_exception");
+    datatypes_exception(std::string const& message, std::string const& name="datatypes_exception", 
+                        const std::string& crate_type="", int crate=-1, int card=-1, int channel=-1);
     virtual const char *    what () const noexcept;
     virtual ~datatypes_exception() noexcept;
+    virtual const char * crate_type () const noexcept {return _crate_type.c_str();} ;
+    virtual int          crate () const noexcept  {return _crate;};
+    virtual int          card  () const noexcept {return _card;} ;
+    virtual int          channel()  const noexcept {return _channel;};
+    virtual datatypes_exception& operator=(const datatypes_exception& e);
 private:
     std::string _name;
     std::string _message;
+    std::string _crate_type;
+    int         _crate;
+    int         _card;
+    int         _channel;
 };
 
 struct artdaq_fragment_header final{
