@@ -26,8 +26,8 @@ public:
 
     explicit ub_MarkedRawCardData(ub_RawData const& rawdata):
         ub_MarkedRawDataBlock<HEADER,TRAILER>(rawdata),
-     _markedRawChannelsData {},_isValid {isValid()},_isFullyDissected { _dissectChannels ?canFullyDissect():false } {}
-    //_markedRawChannelsData{},_isValid{isValid()},_isFullyDissected{false}{}
+     _markedRawChannelsData {},_isValid {isValid()},_isFullyDissected { _dissectChannels ?canFullyDissect():false },
+     _dissection_exception(""){}
 
     uint32_t const& getCardIDAndModuleWord() const noexcept{
         return ub_MarkedRawDataBlock<HEADER,TRAILER>::header().id_and_module;
@@ -74,6 +74,8 @@ public:
     
     static void neverDissectChannels() {_dissectChannels=false;}
     
+    bool                wasDissected() const { return _isFullyDissected; }
+    datatypes_exception dissectionException() const { return _dissection_exception; }
 private:
     bool isValid() noexcept;
     bool canFullyDissect();
@@ -85,6 +87,7 @@ private:
     std::vector<CHANN>  _markedRawChannelsData;
     bool _isValid;
     bool _isFullyDissected;
+    datatypes_exception _dissection_exception;
 };
 
 template <typename CHANN, typename HEADER,typename TRAILER>
@@ -126,19 +129,20 @@ void ub_MarkedRawCardData<CHANN, HEADER,TRAILER>::dissectChannels() throw(dataty
 template <typename CHANN, typename HEADER,typename TRAILER>
 bool ub_MarkedRawCardData<CHANN, HEADER,TRAILER>::canFullyDissect() 
 {
-    // try
-    // {
+    try
+    {
         dissectChannels();
-    // }
-//     catch(std::exception &ex){
-//         // std::cerr << "Exception:" << ex.what() << std::endl;
-//       //        std::cerr << debugInfo() << std::endl;
-//         return false;
-//     }catch(...){
-//         std::cerr << "Caught unknown exception ub_MarkedRawCardData::canFullyDissect()" << std::endl;
-// //        std::cerr << debugInfo() << std::endl;
-//         return false;
-    // }
+    }
+    catch(datatypes_exception &ex){
+        // std::cerr << "Exception:" << ex.what() << std::endl;
+        //        std::cerr << debugInfo() << std::endl;
+      _dissection_exception = ex;
+      return false;
+    } catch(...){
+      _dissection_exception = datatypes_exception("Caught unknown exception ub_MarkedRawCardData::canFullyDissect()");
+      std::cerr << "Caught unknown exception ub_MarkedRawCardData::canFullyDissect()" << std::endl;
+      return false;
+    }
     
     return true;
 }
