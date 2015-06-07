@@ -23,14 +23,14 @@ public:
         _initializeHeaderFromRawData {false},
         _markedRawCardsData {},_dissectableDataSize {0},
         _crateHeader {nullptr},_isValid {isValid()},
-        _isFullyDissected {canFullyDissect()}{}
+        _isFullyDissected {_do_dissect ?canFullyDissect():false}{}
 
     explicit ub_MarkedRawCrateData(ub_RawData const& rawdata,bool initializeHeaderFromRawData):
         ub_MarkedRawDataBlock<HEADER,TRAILER>(rawdata),
         _initializeHeaderFromRawData {initializeHeaderFromRawData},
         _markedRawCardsData {},_dissectableDataSize {0},
         _crateHeader {nullptr},_isValid {isValid()},
-        _isFullyDissected {canFullyDissect()} {}
+        _isFullyDissected {_do_dissect ?canFullyDissect():false } {}
 
     std::vector<CARD> const&  getCards() throw(datatypes_exception);
     std::vector<CARD> const&  getCards() const noexcept{
@@ -68,12 +68,15 @@ public:
 
     bool compare(ub_MarkedRawCrateData const&,bool do_rethrow=false) const throw(datatypes_exception);
     
+    static void neverDissect() {_do_dissect=false;}
+    
 private:
     bool isValid() noexcept;
     bool canFullyDissect() noexcept;
    
     
 private:
+    static bool  _do_dissect;   
     bool _initializeHeaderFromRawData;
     std::vector<CARD> _markedRawCardsData;
     size_t _dissectableDataSize;
@@ -107,10 +110,15 @@ void ub_MarkedRawCrateData<CARD,HEADER,TRAILER>::dissectCards() throw(datatypes_
        // std::cerr << ub_data_types::debugInfoShort(ub_RawData{rawdata().begin(),rawdata().begin()+_dissectableDataSize}) <<std::endl;
     }
     catch(datatypes_exception &ex){
-        throw;
+      std::cout << "\n\nCaught in dissectCards.  Throwing.\n\n";
+        throw ex;
     }catch(std::exception &e){
+      std::cout << "\n\nCaught in dissectCards.  Throwing.\n\n";
+      
          throw datatypes_exception(std::string("Caught std::exception in ub_MarkedRawCrateData::dissectCards(). Message:").append(e.what()));
     }catch(...){
+      std::cout << "\n\nCaught in dissectCards.  Throwing.\n\n";
+      
         throw datatypes_exception("Caught unknown exception in ub_MarkedRawCrateData::dissectCards().");
     }
 }
