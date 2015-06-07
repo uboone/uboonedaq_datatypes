@@ -42,7 +42,7 @@ ub_Trigger_CrateData_v6::ub_Trigger_CrateData_v6(ub_RawData const& rawdata, bool
 {
 }
 
-ub_Trigger_CardData_v6 const& ub_Trigger_CrateData_v6::getTriggerCardData() throw(datatypes_exception)
+ub_Trigger_CardData_v6 const& ub_Trigger_CrateData_v6::getTriggerCardData() const throw(datatypes_exception)
 {
   if( getCards().size() != 1)
     throw datatypes_exception("Exception in ub_Trigger_CrateData_v6::getTriggerCardData(): getCards() data size not 1.");
@@ -50,12 +50,12 @@ ub_Trigger_CardData_v6 const& ub_Trigger_CrateData_v6::getTriggerCardData() thro
   return getCards().at(0);
 }
 
-ub_Trigger_Header_v6 const& ub_Trigger_CrateData_v6::getTriggerHeader() throw(datatypes_exception)
+ub_Trigger_Header_v6 const& ub_Trigger_CrateData_v6::getTriggerHeader() const throw(datatypes_exception)
 {
   return getTriggerCardData().header();
 }
 
-ub_Trigger_Data_v6 const& ub_Trigger_CrateData_v6::getTriggerData() throw(datatypes_exception)
+ub_Trigger_Data_v6 const& ub_Trigger_CrateData_v6::getTriggerData() const throw(datatypes_exception)
 {
   if( getCards().size() != 1)
     throw datatypes_exception("Exception in ub_Trigger_CrateData_v6::getTriggerCardData(): getCards() data size not 1.");
