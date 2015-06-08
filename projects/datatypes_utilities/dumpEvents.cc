@@ -38,7 +38,10 @@ int main(int argc, char **argv)
     ub_EventRecord  eventRecord;
     ia >> eventRecord;
     std::cout << "+++++ Event: " << ++i << "\n";
-    std::cout << eventRecord.debugInfo();        
+    //    std::cout << eventRecord.debugInfo();        
+    // EC: let's just dump the header to cout.
+    global_header_t const& globalHeader = eventRecord.getGlobalHeader();
+    std::cout << globalHeader.debugInfo();
   
   }
   }catch(...){

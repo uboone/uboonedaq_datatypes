@@ -84,6 +84,7 @@ struct ub_Trigger_Header_v6 final
 
     std::string debugInfo()const noexcept;
     size_t      getWordCount() const noexcept;
+    size_t      getModule() const noexcept { return 0; };
 } ;
 static_assert (sizeof(ub_Trigger_Header_v6) == 8, "ub_Trigger_Header_v6 structure size is not correct.");
 

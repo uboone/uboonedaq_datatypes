@@ -4,8 +4,10 @@
 
 using namespace gov::fnal::uboone::datatypes;
 
-datatypes_exception::datatypes_exception(std::string const& message, std::string const& name)
-    :_name(name), _message(message)
+datatypes_exception::datatypes_exception(std::string const& message, std::string const& name
+  // ,const std::string& crate_type, int crate, int card, int channel
+  ) :_name(name), _message(message)
+      // ,_crate_type(crate_type), _crate(crate), _card(card), _channel(channel)
 {
     std::stringstream out;
     out << " " << _name << " Message: " << _message <<".";
@@ -21,6 +23,18 @@ datatypes_exception::~datatypes_exception() noexcept
 {
 
 }
+
+// datatypes_exception& datatypes_exception::operator=(const datatypes_exception& e)
+// {
+//   _name        = e._name      ;
+//   _message     = e._message   ;
+//   _crate_type  = e._crate_type;
+//   _crate       = e._crate     ;
+//   _card        = e._card      ;
+//   _channel     = e._channel   ;
+//   return *this;
+// }
+
 
 bool ub_fragment_header::compare(ub_fragment_header const& header, bool do_rethrow) const throw(datatypes_exception)
 {

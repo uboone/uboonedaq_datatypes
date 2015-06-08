@@ -22,15 +22,17 @@ public:
         ub_MarkedRawDataBlock<HEADER,TRAILER>(rawdata),
         _initializeHeaderFromRawData {false},
         _markedRawCardsData {},_dissectableDataSize {0},
-        _crateHeader {nullptr},_isValid {isValid()},
-        _isFullyDissected {canFullyDissect()}{}
+        _crateHeader {nullptr},
+         _dissection_exception(""),_isValid {isValid()},
+        _isFullyDissected { _do_dissect ?canFullyDissect():false} {}
 
     explicit ub_MarkedRawCrateData(ub_RawData const& rawdata,bool initializeHeaderFromRawData):
         ub_MarkedRawDataBlock<HEADER,TRAILER>(rawdata),
         _initializeHeaderFromRawData {initializeHeaderFromRawData},
         _markedRawCardsData {},_dissectableDataSize {0},
-        _crateHeader {nullptr},_isValid {isValid()},
-        _isFullyDissected {canFullyDissect()} {}
+        _crateHeader {nullptr},
+         _dissection_exception(""),_isValid {isValid()},
+        _isFullyDissected { _do_dissect ?canFullyDissect():false  } {}
 
     std::vector<CARD> const&  getCards() throw(datatypes_exception);
     std::vector<CARD> const&  getCards() const noexcept{
@@ -68,18 +70,26 @@ public:
 
     bool compare(ub_MarkedRawCrateData const&,bool do_rethrow=false) const throw(datatypes_exception);
     
+    static void         doDissect(bool dod)          { _do_dissect = dod ; } // Allow user to turn off unpacking.
+    bool                wasDissected() const { return _isFullyDissected; }
+    datatypes_exception dissectionException() const { return _dissection_exception; }
+    
 private:
     bool isValid() noexcept;
     bool canFullyDissect() noexcept;
    
     
 private:
+    static bool  _do_dissect;   
     bool _initializeHeaderFromRawData;
     std::vector<CARD> _markedRawCardsData;
     size_t _dissectableDataSize;
     std::unique_ptr<typename CARD::ub_CrateHeader> _crateHeader;
+    datatypes_exception _dissection_exception;
     bool _isValid;
     bool _isFullyDissected;
+    
+    
 };
 
 template <typename CARD, typename HEADER, typename TRAILER>
@@ -106,12 +116,18 @@ void ub_MarkedRawCrateData<CARD,HEADER,TRAILER>::dissectCards() throw(datatypes_
         
        // std::cerr << ub_data_types::debugInfoShort(ub_RawData{rawdata().begin(),rawdata().begin()+_dissectableDataSize}) <<std::endl;
     }
+    // If there's a problem unpacking card-level data, sets _fully to false and stores the exception.
     catch(datatypes_exception &ex){
-        throw;
+      _dissection_exception = ex;      
+      throw ex;
     }catch(std::exception &e){
-         throw datatypes_exception(std::string("Caught std::exception in ub_MarkedRawCrateData::dissectCards(). Message:").append(e.what()));
+          datatypes_exception de(std::string("Caught std::exception in ub_MarkedRawCrateData::dissectCards(). Message:").append(e.what()));
+          _dissection_exception = de;
+          throw de;                
     }catch(...){
-        throw datatypes_exception("Caught unknown exception in ub_MarkedRawCrateData::dissectCards().");
+        datatypes_exception de("Caught unknown exception in ub_MarkedRawCrateData::dissectCards().");
+        _dissection_exception = de;
+        throw de;                
     }
 }
 

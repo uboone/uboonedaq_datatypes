@@ -29,9 +29,9 @@ public:
       return trailer().getTrailerWord();
     }
 
-    ub_Trigger_CardData_v6 const& getTriggerCardData() throw(datatypes_exception);
-    ub_Trigger_Header_v6 const&   getTriggerHeader()   throw(datatypes_exception);
-    ub_Trigger_Data_v6 const&     getTriggerData()     throw(datatypes_exception);
+    ub_Trigger_CardData_v6 const& getTriggerCardData() const throw(datatypes_exception);
+    ub_Trigger_Header_v6 const&   getTriggerHeader()   const throw(datatypes_exception);
+    ub_Trigger_Data_v6 const&     getTriggerData()     const throw(datatypes_exception);
 
     static constexpr auto typeName="TRIGGER";
 private:
