@@ -60,6 +60,9 @@ void ub_CardDataCreatorHelperClass<MRCD>::populateCardDataVector(std::vector<MRC
          std::cerr <<  "Details: Card number" << counter << std::endl;
          std::cerr <<  quick_cast<typename MRCD::card_header_type>(curr_rawData.begin()).debugInfo() << std::endl;
         // std::cerr <<  debugInfoShort(curr_rawData) << std::endl;
+
+	 std::cerr << "\n\nFullDataBlock!" << std::endl;
+	 std::cerr << debugInfo(_rawData) << std::endl;
         throw;
     }
 }
