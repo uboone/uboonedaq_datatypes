@@ -27,8 +27,8 @@ void ub_ChannelDataCreatorHelperClass<ub_Trigger_ChannelData_v6>::populateChanne
   }catch(std::exception& e){         
     std::cerr << "Caught exception in ub_Trigger_ChannelDataCreatorHelperClass::populateChannelDataVector() Message: " <<e.what() << std::endl;
     std::cerr <<  debugInfoShort(_rawData) << std::endl;
-    // std::cerr << "Raw Card Data"<< std::endl;         
-    // std::cerr <<  debugInfo(_rawData) << std::endl;         
+    std::cerr << "Raw Card Data"<< std::endl;         
+    std::cerr <<  debugInfo(_rawData) << std::endl;         
     throw;
   }
  }
