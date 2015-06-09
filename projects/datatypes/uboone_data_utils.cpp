@@ -54,6 +54,37 @@ std::string debugInfo(ub_RawData const& data) noexcept
     return os.str();
 }
 
+void printDebugInfo(ub_RawData const& data, std::ostream& os) noexcept
+{
+    os <<"Buffer size is "<< std::dec << std::distance(data.begin(), data.end())  *sizeof(raw_data_type);
+    os << " bytes, or "<< std::distance(data.begin(), data.end()) << " elements " ;
+    os << sizeof(raw_data_type) << " bytes each.\n"<< std::endl;
+
+    size_t counter {0};
+    std::ostringstream ss;
+
+    std::for_each(data.begin(), data.end(),
+		  [&ss,&os,&counter](raw_data_type data) {
+        ss << std::hex <<std::setfill('0') << std::setw(4) << data ;
+        if (++counter%0x10 == 0)
+        {
+            ss <<std::endl  << STRTAB;
+
+            if (counter%0x100 == 0)
+                ss <<std::endl  << STRTAB;
+	    os << ss;
+
+	    ss.str( std::string() );
+	    ss.clear();
+        }
+        else
+            os << " ";
+    }
+                 );
+
+    os << ss;
+}
+
 std::string debugInfoShort(ub_RawData const& data) noexcept
 {
     std::ostringstream os;
