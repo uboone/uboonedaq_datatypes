@@ -42,5 +42,5 @@ install_headers()
 
 install_source()
 
-install( TARGETS dumpEvents fragmentReader eventReader exportRawFragments
+install( TARGETS dumpEvents dumpEventHeaders fragmentReader eventReader exportRawFragments
          DESTINATION ${flavorqual_dir}/bin )
