@@ -87,6 +87,7 @@ typedef ub_RawDataBlock< raw_data_container,raw_data_type> ub_RawData;
 #define STRTAB "            "
 
 std::string debugInfo(ub_RawData const& data) noexcept;
+void printDebugInfo(ub_RawData const&, std::ostream&) noexcept;
 std::string debugInfoShort(ub_RawData const& data) noexcept;
 
 std::string debugInfoRawData(raw_data_container<raw_data_type>const& data) noexcept;
