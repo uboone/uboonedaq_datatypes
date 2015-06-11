@@ -60,7 +60,7 @@ void ub_ChannelDataCreatorHelperClass<ub_TPC_ChannelData_v6>::populateChannelDat
       std::cerr << "Caught datatype exception in ub_TPC_ChannelDataCreatorHelperClass::populateChannelDataVector() Message: " <<e.what() << std::endl;
       // std::cerr <<  debugInfoShort(curr_rawData) << std::endl;
       std::cerr << "Raw Card Data"<< std::endl;
-      std::cerr <<  debugInfo(_rawData) << std::endl;
+      printDebugInfo(_rawData,std::cerr);
       throw e;
     } catch(std::exception& e){         
       std::cerr << "Caught std exception in ub_TPC_ChannelDataCreatorHelperClass::populateChannelDataVector() Message: " <<e.what() << std::endl;
