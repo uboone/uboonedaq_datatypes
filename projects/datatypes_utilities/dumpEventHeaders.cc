@@ -48,7 +48,8 @@ int main(int argc, char **argv)
     is.seekg(-6,is.end); // Go to position 6 bytes before end of file. 
     uint8_t buff[10];
     is.read((char*) buff, 6);
-    nevents = *(uint32_t*)(buff);
+    uint32_t* buff_ptr = (uint32_t*)(buff);
+    nevents = *buff_ptr;
     uint16_t endOfFileMarker = *(uint16_t*)(buff+4);
     if(endOfFileMarker == 0xe0f0 && (nevents>0 && nevents <1E9) )
       closedCleanly = true; 
