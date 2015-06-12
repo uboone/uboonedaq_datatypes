@@ -50,8 +50,15 @@ void ub_CardDataCreatorHelperClass<MRCD>::populateCardDataVector(std::vector<MRC
         
         curr_rawData=ub_RawData {curr_rawData.begin()+card_raw_data_size,curr_rawData.end()};
         
-        if (quick_cast<uint32_t>(curr_rawData.begin())==EVENTTRAILER)
+	//handle padding zeroes
+	//Note from Wes: padded zeroes do not get added to cardDataVector!
+	//I think this is the right thing to do, but we can revisit.
+	while(quick_cast<uint16_t>(curr_rawData.begin())==0x0000){
+	  if (quick_cast<uint32_t>(curr_rawData.begin())==EVENTTRAILER)
             break;
+	  curr_rawData=ub_RawData{curr_rawData.begin()+1,curr_rawData.end()};
+	}
+
     }
     _dissectableDataSize=std::distance(_rawData.begin(),curr_rawData.begin());
     cardDataVector.swap(retValue);
