@@ -52,9 +52,21 @@ void ub_ChannelDataCreatorHelperClass<ub_TPC_ChannelData_v6>::populateChannelDat
                     throw datatypes_exception("Junk data: Corrupt or truncated channel data");
                     
                 break;
-            }
-        }
-    }
+            }//normal end of channel handling
+
+	    //special case for missing 503f 
+	    else if(curr_trailer==0x503f){
+	      if(std::distance(curr_position,curr_rawData.end())==1 && *curr_position!=curr_trailer){
+                ub_RawData data {curr_rawData.begin(),curr_position+1};
+		retValue.push_back(data);
+		std::cerr << "Missing 0x503f in the channel!" << std::endl;
+                curr_rawData=ub_RawData {curr_position+1,curr_rawData.end()};
+		break;
+	      }
+	    }
+
+        }//end loop over getting data from channels
+    }//end loop over n_channels
     channelDataVector.swap(retValue);
     } catch(datatypes_exception& e) {
       std::cerr << "Caught datatype exception in ub_TPC_ChannelDataCreatorHelperClass::populateChannelDataVector() Message: " <<e.what() << std::endl;
