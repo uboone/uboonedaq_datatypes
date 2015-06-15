@@ -73,9 +73,9 @@ void printDebugInfo(ub_RawData const& data, std::ostream& os) noexcept
             if (counter%0x100 == 0)
                 os <<std::endl  << STRTAB;
 
-	    ss = std::ostringstream();
-	    //ss.str( std::string() );
-	    //ss.clear();
+	    //std::ostringstream().swap(ss);
+	    ss.clear();
+	    ss.str( std::string() );
         }
         else
             ss << " ";
