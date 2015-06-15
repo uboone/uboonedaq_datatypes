@@ -56,7 +56,7 @@ void ub_ChannelDataCreatorHelperClass<ub_TPC_ChannelData_v6>::populateChannelDat
 
 	    //special case for missing 503f 
 	    else if(curr_trailer==0x503f){
-	      if(std::distance(curr_position,curr_rawData.end())==1 && *curr_position!=curr_trailer){
+	      if(std::distance(curr_position,curr_rawData.end())==1 && (*curr_position)!=curr_trailer){
                 ub_RawData data {curr_rawData.begin(),curr_position+1};
 		retValue.push_back(data);
 		std::cerr << "Missing 0x503f in the channel!" << std::endl;
@@ -72,7 +72,8 @@ void ub_ChannelDataCreatorHelperClass<ub_TPC_ChannelData_v6>::populateChannelDat
       std::cerr << "Caught datatype exception in ub_TPC_ChannelDataCreatorHelperClass::populateChannelDataVector() Message: " <<e.what() << std::endl;
       // std::cerr <<  debugInfoShort(curr_rawData) << std::endl;
       std::cerr << "Raw Card Data"<< std::endl;
-      printDebugInfo(_rawData,std::cerr);
+      //printDebugInfo(_rawData,std::cerr);
+      std::cerr << debugInfo(_rawData) << std::endl;
       throw e;
     } catch(std::exception& e){         
       std::cerr << "Caught std exception in ub_TPC_ChannelDataCreatorHelperClass::populateChannelDataVector() Message: " <<e.what() << std::endl;
