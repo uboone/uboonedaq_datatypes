@@ -22,7 +22,7 @@ void ub_ChannelDataCreatorHelperClass<ub_TPC_ChannelData_v6>::populateChannelDat
     try{
     for(size_t channel=0; channel < tpc_card_channel_count; channel++,curr_trailer++)
     {
-        if(*curr_rawData.begin()!=curr_header++)
+        if(*curr_rawData.begin()!=curr_header)
         {
             std::stringstream ss;
             ss << "Junk data: Wrong channel header: (channel, expected, received)=(" <<hex(4,channel) << ", ";
@@ -37,6 +37,7 @@ void ub_ChannelDataCreatorHelperClass<ub_TPC_ChannelData_v6>::populateChannelDat
              else
                 throw datatypes_exception(ss.str());
         }
+	curr_header++;
 
         for(ub_RawData::const_iterator curr_position=curr_rawData.begin(); curr_position!=curr_rawData.end(); curr_position++)
         {

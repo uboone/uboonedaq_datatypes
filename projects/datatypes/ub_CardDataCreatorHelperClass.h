@@ -45,10 +45,16 @@ void ub_CardDataCreatorHelperClass<MRCD>::populateCardDataVector(std::vector<MRC
 	    ss << "\tCardSize=" << card_raw_data_size << " , RemainingSize=" << curr_rawData.size();
             throw datatypes_exception(ss.str());
 	}
+	
         ub_RawData data {curr_rawData.begin(),curr_rawData.begin()+card_raw_data_size};
 
         retValue.emplace_back(data);
         
+	std::stringstream ss;
+	ss << "Card " << counter << ", Size=" << card_raw_data_size;
+	ss << "\tLast word=0x" << std::hex << *(curr_rawData.begin()+card_raw_data_size-1);
+	ss << "\tNext word=0x" << std::hex << *(curr_rawData.begin()+card_raw_data_size);
+
         curr_rawData=ub_RawData {curr_rawData.begin()+card_raw_data_size,curr_rawData.end()};
         
 	//handle padding zeroes
@@ -62,8 +68,14 @@ void ub_CardDataCreatorHelperClass<MRCD>::populateCardDataVector(std::vector<MRC
 	  curr_rawData=ub_RawData{curr_rawData.begin()+1,curr_rawData.end()};
 	}
 
+	ss << "\tFinal word=0x" << std::hex << *(curr_rawData.begin()-1);	
+	ss << "\tNext word=0x" << std::hex << *(curr_rawData.begin());	
+	std::cerr << ss.str() << std::endl;
+
 	if(end_of_event)
 	  break;
+
+	
 
     }
     _dissectableDataSize=std::distance(_rawData.begin(),curr_rawData.begin());
