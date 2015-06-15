@@ -31,6 +31,7 @@ void ub_CardDataCreatorHelperClass<MRCD>::populateCardDataVector(std::vector<MRC
     uint32_t card_raw_data_size;
     
     int counter{0};
+    bool end_of_event{false};
     try{
     while ( curr_rawData.size() > MRCD::size_of_data_overhead() )
     {   
@@ -54,10 +55,15 @@ void ub_CardDataCreatorHelperClass<MRCD>::populateCardDataVector(std::vector<MRC
 	//Note from Wes: padded zeroes do not get added to cardDataVector!
 	//I think this is the right thing to do, but we can revisit.
 	while(quick_cast<uint16_t>(curr_rawData.begin())==0x0000){
-	  if (quick_cast<uint32_t>(curr_rawData.begin())==EVENTTRAILER)
+	  if (quick_cast<uint32_t>(curr_rawData.begin())==EVENTTRAILER){
+	    end_of_event=true;
             break;
+	  }
 	  curr_rawData=ub_RawData{curr_rawData.begin()+1,curr_rawData.end()};
 	}
+
+	if(end_of_event)
+	  break;
 
     }
     _dissectableDataSize=std::distance(_rawData.begin(),curr_rawData.begin());
