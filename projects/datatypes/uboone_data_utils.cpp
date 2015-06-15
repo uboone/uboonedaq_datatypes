@@ -68,21 +68,21 @@ void printDebugInfo(ub_RawData const& data, std::ostream& os) noexcept
         ss << std::hex <<std::setfill('0') << std::setw(4) << data ;
         if (++counter%0x10 == 0)
         {
-            ss <<std::endl  << STRTAB;
+	    os << ss <<std::endl  << STRTAB;
 
             if (counter%0x100 == 0)
-                ss <<std::endl  << STRTAB;
-	    os << ss;
+                os <<std::endl  << STRTAB;
 
-	    ss.str( std::string() );
+	    //std::ostringstream().swap(ss);
 	    ss.clear();
+	    ss.str( std::string() );
         }
         else
-            os << " ";
+            ss << " ";
     }
                  );
 
-    os << ss;
+    os << ss << std::endl;
 }
 
 std::string debugInfoShort(ub_RawData const& data) noexcept
