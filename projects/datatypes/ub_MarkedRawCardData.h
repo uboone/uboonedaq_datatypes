@@ -119,6 +119,8 @@ void ub_MarkedRawCardData<CHANN, HEADER,TRAILER>::dissectChannels() throw(dataty
         _isFullyDissected=true;
     }
     catch(datatypes_exception &ex){        
+      std::cerr << ub_MarkedRawDataBlock<HEADER,TRAILER>::header().debugInfo() << std::endl;
+      std::cerr << ub_MarkedRawDataBlock<HEADER,TRAILER>::trailer().debugInfo() << std::endl;
         throw ex;
     }catch(std::exception &e){
          throw datatypes_exception(std::string("Caught std::exception in ub_MarkedRawCardData::dissectChannels(). Message:").append(e.what()));         

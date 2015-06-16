@@ -109,7 +109,7 @@ void ub_CardDataCreatorHelperClass<MRCD>::populateCardDataVector(std::vector<MRC
     cardDataVector.swap(retValue);
     }
     catch(datatypes_exception& e){
-      if(e.name().compare("size_error"))
+      if(e.name().compare("size_error")==0)
 	throw e;
       else{
 	std::cerr <<  "Caught exception in ub_CardDataCreatorHelperClass::populateCardDataVector() Message: " <<e.what() << std::endl;

@@ -75,6 +75,10 @@ void ub_ChannelDataCreatorHelperClass<ub_TPC_ChannelData_v6>::populateChannelDat
       std::cerr << "Current data block: " << std::endl;
       std::cerr << debugInfo(curr_rawData) << std::endl;
 
+      if(retValue.size()>0){
+	std::cerr << "\nPrevious data block: " << std::endl;
+	std::cerr << debugInfo(retValue.back().rawdata()) << std::endl;
+      }
       std::cerr << "\nRaw Card Data"<< std::endl;
       std::cerr << debugInfo(_rawData) << std::endl;
       throw e;
