@@ -46,7 +46,7 @@ void ub_CardDataCreatorHelperClass<MRCD>::populateCardDataVector(std::vector<MRC
             std::stringstream ss;
 	    ss << "Junk data: Wrong word count in the card header.";
 	    ss << "\tCardSize-1=" << card_raw_data_size-1 << " , RemainingSize=" << curr_rawData.size();
-            throw datatypes_exception(ss.str());
+            throw datatypes_exception(ss.str(),"size_error");
 	}
 	if( *(curr_rawData.begin()+card_raw_data_size-1)==0xffff ){
 	  std::stringstream ss;
@@ -70,7 +70,7 @@ void ub_CardDataCreatorHelperClass<MRCD>::populateCardDataVector(std::vector<MRC
             std::stringstream ss;
 	    ss << "Junk data: Wrong word count in the card header.";
 	    ss << "\tCardSize=" << card_raw_data_size << " , RemainingSize=" << curr_rawData.size();
-            throw datatypes_exception(ss.str());
+            throw datatypes_exception(ss.str(),"size_error");
 	}
 
         ub_RawData data {curr_rawData.begin(),curr_rawData.begin()+card_raw_data_size};
@@ -107,18 +107,33 @@ void ub_CardDataCreatorHelperClass<MRCD>::populateCardDataVector(std::vector<MRC
     }
     _dissectableDataSize=std::distance(_rawData.begin(),curr_rawData.begin());
     cardDataVector.swap(retValue);
-    }catch(std::exception& e){
-         std::cerr <<  "Caught exception in ub_CardDataCreatorHelperClass::populateCardDataVector() Message: " <<e.what() << std::endl;
+    }
+    catch(datatypes_exception& e){
+      if(e.name().compare("size_error"))
+	throw e;
+      else{
+	std::cerr <<  "Caught exception in ub_CardDataCreatorHelperClass::populateCardDataVector() Message: " <<e.what() << std::endl;
          std::cerr <<  "Details: Card number" << counter << std::endl;
          std::cerr <<  quick_cast<typename MRCD::card_header_type>(curr_rawData.begin()).debugInfo() << std::endl;
-        // std::cerr <<  debugInfoShort(curr_rawData) << std::endl;
-
+	 // std::cerr <<  debugInfoShort(curr_rawData) << std::endl;
+	 
 	 std::cerr << "\n\nFullDataBlock!" << std::endl;
 	 std::cerr << debugInfo(_rawData) << std::endl;
-        throw;
+	 throw e;
+      }
     }
-}
-
+    catch(std::exception& e){
+      std::cerr <<  "Caught exception in ub_CardDataCreatorHelperClass::populateCardDataVector() Message: " <<e.what() << std::endl;
+      std::cerr <<  "Details: Card number" << counter << std::endl;
+      std::cerr <<  quick_cast<typename MRCD::card_header_type>(curr_rawData.begin()).debugInfo() << std::endl;
+      // std::cerr <<  debugInfoShort(curr_rawData) << std::endl;
+	
+      std::cerr << "\n\nFullDataBlock!" << std::endl;
+      std::cerr << debugInfo(_rawData) << std::endl;
+      throw e;
+    }
+ }
+ 
 }  // end of namespace datatypes
 }  // end of namespace uboone
 }  // end of namespace fnal
