@@ -58,6 +58,7 @@ public:
         );
     virtual const char *    what () const noexcept;
     virtual ~datatypes_exception() noexcept;
+    std::string name() const noexcept { return _name; };
     // virtual const char * crate_type () const noexcept {return _crate_type.c_str();} ;
     // virtual int          crate () const noexcept  {return _crate;};
     // virtual int          card  () const noexcept {return _card;} ;

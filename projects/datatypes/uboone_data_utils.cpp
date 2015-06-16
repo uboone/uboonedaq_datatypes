@@ -68,7 +68,7 @@ void printDebugInfo(ub_RawData const& data, std::ostream& os) noexcept
         ss << std::hex <<std::setfill('0') << std::setw(4) << data ;
         if (++counter%0x10 == 0)
         {
-	    os << ss <<std::endl  << STRTAB;
+	    os << ss.str() <<std::endl  << STRTAB;
 
             if (counter%0x100 == 0)
                 os <<std::endl  << STRTAB;
@@ -82,7 +82,7 @@ void printDebugInfo(ub_RawData const& data, std::ostream& os) noexcept
     }
                  );
 
-    os << ss << std::endl;
+    os << ss.str() << std::endl;
 }
 
 std::string debugInfoShort(ub_RawData const& data) noexcept

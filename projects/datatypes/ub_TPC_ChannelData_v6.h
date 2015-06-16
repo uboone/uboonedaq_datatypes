@@ -3,6 +3,7 @@
 
 #include "ub_MarkedRawChannelData.h"
 #include "ub_TPC_ChannelHeaderTrailer_v0.h"
+#include <bitset>
 
 namespace gov {
 namespace fnal {
@@ -45,11 +46,13 @@ void ub_TPC_ChannelData_v6::decompress(std::vector<T>& uncompressed) const throw
   /// N. Tagg. May 2015
   ///
 
+  //  1 00001 001 000
+
   // This saves a fair bit of time in the long run.
   // It's much faster to resize() and use operator[] than to reserve, but this is the safest in case of buffer overruns.
   //
   const size_t kMaxBufferSize = 9600;
-  
+  // std::cout << debugInfo();
   // uncompressed.resize(9600); // Set size.
   
   uncompressed.resize(0); // Set size.
@@ -66,6 +69,9 @@ void ub_TPC_ChannelData_v6::decompress(std::vector<T>& uncompressed) const throw
 
     uint16_t word = *it;
     //if it's not a compressed word, just put it on the uncompressed vector
+    // std::cout << "\n\n";
+    std::bitset<16> bits(word);
+    // std::cout << bits << std::endl;
     if( (word & 0x8000)==0 ) {
       last_uncompressed_word = word&0xfff;
       // explicit conversion to templated type. Use push_back if size to small, otherwise [] is faster.
@@ -73,18 +79,36 @@ void ub_TPC_ChannelData_v6::decompress(std::vector<T>& uncompressed) const throw
       // else uncompressed[outpos] = (  (T)(last_uncompressed_word)  );
       // outpos++;
       uncompressed.push_back((T)(last_uncompressed_word));
-      
+      // std::cout << "\n  u" << hex(4,word);
     } else {  // huffman bit on.
+      // std::cout << "\n  h" << hex(4,word);
+      
+      // Padding in LSB
+      // top 2 bits are "header" and always 10
+      // Bit patters are 1,01,001,0001,00001 etc.
+      // Example: 1000 0000 1110 0000
+      //          xxcc cccc cbap pppp
+      // p = padding
+      // a -> increment zero
+      // b -> increment zero 
+      // c -> +3 adc counts.
+      
       uint16_t outword;
       size_t zero_count = 0;
       bool   non_zero_found = false;
-      for(size_t index=0; index<16; ++index){
-        if( !((word >> index) & 0x1) ) {
-          if(non_zero_found) zero_count ++; // Count zeros IF we're past the padding in the right-hand bits.
+
+      // set terminating bit in bit 14.
+      // This is a hack to allow the end-of-pattern to be found.
+      // We COULD rewrite everything, but this is easier right now.
+      word = word | (1<<14);
+      // Then read everything up to and including bit 14.
+      for(size_t index=0; index<15; ++index){
+        if( !((word >> index) & 0x1) ) { // is this bit a zeron?
+          if(non_zero_found) zero_count ++; // Count zerons IF we're past the padding in the right-hand bits.
         }else{
           if(!non_zero_found) non_zero_found= true;
           else {
-            switch(zero_count) { // subst 
+            switch(zero_count) { // subst
               case 0: outword = last_uncompressed_word;    break;
               case 1: outword = last_uncompressed_word -1; break;
               case 2: outword = last_uncompressed_word +1; break;
@@ -94,12 +118,17 @@ void ub_TPC_ChannelData_v6::decompress(std::vector<T>& uncompressed) const throw
               case 6: outword = last_uncompressed_word +3; break;
               default:
               // std::cout << "Huffman decompress unrecoginized bit pattern " << (std::bitset<16>) word << std::endl;
-                throw datatypes_exception("Huffman decompress unrecoginized bit pattern");                
+              // std::cout << "\n----\n";
+              // std::cout << debugInfo();
+              std::stringstream ss;
+              ss << "Huffman decompress unrecoginized bit pattern:" << hex(4,word) << " on word number " << (it-raw.begin());
+                throw datatypes_exception(ss.str());
             }
-            
+
             // if(outpos >= uncompressed.size()) uncompressed.push_back((T)(outword));
             // else uncompressed[outpos] = (  (T)(outword)  );
             // outpos++;
+            // std::cout << " out :" << hex(4,outword);
             uncompressed.push_back((T)(outword));
 
             last_uncompressed_word = outword;   // Activite this line is delta is from last word. Comment out this line if diff is from the last EXPLICIT word, instead of the last huffman-compressed word.
@@ -107,6 +136,53 @@ void ub_TPC_ChannelData_v6::decompress(std::vector<T>& uncompressed) const throw
           }
         }
       }
+      // Whups, haven't pushed the _last one_
+      
+
+      // for(size_t index=0; index<15; ++index){
+     //    if( !((word >> index) & 0x1) ) { // is this bit a zeron?
+     //      if(non_zero_found) zero_count ++; // Count zerons IF we're past the padding in the right-hand bits.
+     //    }else{
+     //      if(!non_zero_found) non_zero_found= true;
+     //      else {
+     //        switch(zero_count) { // subst
+     //          case 0: outword = last_uncompressed_word;    break;
+     //          case 1: outword = last_uncompressed_word -1; break;
+     //          case 2: outword = last_uncompressed_word +1; break;
+     //          case 3: outword = last_uncompressed_word -2; break;
+     //          case 4: outword = last_uncompressed_word +2; break;
+     //          case 5: outword = last_uncompressed_word -3; break;
+     //          case 6: outword = last_uncompressed_word +3; break;
+     //          default:
+     //          // std::cout << "Huffman decompress unrecoginized bit pattern " << (std::bitset<16>) word << std::endl;
+     //          std::stringstream ss;
+     //          ss << "Huffman decompress unrecoginized bit pattern:" << hex(4,word) << " on word number " << (it-raw.begin());
+     //            throw datatypes_exception(ss.str());
+     //        }
+     //
+     //        // if(outpos >= uncompressed.size()) uncompressed.push_back((T)(outword));
+     //        // else uncompressed[outpos] = (  (T)(outword)  );
+     //        // outpos++;
+     //        // std::cout << " out :" << hex(4,outword);
+     //        uncompressed.push_back((T)(outword));
+     //
+     //        last_uncompressed_word = outword;   // Activite this line is delta is from last word. Comment out this line if diff is from the last EXPLICIT word, instead of the last huffman-compressed word.
+     //        zero_count=0;
+     //      }
+     //    }
+     //  }
+
+
+
+      // for(size_t index=0; index<15; ++index){
+      //   if( ((word >> index) & 0x1) ) { uncompressed.push_back((T)(0x001));
+      //
+      //   }
+      // }
+
+      
+
+
       
     } //end else huffman bit on
   }//end for loop over data words
