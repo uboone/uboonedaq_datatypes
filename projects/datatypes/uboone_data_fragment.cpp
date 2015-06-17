@@ -24,6 +24,22 @@ datatypes_exception::~datatypes_exception() noexcept
 
 }
 
+data_size_exception::data_size_exception(size_t const& size, std::string const& message, std::string const& name)
+  : datatypes_exception(name,message), _size(size)
+{
+    std::stringstream out;
+    out << " " << _name << " Size Missing: " << _size << " Message: " << _message <<".";
+    _message = out.str();
+}
+data_size_exception::data_size_exception(std::string const& message, std::string const& name)
+  : datatypes_exception(name,message), _size(0)
+  
+{
+    std::stringstream out;
+    out << " " << _name << " Size Missing: " << _size << " Message: " << _message <<".";
+    _message = out.str();
+}
+
 // datatypes_exception& datatypes_exception::operator=(const datatypes_exception& e)
 // {
 //   _name        = e._name      ;
