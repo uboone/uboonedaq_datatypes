@@ -58,7 +58,7 @@ public:
         );
     virtual const char *    what () const noexcept;
     virtual ~datatypes_exception() noexcept;
-    std::string name() const noexcept { return _name; };
+
     // virtual const char * crate_type () const noexcept {return _crate_type.c_str();} ;
     // virtual int          crate () const noexcept  {return _crate;};
     // virtual int          card  () const noexcept {return _card;} ;
@@ -71,6 +71,20 @@ private:
     // int         _crate;
     // int         _card;
     // int         _channel;
+};
+
+class data_size_exception : std::exception
+{
+public:
+  data_size_exception(size_t const& size, std::string const& message, std::string const& name="data_size_exception");
+  //data_size_exception(std::string const& message, std::string const& name="data_size_exception");
+
+  virtual const char *    what () const noexcept;
+  virtual ~data_size_exception() noexcept;
+ private:
+  std::string _name;
+  std::string _message;
+  size_t      _size;
 };
 
 struct artdaq_fragment_header final{
