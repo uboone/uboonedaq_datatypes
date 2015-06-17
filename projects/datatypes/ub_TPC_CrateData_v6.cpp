@@ -13,8 +13,10 @@ bool  ub_MarkedRawCrateData<ub_TPC_CardData_v6,ub_XMITEventHeader,ub_XMITEventTr
     return true;
 }
 
+  //template<>
+  //bool  ub_MarkedRawCrateData<ub_TPC_CardData_v6,ub_XMITEventHeader,ub_XMITEventTrailer>::_do_dissect=true;
 template<>
-bool  ub_MarkedRawCrateData<ub_TPC_CardData_v6,ub_XMITEventHeader,ub_XMITEventTrailer>::_do_dissect=true;
+bool  ub_MarkedRawCrateData<ub_TPC_CardData_v6,ub_XMITEventHeader,ub_XMITEventTrailer>::_do_dissect=false;
 
 
 bool ub_TPC_CrateData_v6::compare(ub_TPC_CrateData_v6 const & crate_data, bool do_rethrow) const throw(datatypes_exception)

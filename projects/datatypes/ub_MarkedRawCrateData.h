@@ -62,7 +62,7 @@ public:
         return _dissectableDataSize;
     };
 
-    std::unique_ptr<typename CARD::ub_CrateHeader>& crateHeader() throw(datatypes_exception);
+    std::unique_ptr<typename CARD::ub_CrateHeader>& crateHeader() throw(data_size_exception,datatypes_exception);
     std::unique_ptr<typename CARD::ub_CrateHeader> const& crateHeader()const noexcept{
         assert(_crateHeader);
         return _crateHeader;
@@ -145,14 +145,14 @@ bool ub_MarkedRawCrateData<CARD,HEADER,TRAILER>::canFullyDissect() noexcept
         std::cerr << "Exception:" << ex.what() << std::endl;
         return false;
     }catch(...){
-        std::cerr << "Caught unknown exception in ub_MarkedRawCrateData::dissectCards().";
+        std::cerr << "Caught unknown exception in ub_MarkedRawCrateData::canFullyDiessect().";
         return false;
     }
     return true;
 }
 
 template <typename CARD, typename HEADER, typename TRAILER>
-std::unique_ptr<typename CARD::ub_CrateHeader>& ub_MarkedRawCrateData<CARD,HEADER,TRAILER>::crateHeader() throw(datatypes_exception)
+std::unique_ptr<typename CARD::ub_CrateHeader>& ub_MarkedRawCrateData<CARD,HEADER,TRAILER>::crateHeader() throw(data_size_exception,datatypes_exception)
 {
     if(_crateHeader)
         return _crateHeader;
