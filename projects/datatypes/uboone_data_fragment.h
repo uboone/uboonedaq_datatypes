@@ -73,13 +73,14 @@ private:
     // int         _channel;
 };
 
-class data_size_exception : public datatypes_exception
+class data_size_exception : std::exception
 {
 public:
   data_size_exception(size_t const& size, std::string const& message, std::string const& name="data_size_exception");
-  data_size_exception(std::string const& message, std::string const& name="data_size_exception");
-  //virtual const char *    what () const noexcept;
-  //virtual ~data_size_exception() noexcept;
+  //data_size_exception(std::string const& message, std::string const& name="data_size_exception");
+
+  virtual const char *    what () const noexcept;
+  virtual ~data_size_exception() noexcept;
  private:
   std::string _name;
   std::string _message;

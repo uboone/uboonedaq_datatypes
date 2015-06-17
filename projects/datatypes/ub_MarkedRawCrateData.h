@@ -117,7 +117,9 @@ void ub_MarkedRawCrateData<CARD,HEADER,TRAILER>::dissectCards() throw(datatypes_
        // std::cerr << ub_data_types::debugInfoShort(ub_RawData{rawdata().begin(),rawdata().begin()+_dissectableDataSize}) <<std::endl;
     }
     // If there's a problem unpacking card-level data, sets _fully to false and stores the exception.
-    catch(datatypes_exception &ex){
+    catch(data_size_exception &ex){
+      throw ex;
+    }catch(datatypes_exception &ex){
       _dissection_exception = ex;      
       throw ex;
     }catch(std::exception &e){
