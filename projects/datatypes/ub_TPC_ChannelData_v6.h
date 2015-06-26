@@ -101,9 +101,10 @@ void ub_TPC_ChannelData_v6::decompress(std::vector<T>& uncompressed) const throw
       // This is a hack to allow the end-of-pattern to be found.
       // We COULD rewrite everything, but this is easier right now.
       word = word | (1<<14);
+
       // Then read everything up to and including bit 14.
       for(size_t index=0; index<15; ++index){
-        if( !((word >> index) & 0x1) ) { // is this bit a zeron?
+        if( (word & 0x1)==0 ) { // is this bit a zeron?
           if(non_zero_found) zero_count ++; // Count zerons IF we're past the padding in the right-hand bits.
         }else{
           if(!non_zero_found) non_zero_found= true;
@@ -121,7 +122,7 @@ void ub_TPC_ChannelData_v6::decompress(std::vector<T>& uncompressed) const throw
               // std::cout << "\n----\n";
               // std::cout << debugInfo();
               std::stringstream ss;
-              ss << "Huffman decompress unrecoginized bit pattern:" << hex(4,word) << " on word number " << (it-raw.begin());
+              ss << "Huffman decompress unrecoginized bit pattern:" << hex(4,*it) << " on word number " << (it-raw.begin());
                 throw datatypes_exception(ss.str());
             }
 
@@ -135,52 +136,9 @@ void ub_TPC_ChannelData_v6::decompress(std::vector<T>& uncompressed) const throw
             zero_count=0;
           }
         }
-      }
-      // Whups, haven't pushed the _last one_
-      
 
-      // for(size_t index=0; index<15; ++index){
-     //    if( !((word >> index) & 0x1) ) { // is this bit a zeron?
-     //      if(non_zero_found) zero_count ++; // Count zerons IF we're past the padding in the right-hand bits.
-     //    }else{
-     //      if(!non_zero_found) non_zero_found= true;
-     //      else {
-     //        switch(zero_count) { // subst
-     //          case 0: outword = last_uncompressed_word;    break;
-     //          case 1: outword = last_uncompressed_word -1; break;
-     //          case 2: outword = last_uncompressed_word +1; break;
-     //          case 3: outword = last_uncompressed_word -2; break;
-     //          case 4: outword = last_uncompressed_word +2; break;
-     //          case 5: outword = last_uncompressed_word -3; break;
-     //          case 6: outword = last_uncompressed_word +3; break;
-     //          default:
-     //          // std::cout << "Huffman decompress unrecoginized bit pattern " << (std::bitset<16>) word << std::endl;
-     //          std::stringstream ss;
-     //          ss << "Huffman decompress unrecoginized bit pattern:" << hex(4,word) << " on word number " << (it-raw.begin());
-     //            throw datatypes_exception(ss.str());
-     //        }
-     //
-     //        // if(outpos >= uncompressed.size()) uncompressed.push_back((T)(outword));
-     //        // else uncompressed[outpos] = (  (T)(outword)  );
-     //        // outpos++;
-     //        // std::cout << " out :" << hex(4,outword);
-     //        uncompressed.push_back((T)(outword));
-     //
-     //        last_uncompressed_word = outword;   // Activite this line is delta is from last word. Comment out this line if diff is from the last EXPLICIT word, instead of the last huffman-compressed word.
-     //        zero_count=0;
-     //      }
-     //    }
-     //  }
-
-
-
-      // for(size_t index=0; index<15; ++index){
-      //   if( ((word >> index) & 0x1) ) { uncompressed.push_back((T)(0x001));
-      //
-      //   }
-      // }
-
-      
+        word = word >> 1; // Shift a bit to look at the next one.      
+      }      
 
 
       
