@@ -3,6 +3,7 @@
 #include "ub_ChannelDataCreatorHelperClass.h"
 #include "ub_PMT_WindowData_v6.h"
 #include "ub_PMT_ChannelData_v6.h"
+#include <iostream>
 
 namespace gov {
 namespace fnal {
@@ -20,13 +21,12 @@ namespace datatypes {
       //size_t pmt_expected_window_count = 500;
       ub_RawData curr_rawData {_rawData.begin(),_rawData.end()};
     
-    
       try{
         ub_RawData::const_iterator curr_position=curr_rawData.begin();
         while(curr_position!=curr_rawData.end())
           {
 
-            if(curr_rawData.size() < sizeof(ub_PMT_WindowHeader_v6)){
+            if(curr_rawData.size() < ub_PMT_WindowHeader_v6::size_words()){
               std::stringstream ss;
               ss << "Junk data: Left with a PMT window header that is too small."; 
               throw datatypes_exception(ss.str());
@@ -43,11 +43,18 @@ namespace datatypes {
 
               if( ((*curr_position>>6)&0xf)==0 && ((*curr_position>>12)&0x3)==1 ){
                 ub_RawData data {curr_rawData.begin(),curr_position};
-
+                
+                if(data.size() <= ub_PMT_WindowHeader_v6::size_words()){
+                  std::stringstream ss;
+                  ss << "Junk data: Bad PMT Window - not enough words before end-of-window marker. Words: " << data.size() << "\n\t" 
+                           << debugInfo(curr_rawData);
+                  throw datatypes_exception(ss.str());                  
+                }
+                
+                
                 ub_PMT_WindowData_v6 window(data);
-                int channel = window.getChannelNumber();
-		// FIXME Kazu changed the following line to cast the type (else type unmatch). Someone should review.
-                if((channel<0) || ((unsigned int)channel >= channelGroups.size())) {
+                uint16_t channel = window.getChannelNumber();
+                if(channel >= channelGroups.size()) {
                   std::stringstream ss;
                   ss << "Junk data: Bad PMT Window Header channel number: " << channel << "\n\t" 
                            << window.debugInfo();
