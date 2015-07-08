@@ -54,6 +54,8 @@ public:
     typedef std::map<int,trig_crate_data_tuple_t> trig_seb_map_t;
     typedef std::map<int,trig_crate_data_t const&> trig_map_t;
 
+    typedef std::map<int,ub_LaserData> laser_map_t;
+
     typedef std::vector<raw_fragment_data_t const*> fragment_references_t;
 
     static const uint8_t DAQ_version_number = gov::fnal::uboone::datatypes::constants::DATATYPES_VERSION;
@@ -75,6 +77,8 @@ public:
     const tpc_map_t  getTPCSEBMap() const throw(datatypes_exception);
     const pmt_map_t  getPMTSEBMap() const throw(datatypes_exception);
     const trig_map_t getTRIGSEBMap() const throw(datatypes_exception);
+    const laser_map_t getLASERSEBMap() const throw(datatypes_exception);
+
     std::size_t getFragmentCount() const noexcept;
     void updateDTHeader() throw (datatypes_exception);
 
@@ -109,8 +113,8 @@ private:
     global_header_t    _global_header;
     tpc_seb_map_t      _tpc_seb_map;
     pmt_seb_map_t      _pmt_seb_map;
-    
     trig_seb_map_t     _trigger_seb_map;
+    laser_map_t        _laser_seb_map;
 
     ub_BeamRecord        _beam_record;
     
@@ -153,7 +157,12 @@ private:
         //END SERIALIZE RAW EVENT FRAGMENT DATA
 
         // write remaining event details
-        if(version>0)
+
+	if(version>=7){
+	  ar << _global_header;
+	  ar << _laser_seb_map;
+	}
+        else if(version>0)
         {
             ar << _global_header;
             //ar << _beam_record;
@@ -196,7 +205,12 @@ private:
         //END SERIALIZE RAW EVENT FRAGMENT DATA
 
         // write remaining event details
-        if(version>0)
+	if(version>=7)
+	{
+	  ar >> _global_header;
+	  ar >> _laser_seb_map;
+	}
+        else if(version>0)
         {
             ar >> _global_header;
             //ar << _beam_record;
