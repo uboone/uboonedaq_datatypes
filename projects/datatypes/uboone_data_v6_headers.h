@@ -28,6 +28,8 @@
 #include "ub_Trigger_CrateData_v6.h"
 #include "ub_Trigger_DataTypes_v6.h"
 
+#include "ub_LaserData.h"
+
 #include "ub_GlobalHeader.h"
 
 #include "ub_GPS_DataTypes.h"

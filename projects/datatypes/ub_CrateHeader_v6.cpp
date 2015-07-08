@@ -59,6 +59,30 @@ ub_CrateHeader_v6::ub_CrateHeader_v6(ub_Trigger_Header_v6 const& header):
                          local_host_time {0,0}
 {}
 
+ub_CrateHeader_v6::ub_CrateHeader_v6(ub_LaserData const& laserdata)
+  :data_transmission_header {},
+  complete {1},crateBits {0},
+  size {sizeof(ub_LaserData)},
+  //crate_number {200+(uint8_t)laserdata.getID()},
+  card_count {1},
+  crate_type { SystemDesignator::LASER_SYSTEM },
+  //event_number {(unsigned int)laserdata.getCountTrigger()},
+  frame_number {0},
+  gps_time {0,0,0},
+  trigger_board_time {0,0,0},
+  local_host_time {0,0}
+{
+  if(laserdata.getID()<0 || laserdata.getID()>(1<<8))
+    throw datatypes_exception(std::string("Caught exception in ub_CrateHeader_v6 constructor. Bad laser ID"));
+  uint8_t id = laserdata.getID() % (1<<8);
+  crate_number = 200 + id;
+
+  if(laserdata.getCountTrigger()<0)
+    throw datatypes_exception(std::string("Caught exception in ub_CrateHeader_v6 constructor. Bad trigger counter"));
+  event_number = (unsigned int)laserdata.getCountTrigger();
+
+}
+  
 void ub_CrateHeader_v6::copyIn(ub_CrateHeader_v6 const& source)  noexcept
 {
     *this=source;
