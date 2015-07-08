@@ -77,7 +77,7 @@ public:
     const tpc_map_t  getTPCSEBMap() const throw(datatypes_exception);
     const pmt_map_t  getPMTSEBMap() const throw(datatypes_exception);
     const trig_map_t getTRIGSEBMap() const throw(datatypes_exception);
-    const laser_map_t getLASERSEBMap() const throw(datatypes_exception);
+    laser_map_t const& getLASERSEBMap() const throw(datatypes_exception);
 
     std::size_t getFragmentCount() const noexcept;
     void updateDTHeader() throw (datatypes_exception);
