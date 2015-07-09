@@ -23,7 +23,7 @@ class ub_LaserData final{
     template<class Archive>
     void serialize(Archive & ar, const unsigned int version)
     {
-      if(version>=7)
+      if(version>=8)
 	ar 
 	  & laserdata.laserid & laserdata.status
 	  & laserdata.pos_rot & laserdata.pos_lin & laserdata.pos_att & laserdata.pos_iris

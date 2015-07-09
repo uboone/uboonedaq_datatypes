@@ -158,7 +158,7 @@ private:
 
         // write remaining event details
 
-	if(version>=7){
+	if(version>=8){
 	  ar << _global_header;
 	  ar << _laser_seb_map;
 	}
@@ -205,7 +205,7 @@ private:
         //END SERIALIZE RAW EVENT FRAGMENT DATA
 
         // write remaining event details
-	if(version>=7)
+	if(version>=8)
 	{
 	  ar >> _global_header;
 	  ar >> _laser_seb_map;
