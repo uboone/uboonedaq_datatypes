@@ -13,7 +13,7 @@ bool ub_MarkedRawCardData<ub_Trigger_ChannelData_v6,ub_Trigger_Header_v6,empty_t
     return true;
 }
 template<>
-bool ub_MarkedRawCardData<ub_Trigger_ChannelData_v6,ub_Trigger_Header_v6,empty_trailer>::_dissectChannels=true;
+bool ub_MarkedRawCardData<ub_Trigger_ChannelData_v6,ub_Trigger_Header_v6,empty_trailer>::_do_dissect=true;
 
 
 }  // end of namespace datatypes

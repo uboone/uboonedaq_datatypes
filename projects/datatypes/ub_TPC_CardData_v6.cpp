@@ -10,10 +10,15 @@ namespace datatypes {
 template<>
 bool ub_MarkedRawCardData<ub_TPC_ChannelData_v6,ub_TPC_CardHeader_v6,empty_trailer>::isValid() noexcept
 {
-    return true;
+    if(!verify_checksum( data(),  header().getChecksum())){
+      std::cerr << "Wrong channel data checksum\n";
+      return false;
+    }    
+   return true;
 }
+
 template<>
-bool ub_MarkedRawCardData<ub_TPC_ChannelData_v6,ub_TPC_CardHeader_v6,empty_trailer>::_dissectChannels=true;
+bool ub_MarkedRawCardData<ub_TPC_ChannelData_v6,ub_TPC_CardHeader_v6,empty_trailer>::_do_dissect=true;
 
 
 }  // end of namespace datatypes
@@ -44,7 +49,7 @@ bool ub_TPC_CardData_v6::compare(ub_TPC_CardData_v6 const& card_data,bool do_ret
         else
             return false;
     } catch(...) {
-        std::cerr << "Unknown exception in ub_TPC_CardData_v6::compare()";
+        std::cerr << "Unknown exception in ub_TPC_CardData_v6::compare()\n";
         if(do_rethrow)
             throw datatypes_exception("Unknown exception in ub_TPC_CardData_v6::compare()");
         else
