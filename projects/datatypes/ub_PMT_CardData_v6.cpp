@@ -10,10 +10,15 @@ namespace datatypes {
 template<>
 bool ub_MarkedRawCardData<ub_PMT_ChannelData_v6,ub_PMT_CardHeader_v6,ub_PMT_CardTrailer_v6>::isValid() noexcept
 {
-    return true;
+    if(!verify_checksum( data(),  header().getChecksum())){
+      std::cerr << "Wrong channel data checksum\n";
+      return false;
+    }    
+   return true;
 }
+
 template<>
-bool ub_MarkedRawCardData<ub_PMT_ChannelData_v6,ub_PMT_CardHeader_v6,ub_PMT_CardTrailer_v6>::_dissectChannels=true;
+bool ub_MarkedRawCardData<ub_PMT_ChannelData_v6,ub_PMT_CardHeader_v6,ub_PMT_CardTrailer_v6>::_do_dissect=true;
 
 
 }  // end of namespace datatypes

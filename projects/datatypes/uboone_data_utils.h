@@ -134,6 +134,10 @@ std::string to_hex_string(T& value)
     return os.str();
 }
 
+uint32_t compute_checksum(ub_RawData const& data) noexcept;
+
+bool verify_checksum(ub_RawData const&  data,uint32_t checksum) noexcept;
+
 }  // end of namespace datatypes
 }  // end of namespace uboone
 }  // end of namespace fnal
