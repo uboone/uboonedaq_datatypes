@@ -12,7 +12,7 @@ bool ub_MarkedRawCardData<ub_PMT_ChannelData_v6,ub_PMT_CardHeader_v6,ub_PMT_Card
 {
     if(!verify_checksum( data(),  header().getChecksum())){
       std::cerr << "Wrong channel data checksum\n";
-      return false;
+      return true; //continue for now
     }    
    return true;
 }
