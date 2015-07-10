@@ -94,6 +94,7 @@ struct ub_PMT_WindowHeader_v6 final
     }
 
     std::string debugInfo()const noexcept;
+    static size_t size_words() noexcept { return sizeof(ub_PMT_WindowHeader_v6)/sizeof(raw_data_type);};
 } ;
 static_assert (sizeof(ub_PMT_WindowHeader_v6) == 6, "ub_PMT_WindowHeader_v6 structure size is not correct.");
 

@@ -23,6 +23,7 @@ struct DissectorAdapter
         assert(ptr);
         crate_header_t header;
         ptr->crateHeader()->copyOut(header);
+	ptr->rethrowDissectionException();//rethrows any saved exceptions  
         return header;
         }
 };

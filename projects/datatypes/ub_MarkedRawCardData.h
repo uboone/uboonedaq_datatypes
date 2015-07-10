@@ -27,7 +27,7 @@ public:
     explicit ub_MarkedRawCardData(ub_RawData const& rawdata):
         ub_MarkedRawDataBlock<HEADER,TRAILER>(rawdata),
      _markedRawChannelsData {}, _dissection_exception(""),
-     _isValid {isValid()},_isFullyDissected { _dissectChannels ?canFullyDissect():false }
+     _isValid {isValid()},_isFullyDissected {canFullyDissect()}
      {}
 
     uint32_t const& getCardIDAndModuleWord() const noexcept{
@@ -73,28 +73,28 @@ public:
     void dissectChannels() throw(datatypes_exception);
     std::string debugInfo()const noexcept;
     
-    static void neverDissectChannels() {_dissectChannels=false;}
+    static void neverDissectChannels() {_do_dissect=false;}
     
     bool                wasDissected() const { return _isFullyDissected; }
     datatypes_exception dissectionException() const { return _dissection_exception; }
+    void rethrowDissectionException() const throw(data_size_exception, datatypes_exception);
+
 private:
     bool isValid() noexcept;
-    bool canFullyDissect();
+    bool canFullyDissect() noexcept;
 
-protected:    
-    static bool  _dissectChannels;   
-    
 private:
+    static bool  	_do_dissect;   
     std::vector<CHANN>  _markedRawChannelsData;
     datatypes_exception _dissection_exception;
-    bool _isValid;
+    mutable bool _isValid;
     bool _isFullyDissected;
 };
 
 template <typename CHANN, typename HEADER,typename TRAILER>
 std::vector<CHANN>  const&  ub_MarkedRawCardData<CHANN, HEADER,TRAILER>::getChannels() throw(datatypes_exception)
 {
-    if(!_isFullyDissected)
+    if(!_isFullyDissected && _isValid)
         dissectChannels();
 
     return _markedRawChannelsData;
@@ -103,7 +103,7 @@ std::vector<CHANN>  const&  ub_MarkedRawCardData<CHANN, HEADER,TRAILER>::getChan
 template <typename CHANN, typename HEADER,typename TRAILER>
 std::vector<CHANN>  const&  ub_MarkedRawCardData<CHANN, HEADER,TRAILER>::getElements() throw(datatypes_exception)
 {
-    if(!_isFullyDissected)
+    if(!_isFullyDissected && _isValid)
         dissectChannels();
 
     return _markedRawChannelsData;
@@ -114,9 +114,15 @@ void ub_MarkedRawCardData<CHANN, HEADER,TRAILER>::dissectChannels() throw(dataty
 {
     try
     {
+	if(_isFullyDissected)
+	  return;
+	
+	_isValid=false; //reset the isValid flag
         dissector_type<CHANN> dissector(ub_MarkedRawDataBlock<HEADER,TRAILER>::data());
         dissector.populateChannelDataVector(_markedRawChannelsData);
+        
         _isFullyDissected=true;
+        _isValid=true;
     }
     catch(datatypes_exception &ex){        
       std::cerr << ub_MarkedRawDataBlock<HEADER,TRAILER>::header().debugInfo() << std::endl;
@@ -130,20 +136,30 @@ void ub_MarkedRawCardData<CHANN, HEADER,TRAILER>::dissectChannels() throw(dataty
 }
 
 template <typename CHANN, typename HEADER,typename TRAILER>
-bool ub_MarkedRawCardData<CHANN, HEADER,TRAILER>::canFullyDissect() 
+bool ub_MarkedRawCardData<CHANN, HEADER,TRAILER>::canFullyDissect() noexcept
 {
     try
-    {
-        dissectChannels();
+    { 
+        if(! ub_MarkedRawCardData<CHANN,HEADER,TRAILER>::_do_dissect)
+	  return false;
+	  
+	if(!_isValid){
+	  _dissection_exception = datatypes_exception("ub_MarkedRawCardData was marked as invalid.");
+	  return false;
+	}
+	_isFullyDissected=false;
+	dissectChannels();
     }
     catch(datatypes_exception &ex){
         // std::cerr << "Exception:" << ex.what() << std::endl;
         //        std::cerr << debugInfo() << std::endl;
       _dissection_exception = ex;
+      
       return false;
     } catch(...){
       _dissection_exception = datatypes_exception("Caught unknown exception ub_MarkedRawCardData::canFullyDissect()");
       std::cerr << "Caught unknown exception ub_MarkedRawCardData::canFullyDissect()" << std::endl;
+      
       return false;
     }
     
@@ -173,6 +189,14 @@ bool ub_MarkedRawCardData<CHANN, HEADER,TRAILER>::compare(ub_MarkedRawCardData c
     UNUSED(card_data);
     UNUSED(do_rethrow);
     return true;
+}
+
+
+template <typename CHANN, typename HEADER,typename TRAILER>
+void ub_MarkedRawCardData<CHANN, HEADER,TRAILER>::rethrowDissectionException() const throw(data_size_exception,datatypes_exception)
+{
+  if(!_isValid)      
+    throw _dissection_exception;
 }
 
 }  // end of namespace datatypes

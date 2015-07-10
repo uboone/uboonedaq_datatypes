@@ -41,7 +41,9 @@ public:
         ub_RawData(rawdata.begin()+size_of<HEADER>(),rawdata.begin()+(rawdata.size()-size_of<TRAILER>())),
         rawdata.begin(),
         rawdata.begin()+rawdata.size()-size_of<TRAILER>())
-    } {};
+    } { 
+      //assert(rawdata.end() >= rawdata.begin());  assert(data().end() >= data().begin());
+    };
 
     HEADER const&  header() const noexcept {
         return *(reinterpret_cast<HEADER const *>(&*std::get<cast_enum(data_types::header)>(_data_markers)) );

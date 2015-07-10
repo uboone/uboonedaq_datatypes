@@ -17,6 +17,9 @@ typedef  DissectorAdapter<ub_Trigger_CrateData_v6> ub_Trigger_CrateData_v6_disse
 
 DissectorFactory::DissectorFactory()
 {
+  ub_PMT_CardData_v6::neverDissectChannels();
+  ub_TPC_CardData_v6::neverDissectChannels();
+
   registerDissector("tpc",6,&ub_TPC_CrateData_v6_dissector_t::buildCrateHeader);
   registerDissector("pmt",6,&ub_PMT_CrateData_v6_dissector_t::buildCrateHeader);
   registerDissector("trigger",6,&ub_Trigger_CrateData_v6_dissector_t::buildCrateHeader);

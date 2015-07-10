@@ -6,6 +6,7 @@
 #include <stdexcept>
 #include <sstream>
 #include  <iomanip>
+#include  <numeric>
 
 #include "uboone_data_utils.h"
 
@@ -109,6 +110,19 @@ std::string debugInfoShort(ub_RawData const& data) noexcept
 std::string debugInfoRawData(raw_data_container<raw_data_type>const& data) noexcept
 {
     return debugInfo(ub_RawData(data.begin(),data.end()));
+}
+
+
+uint32_t compute_checksum(ub_RawData const& data) noexcept
+{
+      return std::accumulate(data.begin(), data.end(), 0);
+}
+
+bool verify_checksum(ub_RawData const& data,uint32_t checksum) noexcept
+{
+  uint32_t mask = (1 << 24) - 1;
+  uint32_t data_checksum=compute_checksum(data);
+  return (mask & data_checksum) == (mask & checksum);
 }
 
 }  // end of namespace datatypes

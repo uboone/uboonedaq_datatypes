@@ -41,18 +41,25 @@ public:
     std::string debugInfo()const noexcept;
     bool        wasDissected() const { return _isFullyDissected; }
 
+    void rethrowDissectionException() const throw(data_size_exception, datatypes_exception);
 private:
     bool isValid() noexcept;
     bool canFullyDissect() noexcept;
 private:
-    bool _isValid;
+    mutable bool _isValid;
     bool _isFullyDissected;
 };
 
 template <typename HEADER,typename TRAILER>
 bool ub_MarkedRawChannelData<HEADER,TRAILER>::canFullyDissect() noexcept
 {
-    return true;
+    if(!_isValid) {
+    	  //_dissection_exception = datatypes_exception("ub_MarkedRawChannelData was marked as invalid.");
+      return false;
+    }
+    _isFullyDissected=false;
+    //do channel decoding work 
+    return true;           
 }
 
 template <typename HEADER,typename TRAILER>
@@ -71,6 +78,14 @@ std::string ub_MarkedRawChannelData<HEADER,TRAILER>::debugInfo()const noexcept
       os << debugInfoShort(ub_MarkedRawDataBlock<HEADER,TRAILER>::rawdata());
 
     return os.str();
+}
+
+template <typename HEADER,typename TRAILER>
+void ub_MarkedRawChannelData<HEADER,TRAILER>::rethrowDissectionException() const throw(data_size_exception,datatypes_exception)
+{
+ /* if(!_isValid)      
+    throw _dissection_exception;
+    */
 }
 
 }  // end of namespace datatypes
