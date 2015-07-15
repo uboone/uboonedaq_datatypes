@@ -62,7 +62,7 @@ ub_CrateHeader_v6::ub_CrateHeader_v6(ub_Trigger_Header_v6 const& header):
 ub_CrateHeader_v6::ub_CrateHeader_v6(ub_LaserData const& laserdata)
   :data_transmission_header {},
   complete {1},crateBits {0},
-  size {sizeof(ub_LaserData)},
+  size {size_of<ub_LaserData>()},
   //crate_number {200+(uint8_t)laserdata.getID()},
   card_count {1},
   crate_type { SystemDesignator::LASER_SYSTEM },
