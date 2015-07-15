@@ -10,6 +10,7 @@ ub_EventRecord::ub_EventRecord()
      _tpc_seb_map(),
      _pmt_seb_map(),
      _trigger_seb_map(),
+     _laser_seb_map(),
      _beam_record() {
 }
 
@@ -39,6 +40,8 @@ ub_EventRecord::~ub_EventRecord()
     for(auto& trg : _trigger_seb_map)
             std::get<0>(trg.second).clear();
     _trigger_seb_map.clear();
+
+    _laser_seb_map.clear();
 }
 
 void ub_EventRecord::setGlobalHeader (global_header_t & header) noexcept {
@@ -175,6 +178,18 @@ void ub_EventRecord::addFragment(raw_fragment_data_t& fragment) throw(datatypes_
         getGlobalHeader().setEventNumberCrate (crate_header.event_number);
         
     }
+    else if(crate_type == SystemDesignator::LASER_SYSTEM)
+    {
+      raw_fragment_data_t& tpm_fragment=fragment;      
+      artdaq_fragment_header const* artdaq_header= reinterpret_cast<artdaq_fragment_header const*>(&* tpm_fragment.begin());
+      ub_RawData data(tpm_fragment.begin(),tpm_fragment.end());
+
+      //this is klugey, and inefficient, but it's the best I got right now --- WK
+      ub_LaserData mydata;
+      mydata.setData((char*)(&(*(tpm_fragment.begin()+artdaq_header->metadata_word_count+
+				 artdaq_fragment_header::num_words()))));
+      _laser_seb_map.emplace(crate_number,mydata);
+    }
 
     getGlobalHeader().setNumberOfSEBs((uint8_t)(_tpc_seb_map.size() + _pmt_seb_map.size()));    
     updateDTHeader();
@@ -200,6 +215,11 @@ const ub_EventRecord::trig_map_t ub_EventRecord::getTRIGSEBMap() const throw(dat
     for(auto& trg : _trigger_seb_map)
         retMap.emplace(trg.first,*std::get<2>(trg.second));
     return retMap;
+}
+
+ub_EventRecord::laser_map_t const& ub_EventRecord::getLASERSEBMap() const throw(datatypes_exception)
+{
+  return _laser_seb_map;
 }
 
 #define CHECK_BIT(var,pos) ((var) & (1<<(pos)))
@@ -337,10 +357,12 @@ std::string ub_EventRecord::debugInfo()const noexcept {
     std::ostringstream os;
     auto tpcs = getTPCSEBMap();
     auto pmts = getPMTSEBMap();
+    auto lasers = getLASERSEBMap();
 
     os << "Object " << demangle(typeid(this)) << ".";
     os << "\n TPC fragment count=" << tpcs.size();
     os << "\n PMT fragment count=" << pmts.size() << std::endl;
+    os << "\n LASER fragment count=" << lasers.size() << std::endl;
     os << _global_header.debugInfo() << std::endl;
 
     os << "\nTRG fragments";
@@ -366,6 +388,12 @@ std::string ub_EventRecord::debugInfo()const noexcept {
         ub_RawData data(tpm_fragment.begin(),tpm_fragment.end());
         os << "\n" <<  crate_header_t::getHeaderFromFragment(data).debugInfo();
         os << "\n" <<  std::get<std::unique_ptr<pmt_crate_data_t>>(pmt.second)->debugInfo();
+    }
+
+    os << "\nLASER fragments";
+    for(auto const& laser : _laser_seb_map){
+      os << "\n Laser crate number is " << laser.first;
+      os << "\n" << (laser.second).debugInfo();
     }
 
     return os.str();
