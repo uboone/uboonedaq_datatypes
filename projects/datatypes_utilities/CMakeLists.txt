@@ -13,6 +13,11 @@ add_executable(eventReader eventReader.cc)
 
 add_executable(exportRawFragments exportRawFragments.cc)
 
+add_executable(dumpRawPMTCrateFrame dumpRawPMTCrateFrame.cc)
+
+add_executable(dumpRawTPCCrateFrame dumpRawTPCCrateFrame.cc)
+
+
 target_link_libraries(fragmentReader
     ${COMMON_PROJECT_LIBS}
     ubdata_types
@@ -37,10 +42,20 @@ target_link_libraries(exportRawFragments
     ${COMMON_PROJECT_LIBS}
     ubdata_types
     )
-    
+
+target_link_libraries(dumpRawPMTCrateFrame
+    ${COMMON_PROJECT_LIBS}
+    ubdata_types
+    )
+
+target_link_libraries(dumpRawTPCCrateFrame
+    ${COMMON_PROJECT_LIBS}
+    ubdata_types
+    )
+        
 install_headers()
 
 install_source()
 
-install( TARGETS dumpEvents dumpEventHeaders fragmentReader eventReader exportRawFragments
+install( TARGETS dumpEvents dumpEventHeaders fragmentReader eventReader exportRawFragments dumpRawPMTCrateFrame dumpRawTPCCrateFrame
          DESTINATION ${flavorqual_dir}/bin )

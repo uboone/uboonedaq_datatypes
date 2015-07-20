@@ -2,7 +2,8 @@
 BuildItems=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x00)
 
 [MakeBuilder]
-Make Binary=/home/lukhanin/development_daq/run/urebuild-types.sh
+Abort on First Error=false
+Make Binary=/data/lukhanin/development_daq/run/urebuild-types.sh
 Number Of Jobs=1
 
 [Project]
