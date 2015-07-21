@@ -118,7 +118,7 @@ bool verify_checksum(ub_RawData const& data,uint32_t checksum) noexcept
 {
   uint32_t mask = (1 << 24) - 1;
   uint32_t data_checksum=compute_checksum(data);
-//  std::cout << "Checksum expected, actual " << std::hex <<std::setfill('0') << std::setw(8) << checksum << ", "<< std::hex <<std::setfill('0') << std::setw(8) << data_checksum << "\n"; 
+  std::cout << "Checksum expected, actual " << std::hex <<std::setfill('0') << std::setw(8) << checksum << ", "<< std::hex <<std::setfill('0') << std::setw(8) << data_checksum << "\n"; 
   return (mask & data_checksum) == (mask & checksum);
 }
 
