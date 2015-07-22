@@ -111,13 +111,16 @@ void ub_EventRecord::addFragment(raw_fragment_data_t& fragment) throw(datatypes_
         artdaq_fragment_header const* artdaq_header= reinterpret_cast<artdaq_fragment_header const*>(&* tpm_fragment.begin());
         ub_RawData data(tpm_fragment.begin(),tpm_fragment.end());
         crate_header_t const & crate_header= crate_header_t::getHeaderFromFragment(data);
-
+        
+	if(!crate_header.complete)
+	    markAsIncompleteEvent();
+	    
         auto raw_data = std::make_unique<ub_RawData>(tpm_fragment.begin()+artdaq_header->metadata_word_count+
                         artdaq_fragment_header::num_words(),tpm_fragment.end());
         std::get<1>(_trigger_seb_map[crate_number]).swap(raw_data);
-        auto crate_data = std::make_unique<trig_crate_data_t>(*std::get<1>(_trigger_seb_map[crate_number]),true);
+        auto crate_data = std::make_unique<trig_crate_data_t>(*std::get<1>(_trigger_seb_map[crate_number]));//do not recreate crate header
         auto header=std::make_unique<crate_header_t>(crate_header);
-        crate_data->crateHeader().swap(header);
+        crate_data->crateHeader().swap(header); //use crate header created by a seb   
         std::get<2>(_trigger_seb_map[crate_number]).swap(crate_data);
         getGlobalHeader().setNumberOfBytesInRecord(getGlobalHeader().getNumberOfBytesInRecord()+crate_header.size*sizeof(raw_data_type));
         getGlobalHeader().setEventNumberCrate (crate_header.event_number);
@@ -143,12 +146,15 @@ void ub_EventRecord::addFragment(raw_fragment_data_t& fragment) throw(datatypes_
         ub_RawData data(tpm_fragment.begin(),tpm_fragment.end());
         crate_header_t const & crate_header= crate_header_t::getHeaderFromFragment(data);
 
+	if(!crate_header.complete)
+	    markAsIncompleteEvent();
+	    
         auto raw_data = std::make_unique<ub_RawData>(tpm_fragment.begin()+artdaq_header->metadata_word_count+
                         artdaq_fragment_header::num_words(),tpm_fragment.end());
         std::get<1>(_pmt_seb_map[crate_number]).swap(raw_data);
-        auto crate_data = std::make_unique<pmt_crate_data_t>(*std::get<1>(_pmt_seb_map[crate_number]),true);
-        auto header=std::make_unique<crate_header_t>(crate_header);
-        crate_data->crateHeader().swap(header);
+        auto crate_data = std::make_unique<pmt_crate_data_t>(*std::get<1>(_pmt_seb_map[crate_number])); //do not recreate crate header
+        auto header=std::make_unique<crate_header_t>(crate_header);        
+        crate_data->crateHeader().swap(header); //use crate header created by a seb   
         std::get<2>(_pmt_seb_map[crate_number]).swap(crate_data);
         getGlobalHeader().setNumberOfBytesInRecord(getGlobalHeader().getNumberOfBytesInRecord()+crate_header.size*sizeof(raw_data_type));
         getGlobalHeader().setEventNumberCrate (crate_header.event_number);            
@@ -167,16 +173,20 @@ void ub_EventRecord::addFragment(raw_fragment_data_t& fragment) throw(datatypes_
         artdaq_fragment_header const* artdaq_header= reinterpret_cast<artdaq_fragment_header const*>(&* tpm_fragment.begin());
         ub_RawData data(tpm_fragment.begin(),tpm_fragment.end());
         crate_header_t const & crate_header= crate_header_t::getHeaderFromFragment(data);
-
+        
+	if(!crate_header.complete)
+	    markAsIncompleteEvent();
+	    
         auto raw_data = std::make_unique<ub_RawData>(tpm_fragment.begin()+artdaq_header->metadata_word_count+
                         artdaq_fragment_header::num_words(),tpm_fragment.end());
         std::get<1>(_tpc_seb_map[crate_number]).swap(raw_data);
-        auto crate_data = std::make_unique<tpc_crate_data_t>(*std::get<1>(_tpc_seb_map[crate_number]),true);  // True means build crate header from data.
+       
+        auto crate_data = std::make_unique<tpc_crate_data_t>(*std::get<1>(_tpc_seb_map[crate_number])); //do not recreate crate header
         auto header=std::make_unique<crate_header_t>(crate_header);
+        crate_data->crateHeader().swap(header); //use crate header created by a seb         
         std::get<2>(_tpc_seb_map[crate_number]).swap(crate_data);
         getGlobalHeader().setNumberOfBytesInRecord(getGlobalHeader().getNumberOfBytesInRecord()+crate_header.size*sizeof(raw_data_type));
-        getGlobalHeader().setEventNumberCrate (crate_header.event_number);
-        
+        getGlobalHeader().setEventNumberCrate (crate_header.event_number);                
     }
     else if(crate_type == SystemDesignator::LASER_SYSTEM)
     {
@@ -222,7 +232,6 @@ ub_EventRecord::laser_map_t const& ub_EventRecord::getLASERSEBMap() const throw(
   return _laser_seb_map;
 }
 
-#define CHECK_BIT(var,pos) ((var) & (1<<(pos)))
 
 void ub_EventRecord::getFragments(fragment_references_t& fragments) const throw(datatypes_exception)
 {

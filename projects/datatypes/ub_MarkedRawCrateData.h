@@ -45,7 +45,7 @@ public:
     ub_MarkedRawCrateData& operator= ( ub_MarkedRawCrateData const& ) = delete;
     ub_MarkedRawCrateData& operator= ( ub_MarkedRawCrateData && ) = delete;
     
-    ~ub_MarkedRawCrateData(){_crateHeader.release(); _markedRawCardsData.clear();}
+    ~ub_MarkedRawCrateData(){_crateHeader.reset(nullptr); _markedRawCardsData.clear();}
 
     size_t getSizeOfCardsData() const noexcept{
         return ub_MarkedRawDataBlock<HEADER,TRAILER>::data().size();
@@ -88,9 +88,7 @@ private:
     std::unique_ptr<typename CARD::ub_CrateHeader> _crateHeader;
     datatypes_exception _dissection_exception;
     mutable bool _isValid;
-    bool _isFullyDissected;
-    
-    
+    bool _isFullyDissected;        
 };
 
 template <typename CARD, typename HEADER, typename TRAILER>
@@ -173,7 +171,7 @@ std::unique_ptr<typename CARD::ub_CrateHeader>& ub_MarkedRawCrateData<CARD,HEADE
         return _crateHeader;
 
     std::unique_ptr<typename CARD::ub_CrateHeader> crateHeader{nullptr};
-
+    
     if(_initializeHeaderFromRawData && _isValid){
          assert(!getCards().empty());           
          crateHeader.reset(new typename CARD::ub_CrateHeader(getCards().begin()->header()));
@@ -182,6 +180,15 @@ std::unique_ptr<typename CARD::ub_CrateHeader>& ub_MarkedRawCrateData<CARD,HEADE
          crateHeader->crate_type=stringToSystemDesignator.at(CARD::typeName);
          HasLocalHostTime().update().copyOut(crateHeader->local_host_time);
          crateHeader->updateCrateBits();
+         for(auto const& card: getCards()){
+	  if(card.isValidChecksum())
+	    continue;
+	    
+	    crateHeader->data_transmission_header.flagChecksumAsInvalid();
+	    crateHeader->complete=false;
+	    
+	    break;
+	 }
     } else {
          crateHeader.reset(new typename CARD::ub_CrateHeader());
     }

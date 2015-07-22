@@ -44,5 +44,9 @@ typedef SystemDesignator SystemDesignator_t;
 
 std::string demangle(const std::type_info  &type_info) noexcept;
 
+#define CHECK_BIT(var,pos) ((var) & (1<<(pos)))
+
+#define SET_BIT(var,pos) ((var) |= (1<<(pos)))
+
 #endif //_UBOONE_DATATYPES_COMMON_H
 
