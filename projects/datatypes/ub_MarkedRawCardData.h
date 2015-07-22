@@ -26,7 +26,7 @@ public:
 
     explicit ub_MarkedRawCardData(ub_RawData const& rawdata):
         ub_MarkedRawDataBlock<HEADER,TRAILER>(rawdata),
-     _markedRawChannelsData {}, _dissection_exception(""),
+     _markedRawChannelsData {}, _dissection_exception(""),_validChecksum(true),
      _isValid {isValid()},_isFullyDissected {canFullyDissect()}
      {}
 
@@ -75,10 +75,11 @@ public:
     
     static void neverDissectChannels() {_do_dissect=false;}
     
-    bool                wasDissected() const { return _isFullyDissected; }
+    bool                wasDissected()   const { return _isFullyDissected; }
+    bool 		isValidChecksum() const noexcept {return _validChecksum;}
     datatypes_exception dissectionException() const { return _dissection_exception; }
     void rethrowDissectionException() const throw(data_size_exception, datatypes_exception);
-
+    
 private:
     bool isValid() noexcept;
     bool canFullyDissect() noexcept;
@@ -87,6 +88,7 @@ private:
     static bool  	_do_dissect;   
     std::vector<CHANN>  _markedRawChannelsData;
     datatypes_exception _dissection_exception;
+    bool       _validChecksum;
     mutable bool _isValid;
     bool _isFullyDissected;
 };

@@ -113,15 +113,12 @@ std::string debugInfoRawData(raw_data_container<raw_data_type>const& data) noexc
 }
 
 
-uint32_t compute_checksum(ub_RawData const& data) noexcept
-{
-      return std::accumulate(data.begin(), data.end(), 0);
-}
 
 bool verify_checksum(ub_RawData const& data,uint32_t checksum) noexcept
 {
   uint32_t mask = (1 << 24) - 1;
   uint32_t data_checksum=compute_checksum(data);
+//  std::cout << "Checksum expected, actual " << std::hex <<std::setfill('0') << std::setw(8) << checksum << ", "<< std::hex <<std::setfill('0') << std::setw(8) << data_checksum << "\n"; 
   return (mask & data_checksum) == (mask & checksum);
 }
 

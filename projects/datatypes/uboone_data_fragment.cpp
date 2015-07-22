@@ -104,3 +104,12 @@ bool ub_fragment_header::verifyMD5hash(unsigned char const* addr, std::size_t by
     MD5(addr, bytes , md5hash_);
     return std::equal(std::begin(md5hash), std::end(md5hash), std::begin(md5hash_));
 }
+
+
+void ub_fragment_header::flagChecksumAsInvalid() noexcept{
+    SET_BIT(extra_flags,0);
+}
+
+bool ub_fragment_header::isValidChecksum() noexcept{
+    return ! CHECK_BIT(extra_flags,0);
+}

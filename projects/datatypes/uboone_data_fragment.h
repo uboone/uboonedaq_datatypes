@@ -8,7 +8,7 @@
 #include <iterator>
 
 #include "releaseInfo.h"
-
+#include "uboone_data_common.h"
 
 typedef uint16_t raw_data_type;
 
@@ -139,7 +139,8 @@ struct ub_fragment_header final
     std::size_t   raw_fragment_wordcount;             //4th position size of raw dma'ed data, includeing all headers/trailers
     std::size_t   raw_fragment_beginning_word_offset; //5th position offest to the begining of the raw dma'ed data
     unsigned char md5hash[MD5_DIGEST_LENGTH];    //6th position md5 hash of raw dma'ed data, which was calculated by seb
-    uint32_t      reserved[4];                        //7th position reserved
+    uint32_t      extra_flags;
+    uint32_t      reserved[3];                        //7th position reserved
 
     ub_fragment_header():
         total_fragment_wordcount {0},
@@ -147,14 +148,18 @@ struct ub_fragment_header final
         is_fragment_complete {0},
         raw_fragment_wordcount {0},
 	raw_fragment_beginning_word_offset {0},
-	reserved {0xDEADBEEF,0xDEADBEEF,0xCAFECAFE,0xCAFECAFE} {}
+	extra_flags{0},
+	reserved {0xDEADBEEF,0xCAFECAFE,0xCAFECAFE} {}
 
     void calculateMD5hash(unsigned char const* addr, std::size_t bytes) noexcept;
     
     bool verifyMD5hash(unsigned char const* addr, std::size_t bytes) const noexcept;
 
     bool compare(ub_fragment_header const&, bool do_rethrow=false) const throw(datatypes_exception);
+    
+    void flagChecksumAsInvalid() noexcept;
 
+    bool isValidChecksum() noexcept;
 };
 constexpr std::size_t ub_fragment_header_size = sizeof(ub_fragment_header);
 constexpr std::size_t ub_fragment_header_wordcount = sizeof(ub_fragment_header)/sizeof(artdaq_fragment_header::RawDataType);
