@@ -14,7 +14,7 @@ bool ub_MarkedRawCardData<ub_PMT_ChannelData_v6,ub_PMT_CardHeader_v6,ub_PMT_Card
 
     if(_do_dissect)
     {
-        if(!verify_checksum( data(), header().getChecksum())) {
+        if(!verify_checksum( data(), header().getChecksum() -0x4000)) {
             std::cerr << "Wrong checksum.\n";
             _validChecksum=false;
             returnIsValid=true; //continue for now
