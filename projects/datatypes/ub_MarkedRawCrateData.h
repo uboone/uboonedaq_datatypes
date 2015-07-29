@@ -155,9 +155,15 @@ bool ub_MarkedRawCrateData<CARD,HEADER,TRAILER>::canFullyDissect() noexcept
     } catch(std::exception &ex) {
         std::cerr << "Exception:" << ex.what() << std::endl;
         _isValid=false;
+
+	std::cerr << debugInfo() << std::endl;
+
         return false;
     }catch(...){
         std::cerr << "Caught unknown exception in ub_MarkedRawCrateData::canFullyDiessect().";
+
+	std::cerr << debugInfo() << std::endl;
+
         _isValid=false;
         return false;
     }
@@ -252,7 +258,7 @@ std::string ub_MarkedRawCrateData<CARD,HEADER,TRAILER>::debugInfo()const noexcep
     for(auto const& card : getCards())
 	os << "Card " << ++idx << std::endl << card.debugInfo();
 
-    //os <<  ub_MarkedRawDataBlock::debugInfo();
+    os <<  ub_MarkedRawDataBlock<HEADER,TRAILER>::debugInfo();
     return os.str();
 }
 
