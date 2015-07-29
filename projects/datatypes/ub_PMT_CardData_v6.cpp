@@ -10,11 +10,17 @@ namespace datatypes {
 template<>
 bool ub_MarkedRawCardData<ub_PMT_ChannelData_v6,ub_PMT_CardHeader_v6,ub_PMT_CardTrailer_v6>::isValid() noexcept
 {
-    if(!verify_checksum( data(),  header().getChecksum())){
-      std::cerr << "Wrong channel data checksum\n";
-      return true; //continue for now
-    }    
-   return true;
+    bool returnIsValid{true};
+
+    if(_do_dissect)
+    {
+        if(!verify_checksum( data(), header().getChecksum() -0x4000)) {
+            std::cerr << "Wrong checksum.\n";
+            _validChecksum=false;
+            returnIsValid=true; //continue for now
+        }
+    }
+    return returnIsValid;
 }
 
 template<>
@@ -61,7 +67,7 @@ bool ub_PMT_CardData_v6::compare(ub_PMT_CardData_v6 const& card_data,bool do_ret
 ub_PMT_CardData_v6::ub_PMT_CardData_v6(ub_RawData const& rawdata):
     ub_MarkedRawCardData<ub_PMT_ChannelData_v6,ub_PMT_CardHeader_v6,ub_PMT_CardTrailer_v6>(rawdata) {}
 
-bool ub_PMT_CardData_v6::operator==(ub_PMT_CardData_v6 const& card_data) const{
+bool ub_PMT_CardData_v6::operator==(ub_PMT_CardData_v6 const& card_data) const {
     return compare(card_data,false);
 }
 
@@ -94,8 +100,8 @@ uint32_t ub_PMT_CardData_v6::getTrigSample() const noexcept {
     return header().getTrigSample();
 }
 uint16_t ub_PMT_CardData_v6::getDataStartMarker() const noexcept {
-  return header().getDataStartMarker();
+    return header().getDataStartMarker();
 }
 uint16_t ub_PMT_CardData_v6::getDataEndMarker() const noexcept {
-  return trailer().getDataEndMarker();
+    return trailer().getDataEndMarker();
 }

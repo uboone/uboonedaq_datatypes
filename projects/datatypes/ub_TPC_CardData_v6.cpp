@@ -10,11 +10,17 @@ namespace datatypes {
 template<>
 bool ub_MarkedRawCardData<ub_TPC_ChannelData_v6,ub_TPC_CardHeader_v6,empty_trailer>::isValid() noexcept
 {
-    if(!verify_checksum( data(),  header().getChecksum())){
-      std::cerr << "Wrong channel data checksum\n";
-      return true; //continue for now
-    }    
-   return true;
+    bool returnIsValid{true};
+
+    if(_do_dissect)
+    {
+        if(!verify_checksum( data(),  header().getChecksum())) {
+            std::cerr << "Wrong checksum.\n";
+            _validChecksum=false;
+            returnIsValid=true; //continue for now
+        }
+    }
+    return returnIsValid;
 }
 
 template<>
