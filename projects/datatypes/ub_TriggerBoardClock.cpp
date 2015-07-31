@@ -27,6 +27,17 @@ bool ub_TriggerBoardClock::wasSet() const noexcept {
 return (frame!=0 || sample!=0 || div!=0 );
 }
 
+bool ub_TriggerBoardClock::isValid() const noexcept
+{
+  bool retCode=true; 
+  
+  if(frame==0xffffff && sample==0 && div==0) //run is not configured
+    retCode=false;
+  if(frame==0 && sample==1 && div==0) //run is not running
+     retCode=false;
+     
+  return retCode;
+}
 
 void HasTriggerBoardClock::copyOut(ub_TriggerBoardClock& target) noexcept  { 
 target=_myValue; 

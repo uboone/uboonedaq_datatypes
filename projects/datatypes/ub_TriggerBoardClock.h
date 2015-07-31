@@ -27,6 +27,7 @@ public:
     ub_TriggerBoardClock (uint32_t f, uint16_t s, uint16_t d);
     bool operator<(const ub_TriggerBoardClock& mk) const;    
     std::string debugInfo()const noexcept;
+    bool isValid() const noexcept;
     bool wasSet() const noexcept;
 
 public:
