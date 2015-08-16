@@ -8,6 +8,9 @@ namespace uboone {
 namespace datatypes {
 
 template<>
+bool ub_MarkedRawCardData<ub_TPC_ChannelData_v6,ub_TPC_CardHeader_v6,empty_trailer>::_do_dissect=true;
+
+template<>
 bool ub_MarkedRawCardData<ub_TPC_ChannelData_v6,ub_TPC_CardHeader_v6,empty_trailer>::isValid() noexcept
 {
     bool returnIsValid{true};
@@ -23,8 +26,6 @@ bool ub_MarkedRawCardData<ub_TPC_ChannelData_v6,ub_TPC_CardHeader_v6,empty_trail
     return returnIsValid;
 }
 
-template<>
-bool ub_MarkedRawCardData<ub_TPC_ChannelData_v6,ub_TPC_CardHeader_v6,empty_trailer>::_do_dissect=true;
 
 
 }  // end of namespace datatypes
