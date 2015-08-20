@@ -31,7 +31,7 @@ namespace datatypes {
               ss << "Junk data: Left with a PMT window header that is too small."; 
               throw datatypes_exception(ss.str());
             }
-            if( ((*curr_position>>6)&0xf)!=0 || ((*curr_position>>12)&0x3)!=1 ){
+            if( ((*curr_position>>6)&0x7)!=0 || ((*curr_position>>12)&0xf)!=9 ){
               std::stringstream ss;
               ss << "Junk data: Bad PMT Window Header:\n\t" 
                  << quick_cast<ub_PMT_WindowHeader_v6>(curr_position).debugInfo();
@@ -41,7 +41,7 @@ namespace datatypes {
             curr_position++;
             while(curr_position!=curr_rawData.end()){
 
-              if( ((*curr_position>>6)&0xf)==0 && ((*curr_position>>12)&0x3)==1 ){
+              if( ((*curr_position>>6)&0x7)==0 && ((*curr_position>>12)&0xf)==9 ){
                 ub_RawData data {curr_rawData.begin(),curr_position};
                 
                 if(data.size() <= ub_PMT_WindowHeader_v6::size_words()){
