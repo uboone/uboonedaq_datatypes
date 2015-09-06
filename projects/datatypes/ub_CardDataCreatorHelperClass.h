@@ -39,6 +39,7 @@ void ub_CardDataCreatorHelperClass<MRCD>::throw_data_exception_Junk_Word_Count(s
   std::stringstream ss;
   ss << "Junk data: Wrong word count in the card header.";
   ss << "\tExpSize=" << data_size_exp << " , ActualSize=" << data_size_act;
+  std::cerr << ss.str() << std::endl;
   throw data_size_exception(data_size_exp-data_size_act,ss.str());
 }
 
@@ -46,6 +47,7 @@ template<typename MRCD>
 void ub_CardDataCreatorHelperClass<MRCD>::throw_padding_exception(){
   std::stringstream ss;
   ss << "Junk data: Too many padding words detected.";
+  std::cerr << ss.str() << std::endl;
   throw datatypes_exception(ss.str());
 }
 
@@ -59,7 +61,7 @@ void ub_CardDataCreatorHelperClass<MRCD>::emplace_data(ub_RawData const& data,si
 
 template<typename MRCD>
 bool ub_CardDataCreatorHelperClass<MRCD>::has_16bits_at_end(ub_RawData const& data,size_t card_raw_data_size)
-{ return (card_raw_data_size-1<data.size()); }
+{ return (card_raw_data_size<=data.size()); }
 
 template<typename MRCD>
 bool ub_CardDataCreatorHelperClass<MRCD>::word_at_position_is_zero(ub_RawData const& data,size_t pos)
@@ -87,9 +89,10 @@ void ub_CardDataCreatorHelperClass<MRCD>::populateCardDataVector(std::vector<MRC
     while ( curr_rawData.size() > MRCD::size_of_data_overhead() )
     {   
         counter++;
+
+
         card_raw_data_size = MRCD::size_of_data_overhead() +
                              quick_cast<typename MRCD::card_header_type>(curr_rawData.begin()).getWordCount();
-
 	if(! this->has_16bits_at_end(curr_rawData,card_raw_data_size)){
 
 	  if ( !(this->has_16bits_at_end(curr_rawData,card_raw_data_size-1))||
@@ -126,6 +129,7 @@ void ub_CardDataCreatorHelperClass<MRCD>::populateCardDataVector(std::vector<MRC
 
 	  padding_words++;
 	}
+
 	if(end_of_event) break;
 	if(padding_words==max_padding_words)
 	  throw_padding_exception();
@@ -134,11 +138,11 @@ void ub_CardDataCreatorHelperClass<MRCD>::populateCardDataVector(std::vector<MRC
 	  this->emplace_data(curr_rawData,card_raw_data_size-1,retValue);
 	  curr_rawData=ub_RawData{curr_rawData.begin()+card_raw_data_size+padding_words,curr_rawData.end()};
 	  end_of_event = true;
+	  break;
 	}
 	else if( this->word_at_position_is_FFFF(curr_rawData,card_raw_data_size+padding_words-1) ){
 	  this->emplace_data(curr_rawData,card_raw_data_size-1,retValue);
 	  curr_rawData=ub_RawData{curr_rawData.begin()+card_raw_data_size+padding_words-1,curr_rawData.end()};
-
 
 	  if( ! this->has_16bits_at_end(curr_rawData,2) ){
 	    if(peek_at_next_event<MRCD>() )
@@ -150,6 +154,10 @@ void ub_CardDataCreatorHelperClass<MRCD>::populateCardDataVector(std::vector<MRC
 	    if( this->word_at_position_is_FFFF(curr_rawData,1) )
 	      end_of_event = true;
 	  }
+
+	  if(end_of_event) break;
+	  else continue;
+
 	}
 	if(end_of_event) break;
 
@@ -169,7 +177,7 @@ void ub_CardDataCreatorHelperClass<MRCD>::populateCardDataVector(std::vector<MRC
 	    if(peek_at_next_event<MRCD>() )
 	      this->throw_data_exception_Junk_Word_Count(padding_words+1,curr_rawData.size());
 	    else{
-	      curr_rawData=ub_RawData{curr_rawData.begin()+padding_words,curr_rawData.end()};
+	      curr_rawData=ub_RawData{curr_rawData.begin()+padding_words+1,curr_rawData.end()};
 	      end_of_event = true;
 	      break; //done. end of event. we hit the end of the fragment
 	    }
@@ -184,8 +192,9 @@ void ub_CardDataCreatorHelperClass<MRCD>::populateCardDataVector(std::vector<MRC
 	  throw_padding_exception();
 
 	if( this->word_at_position_is_E000(curr_rawData,padding_words) ){
-	  curr_rawData=ub_RawData{curr_rawData.begin()+padding_words,curr_rawData.end()};
+	  curr_rawData=ub_RawData{curr_rawData.begin()+padding_words+1,curr_rawData.end()};
 	  end_of_event = true;
+	  break;
 	}
 	else if( this->word_at_position_is_FFFF(curr_rawData,padding_words) ){
 	  curr_rawData=ub_RawData{curr_rawData.begin()+padding_words,curr_rawData.end()};
@@ -200,6 +209,10 @@ void ub_CardDataCreatorHelperClass<MRCD>::populateCardDataVector(std::vector<MRC
 	    if( this->word_at_position_is_FFFF(curr_rawData,1) )
 	      end_of_event = true;
 	  }
+	  
+	  if(end_of_event) break;
+	  else continue;
+
 	}
 	if(end_of_event) break;
 
