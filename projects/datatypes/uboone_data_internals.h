@@ -133,6 +133,12 @@ bool peek_at_next_event(bool flag=false) noexcept{
   static bool _flag(flag);
   return _flag;
 }
+template<typename MRCD>
+bool handle_missing_words(bool flag=false) noexcept{
+  static bool _flag(flag);
+  return _flag;
+}
+
 
 
 }  // end of namespace datatypes

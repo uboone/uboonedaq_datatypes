@@ -93,6 +93,9 @@ void ub_CardDataCreatorHelperClass<MRCD>::populateCardDataVector(std::vector<MRC
 
         card_raw_data_size = MRCD::size_of_data_overhead() +
                              quick_cast<typename MRCD::card_header_type>(curr_rawData.begin()).getWordCount();
+
+	if ( handle_missing_words<MRCD>() ){
+
 	if(! this->has_16bits_at_end(curr_rawData,card_raw_data_size)){
 
 	  if ( !(this->has_16bits_at_end(curr_rawData,card_raw_data_size-1))||
@@ -161,6 +164,8 @@ void ub_CardDataCreatorHelperClass<MRCD>::populateCardDataVector(std::vector<MRC
 	}
 	if(end_of_event) break;
 
+	}//end if handle_missing_words<MRCD>()
+
 	//this if is the normal check for the raw data size. This should remain even when above is moved out.
 	if(card_raw_data_size > curr_rawData.size())
 	  this->throw_data_exception_Junk_Word_Count(card_raw_data_size,curr_rawData.size());
@@ -168,8 +173,10 @@ void ub_CardDataCreatorHelperClass<MRCD>::populateCardDataVector(std::vector<MRC
         ub_RawData data {curr_rawData.begin(),curr_rawData.begin()+card_raw_data_size};
         retValue.emplace_back(data);
         curr_rawData=ub_RawData {curr_rawData.begin()+card_raw_data_size,curr_rawData.end()};
-        
-	padding_words = 0;
+
+	if( handle_missing_words<MRCD>() ){
+
+	int padding_words = 0;
 	while(padding_words < max_padding_words){
 
 	  //check if we have data to read
@@ -216,6 +223,7 @@ void ub_CardDataCreatorHelperClass<MRCD>::populateCardDataVector(std::vector<MRC
 	}
 	if(end_of_event) break;
 
+	}
 
     }
     _dissectableDataSize=std::distance(_rawData.begin(),curr_rawData.begin());

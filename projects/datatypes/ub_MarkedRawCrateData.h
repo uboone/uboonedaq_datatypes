@@ -107,17 +107,25 @@ void ub_MarkedRawCrateData<CARD,HEADER,TRAILER>::dissectCards() throw(data_size_
 {
     try
     {
-      ub_RawData data_plus_trailer{ub_MarkedRawDataBlock<HEADER,TRAILER>::data().begin(),
-	  ub_MarkedRawDataBlock<HEADER,TRAILER>::rawdata().end()};
-
 	_isValid=false; //reset the isValid flag
-        //dissector_type<CARD> dissector(ub_MarkedRawDataBlock<HEADER,TRAILER>::data());
-        dissector_type<CARD> dissector(data_plus_trailer);
-        dissector.populateCardDataVector(_markedRawCardsData);         	  
-        _dissectableDataSize= size_of<crate_header_type>()+dissector.getTrueDataSize();
-        assert(_dissectableDataSize > (ub_MarkedRawDataBlock<HEADER,TRAILER>::minsize()));
-        //assert(_dissectableDataSize <=  (ub_MarkedRawDataBlock<HEADER,TRAILER>::rawdata().size()));
-        assert(_markedRawCardsData.size()>0);
+
+	if ( handle_missing_words<CARD>() ){
+
+	  ub_RawData data_plus_trailer{ub_MarkedRawDataBlock<HEADER,TRAILER>::data().begin(),
+	      ub_MarkedRawDataBlock<HEADER,TRAILER>::rawdata().end()};
+	  
+	  dissector_type<CARD> dissector(data_plus_trailer);
+	  dissector.populateCardDataVector(_markedRawCardsData);         	  
+	  _dissectableDataSize= size_of<crate_header_type>()+dissector.getTrueDataSize();
+	}
+	else{
+	  dissector_type<CARD> dissector(ub_MarkedRawDataBlock<HEADER,TRAILER>::data());
+	  dissector.populateCardDataVector(_markedRawCardsData);         	  
+	  _dissectableDataSize= ub_MarkedRawDataBlock<HEADER,TRAILER>::minsize()+dissector.getTrueDataSize();
+	}
+	  assert(_dissectableDataSize > (ub_MarkedRawDataBlock<HEADER,TRAILER>::minsize()));
+	  //assert(_dissectableDataSize <=  (ub_MarkedRawDataBlock<HEADER,TRAILER>::rawdata().size()));
+	  assert(_markedRawCardsData.size()>0);
         
         _isFullyDissected=true;
         
