@@ -58,7 +58,10 @@ void ub_TPC_ChannelData_v6::decompress(std::vector<T>& uncompressed) const throw
   uncompressed.resize(0); // Set size.
   uncompressed.reserve(kMaxBufferSize);  // Enlarge if buffer is too small. No effect if buffer is already large.
 
-  const ub_RawData& raw = data();
+  auto end_point = data().end();
+  if( (getChannelTrailerWord() & 0x5000) != 0x5000 )
+    end_point = rawdata().end();
+  const ub_RawData& raw{data().begin(),end_point};
   ub_RawData::const_iterator it;
   uint16_t last_uncompressed_word = 0;
   //size_t   outpos = 0;
