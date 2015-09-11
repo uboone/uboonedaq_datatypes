@@ -56,7 +56,7 @@ public:
     datatypes_exception(std::string const& message, std::string const& name="datatypes_exception"
       // ,const std::string& crate_type="", int crate=-1, int card=-1, int channel=-1)
         );
-    virtual const char *    what () const noexcept;
+    virtual const char *    what ()  const  noexcept override;
     virtual ~datatypes_exception() noexcept;
 
     // virtual const char * crate_type () const noexcept {return _crate_type.c_str();} ;
@@ -79,7 +79,7 @@ public:
   data_size_exception(size_t const& size, std::string const& message, std::string const& name="data_size_exception");
   //data_size_exception(std::string const& message, std::string const& name="data_size_exception");
 
-  virtual const char *    what () const noexcept;
+  virtual const char *    what () const noexcept override;
   virtual ~data_size_exception() noexcept;
  private:
   std::string _name;
@@ -144,13 +144,15 @@ struct ub_fragment_header final
 
     ub_fragment_header():
         total_fragment_wordcount {0},
-        fragment_format_version {0},
+        fragment_format_version {uint8_t(gov::fnal::uboone::datatypes::constants::DATATYPES_VERSION)},
         is_fragment_complete {0},
         raw_fragment_wordcount {0},
 	raw_fragment_beginning_word_offset {0},
 	extra_flags{0},
 	reserved {0xDEADBEEF,0xCAFECAFE,0xCAFECAFE} {}
 
+    std::string debugInfo()const noexcept;
+ 
     void calculateMD5hash(unsigned char const* addr, std::size_t bytes) noexcept;
     
     bool verifyMD5hash(unsigned char const* addr, std::size_t bytes) const noexcept;
@@ -159,7 +161,7 @@ struct ub_fragment_header final
     
     void flagChecksumAsInvalid() noexcept;
 
-    bool isValidChecksum() noexcept;
+    bool isValidChecksum() const noexcept;
 };
 constexpr std::size_t ub_fragment_header_size = sizeof(ub_fragment_header);
 constexpr std::size_t ub_fragment_header_wordcount = sizeof(ub_fragment_header)/sizeof(artdaq_fragment_header::RawDataType);

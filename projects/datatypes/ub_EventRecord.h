@@ -64,9 +64,9 @@ public:
     ~ub_EventRecord();
 
     global_header_t& getGlobalHeader() noexcept;
-    void setGlobalHeader (global_header_t & header) noexcept;
+    void setGlobalHeader (global_header_t const& header) noexcept;
 
-    void addFragment(raw_fragment_data_t & fragment) throw(datatypes_exception);
+    void addFragment(raw_fragment_data_t & fragment) throw(datatypes_exception,data_size_exception);
 
     trigger_counter_t const& getTriggerCounter() noexcept;
     void setTriggerCounter( trigger_counter_t const& ) noexcept;
@@ -79,10 +79,10 @@ public:
 
     bool compare(ub_EventRecord const& event_record, bool do_rethrow) const throw(datatypes_exception);
 
-    const tpc_map_t  getTPCSEBMap() const throw(datatypes_exception);
-    const pmt_map_t  getPMTSEBMap() const throw(datatypes_exception);
-    const trig_map_t getTRIGSEBMap() const throw(datatypes_exception);
-    laser_map_t const& getLASERSEBMap() const throw(datatypes_exception);
+    const tpc_map_t  getTPCSEBMap() const noexcept;
+    const pmt_map_t  getPMTSEBMap() const noexcept;
+    const trig_map_t getTRIGSEBMap() const noexcept;
+    laser_map_t const& getLASERSEBMap() const noexcept;
 
     std::size_t getFragmentCount() const noexcept;
     void updateDTHeader() throw (datatypes_exception);
@@ -103,7 +103,7 @@ public:
     ub_BeamRecord& beamRecord() noexcept;
 
     void markAsIncompleteEvent() noexcept;
-    void setCrateSerializationMask(uint16_t mask) noexcept;
+    void setCrateSerializationMask(uint16_t mask) throw (datatypes_exception);
     
     //do your custom out-of-class specialization if needed
     template <typename EVENTFRAGMENTPTR_TYPE>
@@ -111,7 +111,7 @@ public:
     
     static int getEventRecordVersion() noexcept;
 private:
-    void  getFragments(fragment_references_t& fragments) const throw(datatypes_exception);
+    void  getFragments(fragment_references_t& fragments) const noexcept;
 private:
     ub_event_header    _bookkeeping_header;
     ub_event_trailer   _bookkeeping_trailer;

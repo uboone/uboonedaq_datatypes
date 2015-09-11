@@ -125,8 +125,10 @@ namespace datatypes {
            std::cerr << "Raw Card Data"<< std::endl;         
 	   printDebugInfo(_rawData,std::cerr);
           throw;
-      }
-    
+      }catch(...){         
+      std::cerr << "Caught unknown exception in ub_PMT_WindowDataCreatorHelperClass::populateChannelDataVector()" << std::endl;
+      throw datatypes_exception("Caught unknown exception in ub_PMT_WindowDataCreatorHelperClass::populateChannelDataVector()");
+    }        
   }
 
 

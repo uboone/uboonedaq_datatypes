@@ -5,6 +5,7 @@
 #include "uboone_data_internals.h"
 #include "ub_MarkedRawChannelData.h"
 #include "ub_ChannelDataCreatorHelperClass.h"
+#include "share/gangliaMetrics.h"
 
 namespace gov {
 namespace fnal {
@@ -80,8 +81,8 @@ public:
     datatypes_exception dissectionException() const { return _dissection_exception; }
     void rethrowDissectionException() const throw(data_size_exception, datatypes_exception);
     
+    bool isValid() noexcept;   
 private:
-    bool isValid() noexcept;
     bool canFullyDissect() noexcept;
 
 private:
@@ -127,12 +128,22 @@ void ub_MarkedRawCardData<CHANN, HEADER,TRAILER>::dissectChannels() throw(dataty
         dissector.populateChannelDataVector(_markedRawChannelsData);
         
         _isFullyDissected=true;
+
+        auto channel_dissection_errors=std::size_t{0};
+                 
+        for(auto & chan: _markedRawChannelsData){
+	    if(!chan.isValid())	
+	      ++channel_dissection_errors;
+	  }
+        
+         GangliaMetric<RATE>::named<decltype(channel_dissection_errors)>("FEM-channel-dissection-errors").publish(channel_dissection_errors);
+        
         _isValid=true;
     }
     catch(datatypes_exception &ex){        
       std::cerr << ub_MarkedRawDataBlock<HEADER,TRAILER>::header().debugInfo() << std::endl;
       std::cerr << ub_MarkedRawDataBlock<HEADER,TRAILER>::trailer().debugInfo() << std::endl;
-        throw ex;
+        throw ;
     }catch(std::exception &e){
          throw datatypes_exception(std::string("Caught std::exception in ub_MarkedRawCardData::dissectChannels(). Message:").append(e.what()));         
     }catch(...){

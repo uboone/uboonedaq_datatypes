@@ -29,7 +29,7 @@ DissectorFactory::~DissectorFactory() {
 _dissectors.clear(); 
 }
 
-void DissectorFactory::registerDissector(std::string const& name, uint8_t const& version, crate_header_builder builder)
+void DissectorFactory::registerDissector(std::string const& name, uint8_t const& version, crate_header_builder builder) noexcept
 {
      auto result = _dissectors.find(name);
      
