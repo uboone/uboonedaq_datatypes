@@ -69,6 +69,7 @@ public:
     void addFragment(raw_fragment_data_t & fragment) throw(datatypes_exception);
 
     trigger_counter_t const& getTriggerCounter() noexcept;
+    void setTriggerCounter( trigger_counter_t const& ) noexcept;
     void resetTriggerCounter() noexcept;
     bool passesSoftwarePrescale( ub_TriggerSummary_t const& ) noexcept; 
 

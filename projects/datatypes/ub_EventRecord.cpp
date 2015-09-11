@@ -59,6 +59,9 @@ trigger_counter_t const& ub_EventRecord::getTriggerCounter() noexcept {
 void ub_EventRecord::resetTriggerCounter() noexcept {
   _trigger_counter.reset();
 }
+void ub_EventRecord::setTriggerCounter( trigger_counter_t const& tc) noexcept {
+  _trigger_counter = tc;
+}
 bool ub_EventRecord::passesSoftwarePrescale(ub_TriggerSummary_t const& ps) noexcept{
   return _trigger_counter.prescalePass(ps);
 }
@@ -142,8 +145,8 @@ void ub_EventRecord::addFragment(raw_fragment_data_t& fragment) throw(datatypes_
         if(crate_header.gps_time.wasSet())
           getGlobalHeader().setGPSTime(crate_header.gps_time);
 
-	bool first_trig_fragment = _trigger_seb_map.size()==1;
-	_trigger_counter.increment(std::get<2>(_trigger_seb_map[crate_number])->getTriggerData(),first_trig_fragment);
+	bool first_trig_fragment = (_trigger_seb_map.size()==1);
+	_trigger_counter.increment(std::get<2>(_trigger_seb_map[crate_number])->getTriggerData(),!first_trig_fragment);
       }
     else if(crate_type == SystemDesignator::PMT_SYSTEM)
     {
