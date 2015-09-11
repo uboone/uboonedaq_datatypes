@@ -13,8 +13,9 @@ bool ub_MarkedRawChannelData<ub_TPC_ChannelHeader,ub_TPC_ChannelTrailer>::isVali
 {
     if( header().header_mark!=0x40 )
         return false;
-    if( trailer().trailer_mark!=0x50 )
-        return false;
+    if( trailer().trailer_mark==0x50 && header().channel_number != trailer().channel_number )
+      return false;
+    
     return true;
 }
 
