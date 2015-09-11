@@ -6,6 +6,7 @@
 #include "uboone_data_internals.h"
 #include "ub_CardDataCreatorHelperClass.h"
 #include "ub_LocalHostTime.h"
+#include "share/gangliaMetrics.h"
 
 namespace gov {
 namespace fnal {
@@ -77,7 +78,7 @@ public:
     datatypes_exception dissectionException() const { return _dissection_exception; }
 
     void rethrowDissectionException() const throw(data_size_exception,datatypes_exception);
-         
+    
 private:
     bool isValid() noexcept;
     bool canFullyDissect() noexcept;   
@@ -129,17 +130,24 @@ void ub_MarkedRawCrateData<CARD,HEADER,TRAILER>::dissectCards() throw(data_size_
         
         _isFullyDissected=true;
         
+         auto fem_dissection_errors=std::size_t{0};
+         
+         for(auto & card: _markedRawCardsData){
+	    if(!card.isValid())	
+	      ++fem_dissection_errors;
+	  }
         
+        GangliaMetric<RATE>::named<decltype(fem_dissection_errors)>("FEM-card-dissection-errors").publish(fem_dissection_errors);
         
         _isValid=true;
        // std::cerr << ub_data_types::debugInfoShort(ub_RawData{rawdata().begin(),rawdata().begin()+_dissectableDataSize}) <<std::endl;
     }
     // If there's a problem unpacking card-level data, sets _fully to false and stores the exception.
     catch(data_size_exception &ex){
-      throw ex;
+      throw;
     }catch(datatypes_exception &ex){
       _dissection_exception = ex;      
-      throw ex;
+      throw;
     }catch(std::exception &e){
           datatypes_exception de(std::string("Caught std::exception in ub_MarkedRawCrateData::dissectCards(). Message:").append(e.what()));
           _dissection_exception = de;

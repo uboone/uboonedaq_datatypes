@@ -70,6 +70,8 @@ struct ub_CrateHeader_v6 final
     
     void copyIn(ub_CrateHeader_v6 const& source)  noexcept;
     void copyOut(ub_CrateHeader_v6&  target)  noexcept;
+    
+    bool isValidChecksum() const noexcept;
 
 };
 

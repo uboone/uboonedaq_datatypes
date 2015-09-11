@@ -28,9 +28,12 @@ void ub_ChannelDataCreatorHelperClass<ub_Trigger_ChannelData_v6>::populateChanne
     std::cerr << "Caught exception in ub_Trigger_ChannelDataCreatorHelperClass::populateChannelDataVector() Message: " <<e.what() << std::endl;
     std::cerr <<  debugInfoShort(_rawData) << std::endl;
     std::cerr << "Raw Card Data"<< std::endl;         
-    std::cerr <<  debugInfo(_rawData) << std::endl;         
-    throw;
-  }
+    std::cerr <<  debugInfo(_rawData) << std::endl;
+    throw datatypes_exception(std::string("Caught exception in ub_Trigger_ChannelDataCreatorHelperClass::populateChannelDataVector() Message: ").append(e.what()));
+  }catch(...){         
+      std::cerr << "Caught unknown exception in ub_TPC_ChannelDataCreatorHelperClass::populateChannelDataVector()" << std::endl;
+      throw datatypes_exception("Caught unknown exception in ub_TPC_ChannelDataCreatorHelperClass::populateChannelDataVector()");
+    }    
  }
     
 }  // end of namespace datatypes

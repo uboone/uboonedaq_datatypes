@@ -30,7 +30,7 @@ public:
       return std::string("  Channel ") + std::to_string(_channel) + " with " + std::to_string(_windows.size()) + " windows ";
     }
     
-    
+    bool isValid() noexcept {return true;};
     
     static constexpr auto typeName="PMT";
     

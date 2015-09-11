@@ -30,9 +30,9 @@ set(CMAKE_MODULE_PATH
 include(CetCMakeEnv)
 cet_cmake_env()
 
-cet_set_compiler_flags(DIAGS VIGILANT WERROR NO_UNDEFINED EXTRA_FLAGS -pedantic -Wno-deprecated-declarations)
+cet_set_compiler_flags(DIAGS VIGILANT WERROR NO_UNDEFINED EXTRA_FLAGS -pedantic -Wno-deprecated-declarations )
 
-cet_add_compiler_flags(CXX -std=c++1y -D_GLIBCXX_USE_NANOSLEEP)
+cet_add_compiler_flags(CXX -std=c++1y -D_GLIBCXX_USE_NANOSLEEP )
 
 cet_report_compiler_flags()
 
