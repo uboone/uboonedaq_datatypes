@@ -120,7 +120,10 @@ void ub_MarkedRawCardData<CHANN, HEADER,TRAILER>::dissectChannels() throw(dataty
 	  return;
 	
 	_isValid=false; //reset the isValid flag
-        dissector_type<CHANN> dissector(ub_MarkedRawDataBlock<HEADER,TRAILER>::data());
+	ub_RawData data_plus_trailer{ub_MarkedRawDataBlock<HEADER,TRAILER>::data().begin(),
+	    ub_MarkedRawDataBlock<HEADER,TRAILER>::rawdata().end()};
+        //dissector_type<CHANN> dissector(ub_MarkedRawDataBlock<HEADER,TRAILER>::data());
+        dissector_type<CHANN> dissector(data_plus_trailer);
         dissector.populateChannelDataVector(_markedRawChannelsData);
         
         _isFullyDissected=true;

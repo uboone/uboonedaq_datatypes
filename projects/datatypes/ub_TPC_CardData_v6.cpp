@@ -14,10 +14,13 @@ bool ub_MarkedRawCardData<ub_TPC_ChannelData_v6,ub_TPC_CardHeader_v6,empty_trail
 
     if(_do_dissect)
     {
-        if(!verify_checksum( data(),  header().getChecksum())) {
+      int checksum_diff = checksum_difference( data(), header().getChecksum() );
+        if(checksum_diff!=0) {
+	  if( (checksum_diff+0x503f) != 0 ){
             std::cerr << "Wrong checksum.\n";
             _validChecksum=false;
             returnIsValid=true; //continue for now
+	  }
         }
     }
     return returnIsValid;

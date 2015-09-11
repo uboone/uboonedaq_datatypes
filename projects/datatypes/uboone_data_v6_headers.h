@@ -30,6 +30,8 @@
 
 #include "ub_LaserData.h"
 
+#include "ub_TriggerCounter.h"
+
 #include "ub_GlobalHeader.h"
 
 #include "ub_GPS_DataTypes.h"

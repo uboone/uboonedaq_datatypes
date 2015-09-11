@@ -68,6 +68,11 @@ public:
 
     void addFragment(raw_fragment_data_t & fragment) throw(datatypes_exception);
 
+    trigger_counter_t const& getTriggerCounter() noexcept;
+    void setTriggerCounter( trigger_counter_t const& ) noexcept;
+    void resetTriggerCounter() noexcept;
+    bool passesSoftwarePrescale( ub_TriggerSummary_t const& ) noexcept; 
+
     std::string debugInfo()const noexcept;
 
     
@@ -111,6 +116,7 @@ private:
     ub_event_header    _bookkeeping_header;
     ub_event_trailer   _bookkeeping_trailer;
     global_header_t    _global_header;
+    trigger_counter_t  _trigger_counter;
     tpc_seb_map_t      _tpc_seb_map;
     pmt_seb_map_t      _pmt_seb_map;
     trig_seb_map_t     _trigger_seb_map;
@@ -158,7 +164,12 @@ private:
 
         // write remaining event details
 
-	if(version>=8){
+	if(version>=9){
+	  ar << _global_header;
+	  ar << _trigger_counter;
+	  ar << _laser_seb_map;
+	}
+	else if(version>=8){
 	  ar << _global_header;
 	  ar << _laser_seb_map;
 	}
@@ -205,8 +216,12 @@ private:
         //END SERIALIZE RAW EVENT FRAGMENT DATA
 
         // write remaining event details
-	if(version>=8)
-	{
+	if(version>=9){
+	  ar >> _global_header;
+	  ar >> _trigger_counter;
+	  ar >> _laser_seb_map;
+	}
+	else if(version>=8){
 	  ar >> _global_header;
 	  ar >> _laser_seb_map;
 	}

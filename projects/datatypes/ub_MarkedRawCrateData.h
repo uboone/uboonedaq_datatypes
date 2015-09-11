@@ -15,6 +15,8 @@ namespace datatypes {
 template <typename CARD, typename HEADER, typename TRAILER> class ub_MarkedRawCrateData :
   public ub_MarkedRawDataBlock<HEADER,TRAILER> {
 public:
+    typedef typename ub_MarkedRawDataBlock<HEADER,TRAILER>::header_type crate_header_type;
+    typedef typename ub_MarkedRawDataBlock<HEADER,TRAILER>::trailer_type crate_trailer_type;
     typedef CARD card_t;
     template <typename MRCD> using dissector_type = ub_CardDataCreatorHelperClass<MRCD>;
 
@@ -106,12 +108,24 @@ void ub_MarkedRawCrateData<CARD,HEADER,TRAILER>::dissectCards() throw(data_size_
     try
     {
 	_isValid=false; //reset the isValid flag
-        dissector_type<CARD> dissector(ub_MarkedRawDataBlock<HEADER,TRAILER>::data());
-        dissector.populateCardDataVector(_markedRawCardsData);         	  
-        _dissectableDataSize= ub_MarkedRawDataBlock<HEADER,TRAILER>::minsize()+dissector.getTrueDataSize();
-        assert(_dissectableDataSize > (ub_MarkedRawDataBlock<HEADER,TRAILER>::minsize()));
-        assert(_dissectableDataSize <=  (ub_MarkedRawDataBlock<HEADER,TRAILER>::rawdata().size()));
-        assert(_markedRawCardsData.size()>0);
+
+	if ( handle_missing_words<CARD>() ){
+
+	  ub_RawData data_plus_trailer{ub_MarkedRawDataBlock<HEADER,TRAILER>::data().begin(),
+	      ub_MarkedRawDataBlock<HEADER,TRAILER>::rawdata().end()};
+	  
+	  dissector_type<CARD> dissector(data_plus_trailer);
+	  dissector.populateCardDataVector(_markedRawCardsData);         	  
+	  _dissectableDataSize= size_of<crate_header_type>()+dissector.getTrueDataSize();
+	}
+	else{
+	  dissector_type<CARD> dissector(ub_MarkedRawDataBlock<HEADER,TRAILER>::data());
+	  dissector.populateCardDataVector(_markedRawCardsData);         	  
+	  _dissectableDataSize= ub_MarkedRawDataBlock<HEADER,TRAILER>::minsize()+dissector.getTrueDataSize();
+	}
+	  assert(_dissectableDataSize > (ub_MarkedRawDataBlock<HEADER,TRAILER>::minsize()));
+	  //assert(_dissectableDataSize <=  (ub_MarkedRawDataBlock<HEADER,TRAILER>::rawdata().size()));
+	  assert(_markedRawCardsData.size()>0);
         
         _isFullyDissected=true;
         
@@ -173,6 +187,7 @@ bool ub_MarkedRawCrateData<CARD,HEADER,TRAILER>::canFullyDissect() noexcept
 template <typename CARD, typename HEADER, typename TRAILER>
 std::unique_ptr<typename CARD::ub_CrateHeader>& ub_MarkedRawCrateData<CARD,HEADER,TRAILER>::crateHeader() throw(data_size_exception,datatypes_exception)
 {
+  try{
     if(_crateHeader)
         return _crateHeader;
 
@@ -202,9 +217,17 @@ std::unique_ptr<typename CARD::ub_CrateHeader>& ub_MarkedRawCrateData<CARD,HEADE
     assert(crateHeader);
         
     _crateHeader.swap(crateHeader);
-    
     assert(_crateHeader);
     return _crateHeader;
+  }
+  catch(datatypes_exception &ex) {
+    std::cerr << ex.what();
+    throw;
+  } catch(...) {
+    std::cerr << "Unknown exception in ub_MarkedRawCrateData<CARD,HEADER,TRAILER>::crateHeader()";
+    throw datatypes_exception("Unknown exception in ub_MarkedRawCrateData<CARD,HEADER,TRAILER>::crateHeader()");
+  }  
+  
 }
 
 template <typename CARD, typename HEADER, typename TRAILER>
