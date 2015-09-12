@@ -12,7 +12,7 @@
 #include "datatypes/raw_data_access.h"
 #include <boost/archive/binary_iarchive.hpp>
 #include "datatypes/ub_EventRecord.h"
-
+#include "datatypes/uboone_data_utils.h"
 using namespace gov::fnal::uboone::datatypes;
 
 
@@ -43,6 +43,11 @@ int main(int argc, char **argv)
   bool closedCleanly (false);
   std::vector<uint32_t>  index_buffer;  // sizes of each event
   int status = 1;
+
+  peek_at_next_event<ub_TPC_CardData_v6>(false);
+  peek_at_next_event<ub_PMT_CardData_v6>(false);
+  handle_missing_words<ub_TPC_CardData_v6>(true);
+  handle_missing_words<ub_PMT_CardData_v6>(true);
 
   try{
     is.seekg(-6,is.end); // Go to position 6 bytes before end of file. 
