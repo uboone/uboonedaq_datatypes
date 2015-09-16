@@ -22,6 +22,21 @@ namespace fnal {
 namespace uboone {
 namespace datatypes {
 
+template<class ForwardIt>
+ForwardIt next(ForwardIt start, ForwardIt end, typename std::iterator_traits<ForwardIt>::difference_type n = 1)
+{
+    auto dist = - std::distance(end,start);
+    
+    if(n <= dist) { 
+        std::advance(start, n);
+	return start;
+    }
+
+    std::cerr << "distance="<< dist << " advance="<<n << std::endl;
+    assert(false);
+    throw datatypes_exception("Unable to advance iterator");
+}
+
 template <typename HEADER, typename TRAILER> class ub_MarkedRawDataBlock
 {
 public:
@@ -59,14 +74,20 @@ public:
 
 private:    
     ub_MarkedRawDataBlock(ub_RawData const& rawdata, void*)
-        : _data_markers {
+	try
+        :_data_markers {
 		std::make_tuple(rawdata,
-		ub_RawData(std::next(rawdata.begin(),size_of<HEADER>()),
-			  std::next(rawdata.begin(),rawdata.size()-size_of<TRAILER>())),
+		ub_RawData(next(rawdata.begin(),rawdata.end(),size_of<HEADER>()),
+			  next(rawdata.begin(),rawdata.end(),rawdata.size()-size_of<TRAILER>())),
 		rawdata.begin(),
-		std::next(rawdata.begin(),rawdata.size()-size_of<TRAILER>()))
-	} {};
-    
+		next(rawdata.begin(),rawdata.end(),rawdata.size()-size_of<TRAILER>()))
+	} {}
+	catch(std::exception &e) {
+	      std::cerr << "Caught exception ub_MarkedRawDataBlock::ctor()" << e.what() << std::endl;
+	}
+	catch(...) {
+	      std::cerr << "Caught unknown exception ub_MarkedRawDataBlock::ctor()" << std::endl;
+	}
 private:
     std::tuple<ub_RawData,ub_RawData,ub_RawData::const_iterator,ub_RawData::const_iterator> _data_markers;    
 };
@@ -133,13 +154,12 @@ bool peek_at_next_event(bool flag=false) noexcept{
   static bool _flag(flag);
   return _flag;
 }
+
 template<typename MRCD>
 bool handle_missing_words(bool flag=false) noexcept{
   static bool _flag(flag);
   return _flag;
 }
-
-
 
 }  // end of namespace datatypes
 }  // end of namespace uboone

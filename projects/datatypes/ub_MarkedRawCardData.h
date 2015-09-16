@@ -25,11 +25,22 @@ public:
 
     template <typename MRCD> using dissector_type = ub_ChannelDataCreatorHelperClass<MRCD>;
 
-    explicit ub_MarkedRawCardData(ub_RawData const& rawdata):
-        ub_MarkedRawDataBlock<HEADER,TRAILER>(rawdata),
-     _markedRawChannelsData {}, _dissection_exception(""),_validChecksum(true),
-     _isValid {isValid()},_isFullyDissected {canFullyDissect()}
-     {}
+    explicit ub_MarkedRawCardData(ub_RawData const& rawdata)
+      try
+      :ub_MarkedRawDataBlock<HEADER,TRAILER>(rawdata),
+      _markedRawChannelsData {}, 
+      _dissection_exception(""),
+      _validChecksum(true),
+      _isValid {isValid()},
+      _isFullyDissected {canFullyDissect()}
+      {}
+      catch(std::exception &e) {
+	     std::cerr << "Caught exception ub_MarkedRawCardData::ctor(). Message " << e.what() << std::endl;
+	     throw;
+      }
+      catch(...) {
+	     std::cerr << "Caught unknown exception ub_MarkedRawCardData::ctor()" << std::endl;
+      }
 
     uint32_t const& getCardIDAndModuleWord() const noexcept{
         return ub_MarkedRawDataBlock<HEADER,TRAILER>::header().id_and_module;
@@ -129,14 +140,11 @@ void ub_MarkedRawCardData<CHANN, HEADER,TRAILER>::dissectChannels() throw(dataty
         
         _isFullyDissected=true;
 
-        auto channel_dissection_errors=std::size_t{0};
-                 
+        auto channel_dissection_errors=ganglia::RATE<void>::preferred_type{0};                 
         for(auto & chan: _markedRawChannelsData){
-	    if(!chan.isValid())	
-	      ++channel_dissection_errors;
-	  }
-        
-         GangliaMetric<RATE>::named<decltype(channel_dissection_errors)>("FEM-channel-dissection-errors").publish(channel_dissection_errors);
+	    if(!chan.isValid())	++channel_dissection_errors;
+	}
+	ganglia::Metric<ganglia::RATE,decltype(channel_dissection_errors)>::named("FEM-channel-dissection-errors","Errors/sec")->publish(channel_dissection_errors);
         
         _isValid=true;
     }
