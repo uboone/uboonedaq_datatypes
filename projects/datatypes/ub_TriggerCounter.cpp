@@ -37,26 +37,26 @@ void ub_TriggerCounter::increment(ub_Trigger_Data_v6 const& td, bool same_total)
 }
 
 bool ub_TriggerCounter::prescalePass(ub_TriggerSummary_t const& ps){
-  if(ps.pc>0)
-    if(_tc.pc%ps.pc==0) return true;
-  if(ps.ext>0)
-    if(_tc.ext%ps.ext==0) return true;
-  if(ps.active>0)
-    if(_tc.active%ps.active==0) return true;
-  if(ps.gate2>0)
-    if(_tc.gate2%ps.gate2==0) return true;
-  if(ps.gate1>0)
-    if(_tc.gate1%ps.gate1==0) return true;
-  if(ps.veto>0)
-    if(_tc.veto%ps.veto==0) return true;
-  if(ps.calib>0)
-    if(_tc.calib%ps.calib==0) return true;
-  if(ps.gatefake>0)
-    if(_tc.gatefake%ps.gatefake==0) return true;
-  if(ps.beamfake>0)
-    if(_tc.beamfake%ps.beamfake==0) return true;
-  if(ps.spare1>0)
-    if(_tc.spare1%ps.spare1==0) return true;
+  if(ps.pc>0 && _tc.pc>0)
+    if((_tc.pc-1)%ps.pc==0) return true;
+  if(ps.ext>0 && _tc.ext>0)
+    if((_tc.ext-1)%ps.ext==0) return true;
+  if(ps.active>0 && _tc.active>0)
+    if((_tc.active-1)%ps.active==0) return true;
+  if(ps.gate2>0 && _tc.gate2>0)
+    if((_tc.gate2-1)%ps.gate2==0) return true;
+  if(ps.gate1>0 && _tc.gate1>0)
+    if((_tc.gate1-1)%ps.gate1==0) return true;
+  if(ps.veto>0 && _tc.veto>0)
+    if((_tc.veto-1)%ps.veto==0) return true;
+  if(ps.calib>0 && _tc.valib>0)
+    if((_tc.calib-1)%ps.calib==0) return true;
+  if(ps.gatefake>0 && _tc.gatefake>0)
+    if((_tc.gatefake-1)%ps.gatefake==0) return true;
+  if(ps.beamfake>0 && _tc.beamfake>0)
+    if((_tc.beamfake-1)%ps.beamfake==0) return true;
+  if(ps.spare1>0 && _tc.spare1>0)
+    if((_tc.spare1-1)%ps.spare1==0) return true;
 
   return false;
 }
