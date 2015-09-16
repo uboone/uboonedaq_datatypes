@@ -49,7 +49,7 @@ bool ub_TriggerCounter::prescalePass(ub_TriggerSummary_t const& ps){
     if((_tc.gate1-1)%ps.gate1==0) return true;
   if(ps.veto>0 && _tc.veto>0)
     if((_tc.veto-1)%ps.veto==0) return true;
-  if(ps.calib>0 && _tc.valib>0)
+  if(ps.calib>0 && _tc.calib>0)
     if((_tc.calib-1)%ps.calib==0) return true;
   if(ps.gatefake>0 && _tc.gatefake>0)
     if((_tc.gatefake-1)%ps.gatefake==0) return true;
