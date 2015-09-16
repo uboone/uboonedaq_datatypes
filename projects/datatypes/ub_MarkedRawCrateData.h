@@ -21,22 +21,49 @@ public:
     typedef CARD card_t;
     template <typename MRCD> using dissector_type = ub_CardDataCreatorHelperClass<MRCD>;
 
-    explicit ub_MarkedRawCrateData(ub_RawData const& rawdata):
-        ub_MarkedRawDataBlock<HEADER,TRAILER>(rawdata),
+    explicit ub_MarkedRawCrateData(ub_RawData const& rawdata) 
+      try
+      :ub_MarkedRawDataBlock<HEADER,TRAILER>(rawdata),
         _initializeHeaderFromRawData {false},
-        _markedRawCardsData {},_dissectableDataSize {0},
+        _markedRawCardsData {},
+        _dissectableDataSize {0},
         _crateHeader {nullptr},
-         _dissection_exception(""),_isValid {isValid()},
-        _isFullyDissected {canFullyDissect()} {}
+        _dissection_exception(""),
+        _isValid {isValid()},
+        _isFullyDissected {canFullyDissect()} 
+        {} 
+       catch(std::exception &e) {
+	     std::cerr << "Caught exception ub_MarkedRawCrateData::ctor(). Message: " << e.what() << std::endl;
+	     throw;
+       }
+       catch(...) {	
+	     std::cerr << "Caught unknown exception ub_MarkedRawCrateData::ctor()" << std::endl;	     
+	     throw datatypes_exception("Caught unknown exception ub_MarkedRawCrateData::ctor()");
+       }
 
-    explicit ub_MarkedRawCrateData(ub_RawData const& rawdata,bool initializeHeaderFromRawData):
-        ub_MarkedRawDataBlock<HEADER,TRAILER>(rawdata),
+    explicit ub_MarkedRawCrateData(ub_RawData const& rawdata,bool initializeHeaderFromRawData)
+      try
+      :ub_MarkedRawDataBlock<HEADER,TRAILER>(rawdata),
         _initializeHeaderFromRawData {initializeHeaderFromRawData},
-        _markedRawCardsData {},_dissectableDataSize {0},
+        _markedRawCardsData {},
+        _dissectableDataSize {0},
         _crateHeader {nullptr},
-         _dissection_exception(""),_isValid {isValid()},
-        _isFullyDissected {canFullyDissect()} {}
-
+        _dissection_exception(""),
+        _isValid {
+        isValid()
+        },
+        _isFullyDissected {
+        canFullyDissect()
+        } {}
+       catch(std::exception &e) {
+	     std::cerr << "Caught exception ub_MarkedRawCrateData::ctor(). Message: " << e.what() << std::endl;
+	     throw;
+       }
+       catch(...) {
+	     std::cerr << "Caught unknown exception ub_MarkedRawCrateData::ctor()" << std::endl;
+	     throw datatypes_exception("Caught unknown exception ub_MarkedRawCrateData::ctor()");
+       }
+        
     std::vector<CARD> const&  getCards() throw(data_size_exception,datatypes_exception);
     std::vector<CARD> const&  getCards() const noexcept{
         return _markedRawCardsData;
@@ -130,15 +157,12 @@ void ub_MarkedRawCrateData<CARD,HEADER,TRAILER>::dissectCards() throw(data_size_
         
         _isFullyDissected=true;
         
-         auto fem_dissection_errors=std::size_t{0};
-         
+         auto fem_dissection_errors=ganglia::RATE<void>::preferred_type{0};                 
          for(auto & card: _markedRawCardsData){
-	    if(!card.isValid())	
-	      ++fem_dissection_errors;
+	    if(!card.isValid())	++fem_dissection_errors;
 	  }
-        
-        GangliaMetric<RATE>::named<decltype(fem_dissection_errors)>("FEM-card-dissection-errors").publish(fem_dissection_errors);
-        
+	 ganglia::Metric<ganglia::RATE,decltype(fem_dissection_errors)>::named("FEM-card-dissection-errors","Errors/sec")->publish(fem_dissection_errors);
+
         _isValid=true;
        // std::cerr << ub_data_types::debugInfoShort(ub_RawData{rawdata().begin(),rawdata().begin()+_dissectableDataSize}) <<std::endl;
     }
