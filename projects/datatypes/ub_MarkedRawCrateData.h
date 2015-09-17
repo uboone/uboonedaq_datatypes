@@ -6,7 +6,6 @@
 #include "uboone_data_internals.h"
 #include "ub_CardDataCreatorHelperClass.h"
 #include "ub_LocalHostTime.h"
-#include "share/gangliaMetrics.h"
 
 namespace gov {
 namespace fnal {

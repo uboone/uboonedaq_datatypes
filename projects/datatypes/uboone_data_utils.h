@@ -11,6 +11,7 @@
 #include <sstream>
 #include <iomanip>
 
+#include "share/gangliaMetrics.h"
 #include "uboone_data_fragment.h"
 
 #define UNUSED(x) (void)(x)

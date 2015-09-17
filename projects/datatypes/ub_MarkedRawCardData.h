@@ -5,7 +5,6 @@
 #include "uboone_data_internals.h"
 #include "ub_MarkedRawChannelData.h"
 #include "ub_ChannelDataCreatorHelperClass.h"
-#include "share/gangliaMetrics.h"
 
 namespace gov {
 namespace fnal {

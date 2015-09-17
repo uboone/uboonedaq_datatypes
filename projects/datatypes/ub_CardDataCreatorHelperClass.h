@@ -69,7 +69,14 @@ bool ub_CardDataCreatorHelperClass<MRCD>::word_at_position_is_zero(ub_RawData co
 
 template<typename MRCD>
 bool ub_CardDataCreatorHelperClass<MRCD>::word_at_position_is_E000(ub_RawData const& data,size_t pos)
-{ return *(data.begin()+pos)==0xe000; }
+{
+  bool found_trailer =*(data.begin()+pos)==0xe000;
+ 
+ if(!found_trailer)
+  ganglia::Metric<ganglia::RATE>::named("FEM-missing-xmit-trailer","Errors/sec")->publish(1.0);
+
+  return found_trailer; 
+}
 
 template<typename MRCD>
 bool ub_CardDataCreatorHelperClass<MRCD>::word_at_position_is_FFFF(ub_RawData const& data,size_t pos)
