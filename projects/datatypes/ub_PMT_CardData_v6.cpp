@@ -16,6 +16,7 @@ bool ub_MarkedRawCardData<ub_PMT_ChannelData_v6,ub_PMT_CardHeader_v6,ub_PMT_Card
     {
         if(!verify_checksum( data(), header().getChecksum() -0x4000)) {
             std::cerr << "Wrong checksum.\n";
+	     ganglia::Metric<ganglia::RATE>::named("PMT-checksum-errors","Errors/sec")->publish(1.);            
             _validChecksum=false;
             returnIsValid=true; //continue for now
         }

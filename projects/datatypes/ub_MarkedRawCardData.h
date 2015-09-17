@@ -144,7 +144,7 @@ void ub_MarkedRawCardData<CHANN, HEADER,TRAILER>::dissectChannels() throw(dataty
         for(auto & chan: _markedRawChannelsData){
 	    if(!chan.isValid())	++channel_dissection_errors;
 	}
-	ganglia::Metric<ganglia::RATE,decltype(channel_dissection_errors)>::named("FEM-channel-dissection-errors","Errors/sec")->publish(channel_dissection_errors);
+	ganglia::Metric<ganglia::RATE>::named("FEM-channel-dissection-errors","Errors/sec")->publish(channel_dissection_errors);
         
         _isValid=true;
     }

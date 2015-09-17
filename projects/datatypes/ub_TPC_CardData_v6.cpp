@@ -18,11 +18,13 @@ bool ub_MarkedRawCardData<ub_TPC_ChannelData_v6,ub_TPC_CardHeader_v6,empty_trail
         if(checksum_diff!=0) {
 	  if( (checksum_diff+0x503f) != 0 ){
             std::cerr << "Wrong checksum.\n";
+            ganglia::Metric<ganglia::RATE>::named("TPC-checksum-errors","Errors/sec")->publish(1.);
+
             _validChecksum=false;
             returnIsValid=true; //continue for now
 	  }
         }
-    }
+    }    
     return returnIsValid;
 }
 
