@@ -1,4 +1,5 @@
 #include "ub_TPC_CrateData_v6.h"
+#include <mutex>
 
 using namespace gov::fnal::uboone::datatypes;
 
@@ -37,6 +38,17 @@ bool ub_TPC_CrateData_v6::compare(ub_TPC_CrateData_v6 const & crate_data, bool d
             return false;
     }
     return true;
+}
+
+std::once_flag flagtpcxmit;
+
+template <>
+void __attribute__ ((noinline)) ub_MarkedRawCrateData<ub_TPC_CardData_v6,ub_XMITEventHeader,ub_XMITEventTrailer>::reportMissingTrailer() noexcept
+{
+    std::call_once(flagtpcxmit, [](){ganglia::Metric<ganglia::RATE,uint32_t>::named("TPC-missing-xmit-trailer","Errors/sec")->publish(1);});
+
+    if( trailer().raw_data!=EVENTTRAILER)
+      	 ganglia::Metric<ganglia::RATE,uint32_t>::named("TPC-missing-xmit-trailer","Errors/sec")->publish(1);
 }
 
 ub_TPC_CrateData_v6::ub_TPC_CrateData_v6(ub_RawData const& rawdata, bool initializeHeaderFromRawData):

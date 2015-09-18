@@ -68,6 +68,16 @@ void ub_ChannelDataCreatorHelperClass<ub_TPC_ChannelData_v6>::populateChannelDat
 
         }//end loop over getting data from channels
     }//end loop over n_channels
+    
+    //report missing channel trailer words
+    auto missing_trailer_counter= uint32_t{0};
+    
+    for(auto const& chan: retValue)
+      if (chan.getChannelTrailerWord()!= 0x503f)
+	  ++missing_trailer_counter;
+    
+    ganglia::Metric<ganglia::RATE,uint32_t>::named("TPC-missing-channel-trailer-rate","Count/sec")->publish(missing_trailer_counter);
+
     channelDataVector.swap(retValue);
     } catch(datatypes_exception& e) {
       std::cerr << "Caught datatype exception in ub_TPC_ChannelDataCreatorHelperClass::populateChannelDataVector() Message: " <<e.what() << std::endl;

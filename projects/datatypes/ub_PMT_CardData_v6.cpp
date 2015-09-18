@@ -1,4 +1,5 @@
 #include "ub_PMT_CardData_v6.h"
+#include <mutex>
 
 using namespace gov::fnal::uboone::datatypes;
 
@@ -7,16 +8,19 @@ namespace fnal {
 namespace uboone {
 namespace datatypes {
 
+std::once_flag flagpmtcs;
+
 template<>
 bool ub_MarkedRawCardData<ub_PMT_ChannelData_v6,ub_PMT_CardHeader_v6,ub_PMT_CardTrailer_v6>::isValid() noexcept
 {
     bool returnIsValid{true};
-
+        
     if(_do_dissect)
     {
+	std::call_once(flagpmtcs, [](){ganglia::Metric<ganglia::RATE,uint32_t>::named("PMT-checksum-error-count","Errors/sec")->publish(0);});
         if(!verify_checksum( data(), header().getChecksum() -0x4000)) {
             std::cerr << "Wrong checksum.\n";
-	     ganglia::Metric<ganglia::RATE>::named("PMT-checksum-errors","Errors/sec")->publish(1.);            
+	     ganglia::Metric<ganglia::RATE,uint32_t>::named("PMT-checksum-error-count","Errors/sec")->publish(1);            
             _validChecksum=false;
             returnIsValid=true; //continue for now
         }

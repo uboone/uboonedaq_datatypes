@@ -51,23 +51,37 @@ template<typename T>struct HEARTBEAT {
 };
 
 template<template<typename> class, typename>
-bool enable_metricts(bool flag=true) noexcept {
-    static bool _flag(flag);
+bool __attribute__ ((noinline))  enable_metricts(bool flag=false) noexcept {
+    static bool _flag{flag};
     return _flag;
 }
 
 namespace detail {
 template <template<typename> class Q, typename T, bool>
 struct quantity_impl {
-    quantity_impl(std::string const& ,std::string const& ) {
-        if(enable_metricts<Q,T>())
-            std::cout << "++ default quantity_impl::quantity_impl this="<<std::hex<< this << "\n";
+    explicit __attribute__ ((noinline))  quantity_impl(std::string const& name,std::string const& units):_name(name),_units(units) {
+        if(enable_metricts<Q,T>())          
+          std::cout << "Console Metric: Created quantity_impl<default> " << debugInfo() << ", this=" << std::hex << this <<std::endl;        
     }
 
-    void publish(typename Q<T>::type const& ) noexcept {
+    void __attribute__ ((noinline))  publish(typename Q<T>::type const& value) noexcept {
         if(enable_metricts<Q,T>())
-            std::cout << "++ default quantity_impl::publish this="<<std::hex << this <<"\n";
+          std::cout << "Console Metric: Publish value=" << value << " to quantity_impl<type> " << debugInfo() << ", this=" << std::hex << this <<std::endl;
     }
+
+   std::string __attribute__ ((noinline)) debugInfo() const{
+        std::stringstream os;
+        os << "Metric<";
+        os << ", name=" << _name;
+        os << ", units=" << _units;
+        os << ", metric_type=" << typeid(Q<T>).name();
+        os << ", value_type=" << typeid(T).name();
+        os << ">";
+        return os.str();
+    }
+
+    std::string _name;
+    std::string _units;        
 };
 
 struct destructable {
@@ -122,11 +136,11 @@ private:
 template<template<typename> class Q, typename T = typename Q<void>::preferred_type>
 class Metric final: public detail::destructable {
     struct quantity : detail::quantity_impl <Q,T, true> {
-        explicit quantity(std::string const& name, std::string const& unit)
+        explicit __attribute__ ((noinline))  quantity(std::string const& name, std::string const& unit)
             :detail::quantity_impl <Q,T,true>(name,unit) {
         }
 
-        void publish(typename Q<T>::type const& value) noexcept {
+        void __attribute__ ((noinline))  publish(typename Q<T>::type const& value) noexcept {
             return detail::quantity_impl <Q,T,true>::publish(value);
         }
     };
@@ -136,7 +150,7 @@ class Metric final: public detail::destructable {
 
     friend class MetricDestructor;
 public:
-    static quantity_ptr named(std::string const& name, std::string const& units) noexcept {
+    static quantity_ptr __attribute__ ((noinline)) named(std::string const& name, std::string const& units) noexcept {
         return self().find_create(name,units);
     }
 
@@ -147,16 +161,16 @@ public:
     Metric& operator= ( Metric && ) = delete;
 
 private:
-    static Metric& self() {
+    static Metric& __attribute__ ((noinline))  self() {
         static Metric _self;
         return _self;
     }
 
-    Metric():_metrics_lock {},_metrics {} {
+    __attribute__ ((noinline))  Metric():_metrics_lock {},_metrics {} {
         detail::MetricDestructor::instance().addMetric(this);
     }
 
-    quantity_ptr find_create(std::string const& name, std::string const& units) noexcept {
+    quantity_ptr __attribute__ ((noinline))  find_create(std::string const& name, std::string const& units) noexcept {
         std::lock_guard<std::mutex> guard(_metrics_lock);
         auto& retVal= _metrics[name];
         if(!retVal)
@@ -165,7 +179,7 @@ private:
         return retVal;
     }
 
-    void destruct() noexcept override {
+    void __attribute__ ((noinline))  destruct() noexcept override {
         std::lock_guard<std::mutex> guard(_metrics_lock);
         _metrics.clear();
     }

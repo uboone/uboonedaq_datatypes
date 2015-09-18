@@ -108,7 +108,7 @@ public:
 private:
     bool isValid() noexcept;
     bool canFullyDissect() noexcept;   
-    
+    void reportMissingTrailer() noexcept;   
 private:
     static bool  _do_dissect;   
     bool _initializeHeaderFromRawData;
@@ -156,13 +156,13 @@ void ub_MarkedRawCrateData<CARD,HEADER,TRAILER>::dissectCards() throw(data_size_
         
         _isFullyDissected=true;
         
-          ganglia::Metric<ganglia::RATE>::named("CRATE-read-data-rate","Words/sec")->publish(double(_dissectableDataSize));
-
          auto fem_dissection_errors=ganglia::RATE<void>::preferred_type{0};                 
          for(auto & card: _markedRawCardsData){
 	    if(!card.isValid())	++fem_dissection_errors;
 	  }
 	 ganglia::Metric<ganglia::RATE>::named("FEM-card-dissection-errors","Errors/sec")->publish(fem_dissection_errors);
+	 
+	 reportMissingTrailer();   
 
         _isValid=true;
        // std::cerr << ub_data_types::debugInfoShort(ub_RawData{rawdata().begin(),rawdata().begin()+_dissectableDataSize}) <<std::endl;
@@ -337,6 +337,12 @@ void ub_MarkedRawCrateData<CARD,HEADER,TRAILER>::rethrowDissectionException() co
  
  if(!_isValid)
    throw datatypes_exception(os.str());
+}
+
+template <typename CARD, typename HEADER, typename TRAILER>
+void __attribute__ ((noinline))  ub_MarkedRawCrateData<CARD,HEADER,TRAILER>::reportMissingTrailer() noexcept
+{
+//do nothing
 }
 
 }  // end of namespace datatypes
