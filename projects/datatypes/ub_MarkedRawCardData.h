@@ -24,11 +24,22 @@ public:
 
     template <typename MRCD> using dissector_type = ub_ChannelDataCreatorHelperClass<MRCD>;
 
-    explicit ub_MarkedRawCardData(ub_RawData const& rawdata):
-        ub_MarkedRawDataBlock<HEADER,TRAILER>(rawdata),
-     _markedRawChannelsData {}, _dissection_exception(""),_validChecksum(true),
-     _isValid {isValid()},_isFullyDissected {canFullyDissect()}
-     {}
+    explicit ub_MarkedRawCardData(ub_RawData const& rawdata)
+      try
+      :ub_MarkedRawDataBlock<HEADER,TRAILER>(rawdata),
+      _markedRawChannelsData {}, 
+      _dissection_exception(""),
+      _validChecksum(true),
+      _isValid {isValid()},
+      _isFullyDissected {canFullyDissect()}
+      {}
+      catch(std::exception &e) {
+	     std::cerr << "Caught exception ub_MarkedRawCardData::ctor(). Message " << e.what() << std::endl;
+	     throw;
+      }
+      catch(...) {
+	     std::cerr << "Caught unknown exception ub_MarkedRawCardData::ctor()" << std::endl;
+      }
 
     uint32_t const& getCardIDAndModuleWord() const noexcept{
         return ub_MarkedRawDataBlock<HEADER,TRAILER>::header().id_and_module;
@@ -80,8 +91,8 @@ public:
     datatypes_exception dissectionException() const { return _dissection_exception; }
     void rethrowDissectionException() const throw(data_size_exception, datatypes_exception);
     
+    bool isValid() noexcept;   
 private:
-    bool isValid() noexcept;
     bool canFullyDissect() noexcept;
 
 private:
@@ -127,12 +138,19 @@ void ub_MarkedRawCardData<CHANN, HEADER,TRAILER>::dissectChannels() throw(dataty
         dissector.populateChannelDataVector(_markedRawChannelsData);
         
         _isFullyDissected=true;
+
+        auto channel_dissection_errors=ganglia::RATE<void>::preferred_type{0};                 
+        for(auto & chan: _markedRawChannelsData){
+	    if(!chan.isValid())	++channel_dissection_errors;
+	}
+	ganglia::Metric<ganglia::RATE>::named("FEM-channel-dissection-errors","Errors/sec")->publish(channel_dissection_errors);
+        
         _isValid=true;
     }
     catch(datatypes_exception &ex){        
       std::cerr << ub_MarkedRawDataBlock<HEADER,TRAILER>::header().debugInfo() << std::endl;
       std::cerr << ub_MarkedRawDataBlock<HEADER,TRAILER>::trailer().debugInfo() << std::endl;
-        throw ex;
+        throw ;
     }catch(std::exception &e){
          throw datatypes_exception(std::string("Caught std::exception in ub_MarkedRawCardData::dissectChannels(). Message:").append(e.what()));         
     }catch(...){

@@ -110,20 +110,20 @@ std::string ub_CrateHeader_v6::debugInfo()const noexcept
 {
     std::ostringstream os;
 
-    os << "Object " << demangle(typeid(this)) << ".";
-    os << "\n Event Number " << event_number << ", Event Size " << size;
-    os << "  Frame Number " <<  frame_number;
-    os << "  Crate Number " << (unsigned int)crate_number;
-    os << "  Crate Bits " << (unsigned int) crateBits;
-    os << "  Crate Complete " << (unsigned int) complete;
-    os << "  Crate seb_time_sec " << (unsigned int)local_host_time.seb_time_sec;
-    os << "  Crate seb_time_usec " << (unsigned int) local_host_time.seb_time_usec;
-    if(crate_number == 100) {
-        os << "  \n Crate 10 gps_time (sec, micro, nano) " << gps_time.second << ",  "
-        << gps_time.micro << ",  " << gps_time.nano ;
-        os << "  \n Crate 10 daqClockTime (frame, sample, div) " << (unsigned int) trigger_board_time.frame
-        << ", " << (unsigned int) trigger_board_time.sample << ", " << (unsigned int)trigger_board_time.div;
+    os << "\n Event Number: " << event_number << 
+    os << "\n   Event Size: " << size;
+    os << "\n   Frame Number: " <<  frame_number;
+    os << "\n   Crate Number: " << int(crate_number);
+    os << "\n   Crate Bits: " << "0x" << std::hex << crateBits;
+    os << "\n   Crate Complete: " <<  (complete ? "True":"False");
+    os << "\n   " << data_transmission_header.debugInfo();
+    os << "\n   " << local_host_time.debugInfo();
+
+    if(crate_number==10){
+        os << "\n   " << gps_time.debugInfo();
+        os << "\n   " << trigger_board_time.debugInfo();
     }
+
 
     return os.str();
 }
@@ -250,6 +250,11 @@ bool ub_CrateHeader_v6::compare(ub_CrateHeader_v6 const& crate_header,bool do_re
             return false;
     }
     return true;
+}
+
+bool ub_CrateHeader_v6::isValidChecksum() const noexcept
+{
+  return data_transmission_header.isValidChecksum();
 }
 
 

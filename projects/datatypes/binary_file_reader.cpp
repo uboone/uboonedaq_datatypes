@@ -35,7 +35,7 @@ bool readFile(std::string const& fileName,raw_data_container<raw_data_type> & re
     os << " into buffer " << std::hex <<  &retBuff << std::endl;
    } catch(std::exception const& e) {
       std::cerr <<os.str()<<" Message:"<< e.what() <<std::flush;
-      throw;
+      throw datatypes_exception(std::string("Caught  std::exception in gov::fnal::uboone::datatypes::readFile() Message: ").append(e.what()));
    }
    
    // std::cout <<os.str()<<std::flush;
