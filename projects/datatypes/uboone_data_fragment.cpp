@@ -14,7 +14,7 @@ datatypes_exception::datatypes_exception(std::string const& message, std::string
     _message = out.str();
 }
 
-const char * datatypes_exception::what () const throw ()
+const char * datatypes_exception::what () const noexcept 
 {
     return _message.c_str();
 }
@@ -36,7 +36,7 @@ data_size_exception::data_size_exception(size_t const& size, std::string const& 
 //  data_size_exception(0,message,name);
 //}
 
-const char * data_size_exception::what () const throw ()
+const char * data_size_exception::what () const noexcept 
 {
     return _message.c_str();
 }
@@ -78,6 +78,10 @@ bool ub_fragment_header::compare(ub_fragment_header const& header, bool do_rethr
 
         if(md5hash!=header.md5hash)
             throw datatypes_exception(make_compare_message("data_transmission_header", "md5hash", md5hash,header.md5hash));
+            
+        if(extra_flags!=header.extra_flags)
+            throw datatypes_exception(make_compare_message("data_transmission_header", "extra_flags", extra_flags,header.extra_flags));
+            
     } catch(datatypes_exception &ex) {
         std::cerr << ex.what();
         if(do_rethrow)
@@ -96,10 +100,14 @@ bool ub_fragment_header::compare(ub_fragment_header const& header, bool do_rethr
 
 
 void ub_fragment_header::calculateMD5hash(unsigned char const* addr, std::size_t bytes) noexcept {
+    assert(addr!=NULL);
+    
     MD5(addr, bytes , md5hash);
 }
 
 bool ub_fragment_header::verifyMD5hash(unsigned char const* addr, std::size_t bytes) const noexcept {
+    assert(addr!=NULL);
+
     unsigned char md5hash_[MD5_DIGEST_LENGTH];
     MD5(addr, bytes , md5hash_);
     return std::equal(std::begin(md5hash), std::end(md5hash), std::begin(md5hash_));
@@ -110,6 +118,25 @@ void ub_fragment_header::flagChecksumAsInvalid() noexcept{
     SET_BIT(extra_flags,0);
 }
 
-bool ub_fragment_header::isValidChecksum() noexcept{
+bool ub_fragment_header::isValidChecksum() const noexcept{
     return ! CHECK_BIT(extra_flags,0);
+}
+
+
+std::string ub_fragment_header::debugInfo() const noexcept {
+
+      std::ostringstream os;      
+      os << "Object " << demangle(typeid(this)) << ".";
+      os << "\n Total word count: " <<   total_fragment_wordcount;
+      os << "\n Fragment format version: " <<   int (fragment_format_version);
+      os << "\n Raw data word count: " <<   raw_fragment_wordcount;
+      os << "\n Raw data begining offset: " <<   raw_fragment_beginning_word_offset;
+      os << "\n Is complete: " <<   (is_fragment_complete?"True":"False");      
+      os << "\n   Extra flags:"   <<"0x" << std::hex << extra_flags;
+      os << "\n       Checksum:"  << (isValidChecksum()?"Valid":"Invalid");
+      //os << "\n       XMIT Trailer:"  << (isMissingXMITTrailer()?"Missing":"OK");
+      os << "\n MD5:"  ; for(int i=0; i < MD5_DIGEST_LENGTH; i++) os << std::hex <<std::setw(1)<< (int)md5hash[i];
+
+      return os.str();
+
 }

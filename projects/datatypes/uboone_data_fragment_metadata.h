@@ -29,14 +29,14 @@ struct DissectorAdapter
 };
 
 
-class DissectorFactory
+class DissectorFactory final
 {
     typedef std::map<std::string,std::pair<uint8_t , crate_header_builder> > DissectorMap_t;   
 public:
      DissectorFactory();
     ~DissectorFactory();
 
-    void registerDissector(std::string const& name, uint8_t const& version, crate_header_builder builder);
+    void registerDissector(std::string const& name, uint8_t const& version, crate_header_builder builder) noexcept;
     crate_header_t buildCrateHeaderFromRawData(std::string const& name, uint8_t const& version, ub_RawData const& rawdata, bool initializeHeaderFromRawData);
     
     DissectorFactory ( DissectorFactory const & ) = delete;

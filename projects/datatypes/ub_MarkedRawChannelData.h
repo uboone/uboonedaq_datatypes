@@ -41,9 +41,9 @@ public:
     std::string debugInfo()const noexcept;
     bool        wasDissected() const { return _isFullyDissected; }
 
-    void rethrowDissectionException() const throw(data_size_exception, datatypes_exception);
-private:
+    void rethrowDissectionException() const throw(data_size_exception, datatypes_exception);    
     bool isValid() noexcept;
+private:
     bool canFullyDissect() noexcept;
 private:
     mutable bool _isValid;
