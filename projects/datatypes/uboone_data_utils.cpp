@@ -122,6 +122,17 @@ bool verify_checksum(ub_RawData const& data,uint32_t checksum) noexcept
   return (mask & data_checksum) == (mask & checksum);
 }
 
+int checksum_difference(ub_RawData const& data,uint32_t checksum) noexcept
+{
+  uint32_t mask = (1 << 24) - 1;
+
+  int data_checksum=(int)(mask & compute_checksum(data));
+  int checkval = (int)(mask & checksum);
+
+//  std::cout << "Checksum expected, actual " << std::hex <<std::setfill('0') << std::setw(8) << checksum << ", "<< std::hex <<std::setfill('0') << std::setw(8) << data_checksum << "\n"; 
+  return (data_checksum - checkval);
+}
+
 }  // end of namespace datatypes
 }  // end of namespace uboone
 }  // end of namespace fnal

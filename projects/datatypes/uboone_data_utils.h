@@ -11,6 +11,7 @@
 #include <sstream>
 #include <iomanip>
 
+#include "share/gangliaMetrics.h"
 #include "uboone_data_fragment.h"
 
 #define UNUSED(x) (void)(x)
@@ -137,6 +138,7 @@ std::string to_hex_string(T& value)
 uint32_t compute_checksum(ub_RawData const& data) noexcept;
 
 bool verify_checksum(ub_RawData const&  data,uint32_t checksum) noexcept;
+int checksum_difference(ub_RawData const&  data,uint32_t checksum) noexcept;
 
 }  // end of namespace datatypes
 }  // end of namespace uboone

@@ -7,6 +7,7 @@ ub_EventRecord::ub_EventRecord()
     :_bookkeeping_header(),
      _bookkeeping_trailer(),
      _global_header(),
+     _trigger_counter(),
      _tpc_seb_map(),
      _pmt_seb_map(),
      _trigger_seb_map(),
@@ -14,7 +15,7 @@ ub_EventRecord::ub_EventRecord()
      _beam_record() {
 }
 
-void ub_EventRecord::setCrateSerializationMask(uint16_t mask) noexcept
+void ub_EventRecord::setCrateSerializationMask(uint16_t mask) throw (datatypes_exception)
 {
     _crate_serialization_mask.store(mask);
     updateDTHeader();
@@ -44,12 +45,25 @@ ub_EventRecord::~ub_EventRecord()
     _laser_seb_map.clear();
 }
 
-void ub_EventRecord::setGlobalHeader (global_header_t & header) noexcept {
+void ub_EventRecord::setGlobalHeader (global_header_t const& header) noexcept {
     _global_header = header;
 }
 
 global_header_t& ub_EventRecord::getGlobalHeader() noexcept {
     return _global_header;
+}
+
+trigger_counter_t const& ub_EventRecord::getTriggerCounter() noexcept {
+  return _trigger_counter;
+}
+void ub_EventRecord::resetTriggerCounter() noexcept {
+  _trigger_counter.reset();
+}
+void ub_EventRecord::setTriggerCounter( trigger_counter_t const& tc) noexcept {
+  _trigger_counter = tc;
+}
+bool ub_EventRecord::passesSoftwarePrescale(ub_TriggerSummary_t const& ps) noexcept{
+  return _trigger_counter.prescalePass(ps);
 }
 
 void ub_EventRecord::setGPSTime(ub_GPS_Time const& gps_time) noexcept{
@@ -84,14 +98,18 @@ ub_BeamRecord const& ub_EventRecord::beamRecord()const noexcept {
     return _beam_record;
 }
 
-ub_BeamRecord& ub_EventRecord::beamRecord() noexcept {return _beam_record;}
+ub_BeamRecord& ub_EventRecord::beamRecord() noexcept {
+return _beam_record;
+}
 
 std::size_t ub_EventRecord::getFragmentCount() const noexcept{
   return _pmt_seb_map.size()+_tpc_seb_map.size()+_trigger_seb_map.size();
 }
 
-void ub_EventRecord::addFragment(raw_fragment_data_t& fragment) throw(datatypes_exception)
+void ub_EventRecord::addFragment(raw_fragment_data_t& fragment) throw(datatypes_exception,data_size_exception)
 {
+    try {
+
     crate_header_t const & crate_header= crate_header_t::getHeaderFromFragment(ub_RawData(fragment.begin(),fragment.end()));
 
     int crate_number {crate_header.crate_number};
@@ -130,6 +148,9 @@ void ub_EventRecord::addFragment(raw_fragment_data_t& fragment) throw(datatypes_
           getGlobalHeader().setTriggerBoardClock(crate_header.trigger_board_time);
         if(crate_header.gps_time.wasSet())
           getGlobalHeader().setGPSTime(crate_header.gps_time);
+
+	bool first_trig_fragment = (_trigger_seb_map.size()==1);
+	_trigger_counter.increment(std::get<2>(_trigger_seb_map[crate_number])->getTriggerData(),!first_trig_fragment);
       }
     else if(crate_type == SystemDesignator::PMT_SYSTEM)
     {
@@ -203,23 +224,40 @@ void ub_EventRecord::addFragment(raw_fragment_data_t& fragment) throw(datatypes_
 
     getGlobalHeader().setNumberOfSEBs((uint8_t)(_tpc_seb_map.size() + _pmt_seb_map.size()));    
     updateDTHeader();
+
+    } catch(datatypes_exception &e) {
+	throw ;
+    }catch(std::exception &ex) {
+	   std::ostringstream os;
+	   os << "Caught exception in  ub_EventRecord::addFragment(). Message:";
+	   os << ex.what();
+	   std::cerr << os.str() << std::endl;
+	   
+            throw datatypes_exception(os.str());
+    } catch(...) {
+    	   std::ostringstream os;
+	   os << "Caught unknown exception in  ub_EventRecord::addFragment()";
+	   std::cerr << os.str() << std::endl;
+
+           throw datatypes_exception(os.str());
+    }    
 }
 
-const ub_EventRecord::tpc_map_t ub_EventRecord::getTPCSEBMap() const throw(datatypes_exception)
+const ub_EventRecord::tpc_map_t ub_EventRecord::getTPCSEBMap() const noexcept
 {
     tpc_map_t retMap;
     for(auto& tpc : _tpc_seb_map)
         retMap.emplace(tpc.first,*std::get<2>(tpc.second));
     return retMap;
 }
-const ub_EventRecord::pmt_map_t ub_EventRecord::getPMTSEBMap() const throw(datatypes_exception)
+const ub_EventRecord::pmt_map_t ub_EventRecord::getPMTSEBMap() const noexcept
 {
     pmt_map_t retMap;
     for(auto& pmt : _pmt_seb_map)
         retMap.emplace(pmt.first,*std::get<2>(pmt.second));
     return retMap;
 }
-const ub_EventRecord::trig_map_t ub_EventRecord::getTRIGSEBMap() const throw(datatypes_exception)
+const ub_EventRecord::trig_map_t ub_EventRecord::getTRIGSEBMap() const noexcept
 {
     trig_map_t retMap;
     for(auto& trg : _trigger_seb_map)
@@ -227,13 +265,13 @@ const ub_EventRecord::trig_map_t ub_EventRecord::getTRIGSEBMap() const throw(dat
     return retMap;
 }
 
-ub_EventRecord::laser_map_t const& ub_EventRecord::getLASERSEBMap() const throw(datatypes_exception)
+ub_EventRecord::laser_map_t const& ub_EventRecord::getLASERSEBMap() const noexcept
 {
   return _laser_seb_map;
 }
 
 
-void ub_EventRecord::getFragments(fragment_references_t& fragments) const throw(datatypes_exception)
+void ub_EventRecord::getFragments(fragment_references_t& fragments) const noexcept
 {
     uint16_t serialization_mask=_crate_serialization_mask.load();
 
@@ -374,6 +412,8 @@ std::string ub_EventRecord::debugInfo()const noexcept {
     os << "\n LASER fragment count=" << lasers.size() << std::endl;
     os << _global_header.debugInfo() << std::endl;
 
+    os << "\nTrigger Counter";
+    os << _trigger_counter.debugInfo();
     os << "\nTRG fragments";
     for(auto const& trg : _trigger_seb_map){
         raw_fragment_data_t const& tpm_fragment=std::get<raw_fragment_data_t>(trg.second);

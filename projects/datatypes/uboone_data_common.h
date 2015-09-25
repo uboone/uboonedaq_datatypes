@@ -6,6 +6,7 @@
 #include <string>
 #include <sys/time.h>
 
+#include "constants.h"
 
 /* These and the following string definitions are crate-type, also
  * known as the "system designator*.*/

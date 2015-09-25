@@ -22,6 +22,21 @@ namespace fnal {
 namespace uboone {
 namespace datatypes {
 
+template<class ForwardIt>
+ForwardIt next(ForwardIt start, ForwardIt end, typename std::iterator_traits<ForwardIt>::difference_type n = 1)
+{
+    auto dist = - std::distance(end,start);
+    
+    if(n <= dist) { 
+        std::advance(start, n);
+	return start;
+    }
+
+    std::cerr << "distance="<< dist << " advance="<<n << std::endl;
+    assert(false);
+    throw datatypes_exception("Unable to advance iterator");
+}
+
 template <typename HEADER, typename TRAILER> class ub_MarkedRawDataBlock
 {
 public:
@@ -35,15 +50,7 @@ public:
     static_assert (sizeof(HEADER)%2==0 ,   "CODING BUG: HEADER must have even byte count, fix C++ header files.");
     static_assert (sizeof(TRAILER)%2 == 0, "CODING BUG: TRAILER must have even byte count, fix C++ header files.");
 
-    explicit ub_MarkedRawDataBlock(ub_RawData const& rawdata)
-        : _data_markers {
-        std::make_tuple(rawdata,
-        ub_RawData(rawdata.begin()+size_of<HEADER>(),rawdata.begin()+(rawdata.size()-size_of<TRAILER>())),
-        rawdata.begin(),
-        rawdata.begin()+rawdata.size()-size_of<TRAILER>())
-    } { 
-      //assert(rawdata.end() >= rawdata.begin());  assert(data().end() >= data().begin());
-    };
+    explicit ub_MarkedRawDataBlock(ub_RawData const& rawdata):ub_MarkedRawDataBlock(rawdata,NULL){}    
 
     HEADER const&  header() const noexcept {
         return *(reinterpret_cast<HEADER const *>(&*std::get<cast_enum(data_types::header)>(_data_markers)) );
@@ -51,7 +58,6 @@ public:
     TRAILER const&  trailer() const noexcept {
         return * (reinterpret_cast<TRAILER const *>(&*std::get<cast_enum(data_types::trailer)>(_data_markers)) );
     }
-
     ub_RawData const&  data() const noexcept {
         return std::get<cast_enum(data_types::data)>(_data_markers);
     }
@@ -62,10 +68,26 @@ public:
     std::string debugInfo()const noexcept;
     bool compare(ub_MarkedRawDataBlock const&,bool do_rethrow=false) const throw(datatypes_exception);
 
-    constexpr size_t minsize()const {
+    size_t minsize()const {
         return  size_of<HEADER>()+size_of<TRAILER>();
     }
 
+private:    
+    ub_MarkedRawDataBlock(ub_RawData const& rawdata, void*)
+	try
+        :_data_markers {
+		std::make_tuple(rawdata,
+		ub_RawData(next(rawdata.begin(),rawdata.end(),size_of<HEADER>()),
+			  next(rawdata.begin(),rawdata.end(),rawdata.size()-size_of<TRAILER>())),
+		rawdata.begin(),
+		next(rawdata.begin(),rawdata.end(),rawdata.size()-size_of<TRAILER>()))
+	} {}
+	catch(std::exception &e) {
+	      std::cerr << "Caught exception ub_MarkedRawDataBlock::ctor()" << e.what() << std::endl;
+	}
+	catch(...) {
+	      std::cerr << "Caught unknown exception ub_MarkedRawDataBlock::ctor()" << std::endl;
+	}
 private:
     std::tuple<ub_RawData,ub_RawData,ub_RawData::const_iterator,ub_RawData::const_iterator> _data_markers;    
 };
@@ -111,15 +133,32 @@ bool ub_MarkedRawDataBlock< HEADER,  TRAILER>::compare(ub_MarkedRawDataBlock con
 
 
 template <typename TYPE>
-typename TYPE::header_type const&  const_header_from(ub_RawData &data) noexcept{
+typename TYPE::header_type const&  const_header_from(ub_RawData const&data) noexcept{
     return *(reinterpret_cast<typename TYPE::header_type const*>(&*
              data.begin()));
 }
 
 template <typename TYPE>
-typename TYPE::trailer_type const&  const_trailer_from(ub_RawData &data) noexcept{
+typename TYPE::trailer_type const&  const_trailer_from(ub_RawData const&data) noexcept{
     return *(reinterpret_cast<typename TYPE::trailer_type const*>(&*
              (data.begin()+data.size()-size_of<typename TYPE::trailer_type>() ) ));
+}
+
+template <typename T> 
+bool invoke_isValid_member(T const&) noexcept{
+    return true;
+}
+
+template<typename MRCD>
+bool peek_at_next_event(bool flag=false) noexcept{
+  static bool _flag(flag);
+  return _flag;
+}
+
+template<typename MRCD>
+bool handle_missing_words(bool flag=false) noexcept{
+  static bool _flag(flag);
+  return _flag;
 }
 
 }  // end of namespace datatypes

@@ -39,10 +39,10 @@ struct ub_PMT_WindowHeader_v6 final
     union {
         struct {
             uint16_t channel_number :6;
-	    uint16_t empty1         :4;
-            uint16_t discriminator  :2;
-	    uint16_t marker1        :2;
-	    uint16_t                :2;
+	    uint16_t empty1         :3;
+            uint16_t discriminator  :3;
+	    uint16_t marker1        :4;
+	  //	    uint16_t                :0;
         } ;
         uint16_t ch_and_disc=0xDEAD;
     } ;

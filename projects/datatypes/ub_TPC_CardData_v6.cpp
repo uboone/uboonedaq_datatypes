@@ -1,11 +1,13 @@
 #include "ub_TPC_CardData_v6.h"
-
+#include <mutex>
 using namespace gov::fnal::uboone::datatypes;
 
 namespace gov {
 namespace fnal {
 namespace uboone {
 namespace datatypes {
+
+std::once_flag flagtpccs;
 
 template<>
 bool ub_MarkedRawCardData<ub_TPC_ChannelData_v6,ub_TPC_CardHeader_v6,empty_trailer>::_do_dissect=true;
@@ -17,12 +19,17 @@ bool ub_MarkedRawCardData<ub_TPC_ChannelData_v6,ub_TPC_CardHeader_v6,empty_trail
 
     if(_do_dissect)
     {
-        if(!verify_checksum( data(),  header().getChecksum())) {
+      std::call_once(flagtpccs, [](){ganglia::Metric<ganglia::RATE,uint32_t>::named("TPC-checksum-error-count","Errors/sec")->publish(0);});
+      int checksum_diff = checksum_difference( data(), header().getChecksum() );
+        if(checksum_diff!=0) {
+	  if( (checksum_diff+0x503f) != 0 ){
             std::cerr << "Wrong checksum.\n";
+	    ganglia::Metric<ganglia::RATE,uint32_t>::named("TPC-checksum-error-count","Errors/sec")->publish(1);            
             _validChecksum=false;
             returnIsValid=true; //continue for now
+	  }
         }
-    }
+    }    
     return returnIsValid;
 }
 
