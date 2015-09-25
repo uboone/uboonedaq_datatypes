@@ -110,7 +110,7 @@ std::string ub_CrateHeader_v6::debugInfo()const noexcept
 {
     std::ostringstream os;
 
-    os << "\n Event Number: " << event_number << 
+    os << "\n Event Number: " << event_number;
     os << "\n   Event Size: " << size;
     os << "\n   Frame Number: " <<  frame_number;
     os << "\n   Crate Number: " << int(crate_number);
