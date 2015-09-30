@@ -110,6 +110,7 @@ private:
     bool isValid() noexcept;
     bool canFullyDissect() noexcept;   
     void reportMissingTrailer() noexcept;   
+    std::once_flag flagfemcarderr;
 private:
     static bool  _do_dissect;   
     bool _initializeHeaderFromRawData;

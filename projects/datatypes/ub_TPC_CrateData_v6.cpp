@@ -50,7 +50,7 @@ void __attribute__ ((noinline)) ub_MarkedRawCrateData<ub_TPC_CardData_v6,ub_XMIT
     //bool ub_CardDataCreatorHelperClass<MRCD>::word_at_position_is_zero(ub_RawData const& data,size_t pos)
     //{ return *(data.begin()+pos)==0x0000; }
 
-    if( *(rawdata.begin()+_dissectableDataSize-1)!=0xe000 )
+    if( *(rawdata().begin()+_dissectableDataSize-1)!=0xe000 )
       	 ganglia::Metric<ganglia::RATE,uint32_t>::named("TPC-missing-xmit-trailer","Errors/sec")->publish(1);
 }
 

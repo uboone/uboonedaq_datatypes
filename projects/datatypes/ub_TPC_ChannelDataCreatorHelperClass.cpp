@@ -26,7 +26,7 @@ void ub_ChannelDataCreatorHelperClass<ub_TPC_ChannelData_v6>::populateChannelDat
     auto channel_per_event_counter= uint32_t{0};
 
     std::call_once(flagtpcmcht, [](){ganglia::Metric<ganglia::RATE,uint32_t>::named("TPC-missing-channel-trailer-rate","Count/sec")->publish(0);});
-    std::call_once(flagtpcch, [](){ganglia::Metric<ganglia::VALUE,uint32_t>::named("TPC-channel-per-event","Channels/event")->publish(tpc_card_channel_count);});
+    std::call_once(flagtpcch, [](){ganglia::Metric<ganglia::VALUE,uint32_t>::named("TPC-channel-per-event","Channels/event")->publish(64);});
 
     try{
     for(size_t channel=0; channel < tpc_card_channel_count; channel++,curr_trailer++)
