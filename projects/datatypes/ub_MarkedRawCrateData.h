@@ -6,6 +6,7 @@
 #include "uboone_data_internals.h"
 #include "ub_CardDataCreatorHelperClass.h"
 #include "ub_LocalHostTime.h"
+#include <mutex>
 
 namespace gov {
 namespace fnal {
@@ -132,6 +133,8 @@ std::vector<CARD> const&  ub_MarkedRawCrateData<CARD,HEADER,TRAILER>::getCards()
 template <typename CARD, typename HEADER, typename TRAILER>
 void ub_MarkedRawCrateData<CARD,HEADER,TRAILER>::dissectCards() throw(data_size_exception,datatypes_exception)
 {
+  std::call_once(flagfemcarderr, [](){ganglia::Metric<ganglia::RATE>::named("FEM-card-dissection-errors","Errors/sec")->publish(0);});
+
     try
     {
 	_isValid=false; //reset the isValid flag

@@ -2,12 +2,14 @@
 #include "uboone_data_internals.h"
 #include "ub_ChannelDataCreatorHelperClass.h"
 #include "ub_TPC_ChannelData_v6.h"
+#include <mutex>
 
 namespace gov {
 namespace fnal {
 namespace uboone {
 namespace datatypes {
 
+std::once_flag flagtpcmcht, flagtpcch;
 
 template<>
 void ub_ChannelDataCreatorHelperClass<ub_TPC_ChannelData_v6>::populateChannelDataVector(std::vector<ub_TPC_ChannelData_v6> & channelDataVector)
@@ -19,6 +21,13 @@ void ub_ChannelDataCreatorHelperClass<ub_TPC_ChannelData_v6>::populateChannelDat
     ub_RawData curr_rawData {_rawData.begin(),_rawData.end()};
     uint16_t curr_header {0x4000},curr_trailer {0x5000};
         
+    //report missing channel trailer words
+    auto missing_trailer_counter= uint32_t{0};
+    auto channel_per_event_counter= uint32_t{0};
+
+    std::call_once(flagtpcmcht, [](){ganglia::Metric<ganglia::RATE,uint32_t>::named("TPC-missing-channel-trailer-rate","Count/sec")->publish(0);});
+    std::call_once(flagtpcch, [](){ganglia::Metric<ganglia::VALUE,uint32_t>::named("TPC-channel-per-event","Channels/event")->publish(tpc_card_channel_count);});
+
     try{
     for(size_t channel=0; channel < tpc_card_channel_count; channel++,curr_trailer++)
     {
@@ -43,9 +52,10 @@ void ub_ChannelDataCreatorHelperClass<ub_TPC_ChannelData_v6>::populateChannelDat
         {
             if(curr_trailer==*curr_position && (curr_header==*(curr_position+1) || channel+1 == tpc_card_channel_count ))
             {
-                ub_RawData data {curr_rawData.begin(),curr_position+1};
-                
+                ub_RawData data {curr_rawData.begin(),curr_position+1};                
+
                 retValue.push_back(data);
+		++channel_per_event_counter;
                 
                 curr_rawData=ub_RawData {curr_position+1,curr_rawData.end()};
                 
@@ -60,7 +70,9 @@ void ub_ChannelDataCreatorHelperClass<ub_TPC_ChannelData_v6>::populateChannelDat
 	      if(std::distance(curr_position,curr_rawData.end())==1 && (*curr_position)!=curr_trailer){
                 ub_RawData data {curr_rawData.begin(),curr_position+1};
 		retValue.push_back(data);
+		++channel_per_event_counter;
 		std::cerr << "Missing 0x503f in the channel!" << std::endl;
+		++missing_trailer_counter;
                 curr_rawData=ub_RawData {curr_position+1,curr_rawData.end()};
 		break;
 	      }
@@ -69,14 +81,9 @@ void ub_ChannelDataCreatorHelperClass<ub_TPC_ChannelData_v6>::populateChannelDat
         }//end loop over getting data from channels
     }//end loop over n_channels
     
-    //report missing channel trailer words
-    auto missing_trailer_counter= uint32_t{0};
-    
-    for(auto const& chan: retValue)
-      if (chan.getChannelTrailerWord()!= 0x503f)
-	  ++missing_trailer_counter;
     
     ganglia::Metric<ganglia::RATE,uint32_t>::named("TPC-missing-channel-trailer-rate","Count/sec")->publish(missing_trailer_counter);
+    ganglia::Metric<ganglia::VALUE,uint32_t>::named("TPC-channel-per-event","Channels/event")->publish(channel_per_event_counter);
 
     channelDataVector.swap(retValue);
     } catch(datatypes_exception& e) {

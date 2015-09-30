@@ -7,7 +7,7 @@ namespace fnal {
 namespace uboone {
 namespace datatypes {
 
-std::once_flag flagtpccs;
+  std::once_flag flagtpccs,flagtpccsd;
 
 template<>
 bool ub_MarkedRawCardData<ub_TPC_ChannelData_v6,ub_TPC_CardHeader_v6,empty_trailer>::isValid() noexcept
@@ -17,16 +17,23 @@ bool ub_MarkedRawCardData<ub_TPC_ChannelData_v6,ub_TPC_CardHeader_v6,empty_trail
     if(_do_dissect)
     {
       std::call_once(flagtpccs, [](){ganglia::Metric<ganglia::RATE,uint32_t>::named("TPC-checksum-error-count","Errors/sec")->publish(0);});
+      std::call_once(flagtpccsd, [](){ganglia::Metric<ganglia::VALUE,int>::named("TPC-checksum-diff","Difference")->publish(0);});
       int checksum_diff = checksum_difference( data(), header().getChecksum() );
         if(checksum_diff!=0) {
 	  if( (checksum_diff+0x503f) != 0 ){
             std::cerr << "Wrong checksum.\n";
 	    ganglia::Metric<ganglia::RATE,uint32_t>::named("TPC-checksum-error-count","Errors/sec")->publish(1);            
+	    ganglia::Metric<ganglia::VALUE,int>::named("TPC-checksum-diff","Difference")->publish(checksum_diff);            
             _validChecksum=false;
             returnIsValid=true; //continue for now
 	  }
+	  else
+	    ganglia::Metric<ganglia::VALUE,int>::named("TPC-checksum-diff","Difference")->publish(0);            
+
         }
-    }    
+	else
+	  ganglia::Metric<ganglia::VALUE,int>::named("TPC-checksum-diff","Difference")->publish(0);            
+    }
     return returnIsValid;
 }
 
