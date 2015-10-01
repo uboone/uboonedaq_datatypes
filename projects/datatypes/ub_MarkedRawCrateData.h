@@ -110,7 +110,7 @@ private:
     bool isValid() noexcept;
     bool canFullyDissect() noexcept;   
     void reportMissingTrailer() noexcept;   
-    std::once_flag flagfemcarderr;
+    std::once_flag flagfemcarderr,flagfemcardn;
 private:
     static bool  _do_dissect;   
     bool _initializeHeaderFromRawData;
@@ -135,6 +135,7 @@ template <typename CARD, typename HEADER, typename TRAILER>
 void ub_MarkedRawCrateData<CARD,HEADER,TRAILER>::dissectCards() throw(data_size_exception,datatypes_exception)
 {
   std::call_once(flagfemcarderr, [](){ganglia::Metric<ganglia::RATE>::named("FEM-card-dissection-errors","Errors/sec")->publish(0);});
+  std::call_once(flagfemcardn, [](){ganglia::Metric<ganglia::VALUE>::named("FEM-cards-per-crate","Cards/crate")->publish(0);});
 
     try
     {
@@ -161,10 +162,13 @@ void ub_MarkedRawCrateData<CARD,HEADER,TRAILER>::dissectCards() throw(data_size_
         _isFullyDissected=true;
         
          auto fem_dissection_errors=ganglia::RATE<void>::preferred_type{0};                 
+         auto n_fem=ganglia::VALUE<void>::preferred_type{0};                 
          for(auto & card: _markedRawCardsData){
 	    if(!card.isValid())	++fem_dissection_errors;
+	    n_fem++;
 	  }
 	 ganglia::Metric<ganglia::RATE>::named("FEM-card-dissection-errors","Errors/sec")->publish(fem_dissection_errors);
+	 ganglia::Metric<ganglia::VALUE>::named("FEM-cards-per-crate","Cards/crate")->publish(n_fem);
 	 
 	 reportMissingTrailer();   
 
