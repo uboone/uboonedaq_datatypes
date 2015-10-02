@@ -14,8 +14,8 @@ bool ub_MarkedRawCardData<ub_TPC_ChannelData_v6,ub_TPC_CardHeader_v6,empty_trail
 {
     bool returnIsValid{true};
 
-    if(_do_dissect)
-    {
+    //if(_do_dissect)
+    //{
       std::call_once(flagtpccs, [](){ganglia::Metric<ganglia::RATE,uint32_t>::named("TPC-checksum-error-count","Errors/sec")->publish(0);});
       std::call_once(flagtpccsd, [](){ganglia::Metric<ganglia::VALUE,int>::named("TPC-checksum-diff","Difference")->publish(0);});
       int checksum_diff = checksum_difference( data(), header().getChecksum() );
@@ -33,7 +33,7 @@ bool ub_MarkedRawCardData<ub_TPC_ChannelData_v6,ub_TPC_CardHeader_v6,empty_trail
         }
 	else
 	  ganglia::Metric<ganglia::VALUE,int>::named("TPC-checksum-diff","Difference")->publish(0);            
-    }
+	//}
     return returnIsValid;
 }
 
