@@ -6,6 +6,10 @@
 #include <iostream>
 #include <vector>
 #include <deque>
+#include <mutex>
+
+std::once_flag flagpmtw;
+
 namespace gov {
 namespace fnal {
 namespace uboone {
@@ -29,6 +33,11 @@ namespace datatypes {
       std::vector<unsigned int> ch_word_ctr_v; // Channel word counter: keeps track of what channel has appeared in data stream or not
       bool next_channel_data=false; // Boolean to skip data from the previous frame before 4-readout frames
       bool first_data=true; // Boolean to mark whether very first data word is readout or not=> used for ignoring data words from previous frame
+
+
+      std::call_once(flagpmtw, [](){ganglia::Metric<ganglia::AVERAGE,uint32_t>::named("PMT-window-per-event","Windows/event")->publish(48);});
+      uint32_t pmt_window_per_event = 0;
+
       try{
         ub_RawData::const_iterator curr_position=curr_rawData.begin();
         while(curr_position!=curr_rawData.end())
@@ -99,6 +108,7 @@ namespace datatypes {
 		  if(ch_word_ctr_v.size()<= channel) ch_word_ctr_v.resize(channel+1,0);
 		  ch_word_ctr_v[channel]+=data.size();
 		  channelGroups[channel].push_back(data);
+		  ++pmt_window_per_event;
 		}else
 		  next_channel_data = false;
 
@@ -113,6 +123,7 @@ namespace datatypes {
 
           }//end for loop over raw data
 
+      ganglia::Metric<ganglia::AVERAGE,uint32_t>::named("PMT-window-per-event","Windows/event")->publish(pmt_window_per_event);
 
       channelDataVector.clear();
       for(size_t channel=0;channel<channelGroups.size();channel++)  {
