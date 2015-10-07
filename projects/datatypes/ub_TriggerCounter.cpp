@@ -10,6 +10,8 @@ ub_TriggerCounter::ub_TriggerCounter()
 
 void ub_TriggerCounter::reset() {
   _n_total=0;
+  _tc.pmt_beam=0;
+  _tc.pmt_cosmic=0;
   _tc.pc=0;
   _tc.ext=0;
   _tc.active=0;
@@ -23,20 +25,26 @@ void ub_TriggerCounter::reset() {
 }
 
 void ub_TriggerCounter::increment(ub_Trigger_Data_v6 const& td, bool same_total) {
-  if(!same_total)        _n_total++;
-  if(td.Trig_PC())       _tc.pc++;
-  if(td.Trig_EXT())      _tc.ext++;
-  if(td.Trig_Active())   _tc.active++;
-  if(td.Trig_Gate2())    _tc.gate2++;
-  if(td.Trig_Gate1())    _tc.gate1++;
-  if(td.Trig_Veto())     _tc.veto++;
-  if(td.Trig_Calib())    _tc.calib++;
-  if(td.Trig_GateFake()) _tc.gatefake++;
-  if(td.Trig_BeamFake()) _tc.beamfake++;
-  if(td.Trig_Spare1())   _tc.spare1++;
+  if(!same_total)          _n_total++;
+  if(td.Trig_PMTBeam())    _tc.pmt_beam++;
+  if(td.Trig_PMTCosmic())  _tc.pmt_cosmic++;
+  if(td.Trig_PC())         _tc.pc++;
+  if(td.Trig_EXT())        _tc.ext++;
+  if(td.Trig_Active())     _tc.active++;
+  if(td.Trig_Gate2())      _tc.gate2++;
+  if(td.Trig_Gate1())      _tc.gate1++;
+  if(td.Trig_Veto())       _tc.veto++;
+  if(td.Trig_Calib())      _tc.calib++;
+  if(td.Trig_GateFake())   _tc.gatefake++;
+  if(td.Trig_BeamFake())   _tc.beamfake++;
+  if(td.Trig_Spare1())     _tc.spare1++;
 }
 
 bool ub_TriggerCounter::prescalePass(ub_TriggerSummary_t const& ps){
+  if(ps.pmt_beam>0 && _tc.pmt_beam>0)
+    if((_tc.pmt_beam-1)%ps.pmt_beam==0) return true;
+  if(ps.pmt_cosmic>0 && _tc.pmt_cosmic>0)
+    if((_tc.pmt_cosmic-1)%ps.pmt_cosmic==0) return true;
   if(ps.pc>0 && _tc.pc>0)
     if((_tc.pc-1)%ps.pc==0) return true;
   if(ps.ext>0 && _tc.ext>0)
@@ -66,6 +74,8 @@ std::string ub_TriggerCounter::debugInfo()const noexcept
     std::ostringstream os;
     os << "Object " << demangle(typeid(this)) << ".";
     os << "\n Total triggers= "       << get_N_Total();
+    os << "\n   PMTBeam triggers= "   << get_N_PMT_Beam();
+    os << "\n   PMTCosmic triggers= " << get_N_PMT_Cosmic();
     os << "\n   PC triggers= "        << get_N_PC();
     os << "\n   EXT triggers= "       << get_N_EXT();
     os << "\n   Active triggers= "    << get_N_Active();
