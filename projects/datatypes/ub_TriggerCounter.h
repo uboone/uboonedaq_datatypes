@@ -74,8 +74,8 @@ public:
     void increment( ub_Trigger_Data_v6 const& td, bool same_total=false);
 
     uint32_t get_N_Total()      const { return _n_total; }
-    uint32_t get_N_PMT_BEAM()   const { return _tc.pmt_beam; }
-    uint32_t get_N_PMT_COSMIC() const { return _tc.pmt_cosmic; }
+    uint32_t get_N_PMT_Beam()   const { return _tc.pmt_beam; }
+    uint32_t get_N_PMT_Cosmic() const { return _tc.pmt_cosmic; }
     uint32_t get_N_PC()         const { return _tc.pc; }
     uint32_t get_N_EXT()        const { return _tc.ext; }
     uint32_t get_N_Active()     const { return _tc.active; }
