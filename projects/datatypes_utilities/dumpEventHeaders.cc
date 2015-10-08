@@ -49,6 +49,9 @@ int main(int argc, char **argv)
   handle_missing_words<ub_TPC_CardData_v6>(true);
   handle_missing_words<ub_PMT_CardData_v6>(true);
 
+  ub_PMT_CardData_v6::neverDissectChannels();                                                                                                 
+  ub_TPC_CardData_v6::neverDissectChannels();                                                                                                 
+
   try{
     is.seekg(-6,is.end); // Go to position 6 bytes before end of file. 
     uint8_t buff[10];
@@ -111,6 +114,7 @@ int main(int argc, char **argv)
 	std::cout << "sizeof(eventRecord) is " << sizeof (eventRecord) << std::endl;
 	global_header_t const& globalHeader = eventRecord.getGlobalHeader();
 	std::cout << globalHeader.debugInfo() << std::endl;
+
 	status = 0;
 	
       }

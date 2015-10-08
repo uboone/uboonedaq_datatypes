@@ -28,12 +28,21 @@ class ub_GlobalHeader final{
     template<class Archive>
     void serialize(Archive & ar, const unsigned int version)
     {
-      if(version>=7)
+      if(version>=10)
+	ar & record_type & record_origin & event_type 
+	   & daq_version_label & daq_version_quals
+	   & run_number & subrun_number & event_number & event_number_crate
+	   & numberOfBytesInRecord & number_of_sebs & is_event_complete 
+	   & local_host_time & trigger_board_time & gps_time  
+	   & trigger_board_evt_time & gps_evt_time;            
+
+      else if(version>=7)
 	ar & record_type & record_origin & event_type 
 	   & daq_version_label & daq_version_quals
 	   & run_number & subrun_number & event_number & event_number_crate
 	   & numberOfBytesInRecord & number_of_sebs & is_event_complete 
 	   & local_host_time & trigger_board_time & gps_time;            
+
 
       else if(version>0)
 	ar & record_type & record_origin & event_type
@@ -64,6 +73,9 @@ public:
     void setTriggerBoardClock(ub_TriggerBoardClock const& trigger_board) noexcept;
     void setLocalHostTime(ub_LocalHostTime const& localhost) noexcept;
 
+    void setGPSEVTTime(ub_GPS_Time const& gps) noexcept;
+    void setTriggerBoardEVTClock(ub_TriggerBoardClock const& trigger_board) noexcept;
+
     
     uint8_t getRecordType() const noexcept;
     uint8_t getRecordOrigin() const noexcept;
@@ -84,6 +96,9 @@ public:
     ub_GPS_Time const& getGPSTime() const noexcept;    
     ub_TriggerBoardClock const& getTriggerBoardClock() const noexcept;
     ub_LocalHostTime const& getLocalHostTime() const noexcept;
+
+    ub_GPS_Time const& getGPSEVTTime() const noexcept;    
+    ub_TriggerBoardClock const& getTriggerBoardEVTClock() const noexcept;
     
     bool isComplete() const noexcept;
 
@@ -91,8 +106,11 @@ public:
 
 private:
     ub_LocalHostTime     local_host_time; 
-    ub_GPS_Time          gps_time;           // Inserted for SEB-10 only in rawFragmentDMASource.cpp:  
-    ub_TriggerBoardClock trigger_board_time; // Inserted for SEB-10 only in rawFragmentDMASource.cpp: PPS frame/sample/div
+    ub_GPS_Time          gps_time;           // Inserted for SEB-10 only in rawFragmentDMASource.cpp: GPS time from PPS map
+    ub_TriggerBoardClock trigger_board_time; // Inserted for SEB-10 only in rawFragmentDMASource.cpp: frame/sample/div from PPS map
+
+    ub_GPS_Time          gps_evt_time;            // Adjusted GPS time to event
+    ub_TriggerBoardClock trigger_board_evt_time;  // Trigger board of event
 
     uint8_t record_type;   /* From event_types.h */
     uint8_t record_origin; /* DATA or MC */

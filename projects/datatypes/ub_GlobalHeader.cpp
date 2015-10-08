@@ -6,7 +6,9 @@ using namespace gov::fnal::uboone::datatypes;
 ub_GlobalHeader::ub_GlobalHeader()
    :local_host_time{0,0},
     gps_time{0,0,0},
-    trigger_board_time{0,0,0},    
+    trigger_board_time{0,0,0}, 
+    gps_evt_time{0,0,0},
+    trigger_board_evt_time{0,0,0},    
     record_type {RESERVED},
     record_origin {0xff},
     event_type {UNUSED_TYPE},
@@ -78,14 +80,14 @@ uint32_t ub_GlobalHeader::getEventNumberCrate() const noexcept {
     return event_number_crate;
 }
 uint32_t ub_GlobalHeader::getSeconds() const noexcept {
-    return gps_time.second;
+    return gps_evt_time.second;
 }
 
 uint16_t ub_GlobalHeader::getMicroSeconds() const noexcept {
-    return gps_time.micro;
+    return gps_evt_time.micro;
 }
 uint16_t ub_GlobalHeader::getNanoSeconds() const noexcept {
-    return gps_time.nano;
+    return gps_evt_time.nano;
 }
 uint32_t ub_GlobalHeader::getNumberOfBytesInRecord() const noexcept {
     return numberOfBytesInRecord;
@@ -125,6 +127,14 @@ void ub_GlobalHeader::setLocalHostTime(ub_LocalHostTime const&local_host) noexce
     local_host_time=local_host;
 }
 
+void ub_GlobalHeader::setGPSEVTTime(ub_GPS_Time const& gps) noexcept {
+    gps_evt_time = gps;
+}
+
+void ub_GlobalHeader::setTriggerBoardEVTClock(ub_TriggerBoardClock const& trigger_board) noexcept{
+    trigger_board_evt_time= trigger_board;
+}
+
 ub_GPS_Time const& ub_GlobalHeader::getGPSTime() const noexcept {
     return gps_time;
 }
@@ -136,6 +146,16 @@ ub_TriggerBoardClock const& ub_GlobalHeader::getTriggerBoardClock() const noexce
 ub_LocalHostTime const& ub_GlobalHeader::getLocalHostTime() const noexcept{
     return local_host_time;
 }
+
+
+ub_GPS_Time const& ub_GlobalHeader::getGPSEVTTime() const noexcept {
+    return gps_evt_time;
+}
+
+ub_TriggerBoardClock const& ub_GlobalHeader::getTriggerBoardEVTClock() const noexcept{
+    return trigger_board_evt_time;
+}
+
 
 std::string ub_GlobalHeader::debugInfo()const noexcept
 {
@@ -161,14 +181,19 @@ std::string ub_GlobalHeader::debugInfo()const noexcept
     os << " micro_seconds=" << (int) getMicroSeconds();
     os << " nano_seconds=" << (int) getNanoSeconds();
     
-    os << "\n GPS Time:";
+    os << "\n GPS Time FROM PPS MAP:";
     os << gps_time.debugInfo();
+
+    os << "\n GPS Time FROM EVENT:";
+    os << gps_evt_time.debugInfo();
     
     os << "\n Localhost Time:";
     os << local_host_time.debugInfo();
     
-    os << "\n Trigger Board Clock Time:";
+    os << "\n Trigger Board Clock Time FROM PPS MSP:";
     os << trigger_board_time.debugInfo();
+    os << "\n Trigger Board Clock Time FROM EVENT:";
+    os << trigger_board_evt_time.debugInfo();
 
     return os.str();
 }

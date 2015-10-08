@@ -70,8 +70,16 @@ void ub_EventRecord::setGPSTime(ub_GPS_Time const& gps_time) noexcept{
     _global_header.setGPSTime(gps_time);
 }
 
+void ub_EventRecord::setGPSEVTTime(ub_GPS_Time const& gps_time) noexcept{
+    _global_header.setGPSEVTTime(gps_time);
+}
+
 void ub_EventRecord::setTriggerBoardClock(ub_TriggerBoardClock const& trigger_board_time) noexcept{
     _global_header.setTriggerBoardClock(trigger_board_time);
+}
+
+void ub_EventRecord::setTriggerBoardEVTClock(ub_TriggerBoardClock const& trigger_board_time) noexcept{
+    _global_header.setTriggerBoardEVTClock(trigger_board_time);
 }
 
 void ub_EventRecord::setLocalHostTime(ub_LocalHostTime const& localhost_time) noexcept{
@@ -86,8 +94,16 @@ ub_GPS_Time const& ub_EventRecord::GPSTime() const noexcept {
     return _global_header.getGPSTime();
 }
 
+ub_GPS_Time const& ub_EventRecord::GPSEVTTime() const noexcept {
+    return _global_header.getGPSEVTTime();
+}
+
 ub_TriggerBoardClock const& ub_EventRecord::TriggerBoardClock() const noexcept{
     return _global_header.getTriggerBoardClock();
+}
+
+ub_TriggerBoardClock const& ub_EventRecord::TriggerBoardEVTClock() const noexcept{
+    return _global_header.getTriggerBoardEVTClock();
 }
 
 ub_LocalHostTime const& ub_EventRecord::LocalHostTime() const noexcept{
@@ -144,10 +160,40 @@ void ub_EventRecord::addFragment(raw_fragment_data_t& fragment) throw(datatypes_
         getGlobalHeader().setEventNumberCrate (crate_header.event_number);
         if(crate_header.local_host_time.wasSet())
           getGlobalHeader().setLocalHostTime(crate_header.local_host_time);
+
+	double gps_adj(0);
         if(crate_header.trigger_board_time.wasSet())
-          getGlobalHeader().setTriggerBoardClock(crate_header.trigger_board_time);
+	  {
+	    getGlobalHeader().setTriggerBoardClock(crate_header.trigger_board_time);
+	    int framePPSMap = crate_header.trigger_board_time.frame;
+	    int samplePPSMap = crate_header.trigger_board_time.sample;
+	    int divPPSMap = crate_header.trigger_board_time.div;
+	    auto const trigMap = getTRIGSEBMap();
+	    if (trigMap.size()==1)
+	      {
+		auto const hdr = trigMap.begin()->second.getTriggerHeader();
+		int  frame  = hdr.getFrame();
+		int  sample = hdr.get2MHzSampleNumber();
+		int  div    = hdr.get16MHzRemainderNumber();
+		//		std::cout << "\n ub_EVENT_RECORD___TMP:: Trigger Clock OF THIS EVENT: (frame,sample,div) " << (int) frame << ", " << (int) sample << ", " << (int) div << std::endl;  	
+		getGlobalHeader().setTriggerBoardEVTClock(ub_TriggerBoardClock(frame,sample,div));
+		gps_adj = (frame-framePPSMap)*1600. + (sample-samplePPSMap)*0.5 + (div-divPPSMap)*0.00624;   // musec
+	      }
+	  }
         if(crate_header.gps_time.wasSet())
-          getGlobalHeader().setGPSTime(crate_header.gps_time);
+	  {
+	    getGlobalHeader().setGPSTime(crate_header.gps_time);
+	    if (crate_header.trigger_board_time.wasSet())
+	      {
+		double gpsPPSMap = crate_header.gps_time.second*1.0E6 + crate_header.gps_time.micro + crate_header.gps_time.nano*(1.E-3);
+		double gps_evt = ( gpsPPSMap + gps_adj ) * 1.E-6;
+		double dec = gps_evt - (double)(int)gps_evt; // rhs of decimal
+		ub_GPS_Time gps_t_adj(int(gps_evt),int(dec*1.E6),int(dec*1.E9)-int(int(dec*1.E9)/1000.)*1000);
+		//		std::cout << "ub_EVENT_RECORD___TMP:: gps deltatime OF THIS EVENT:  " << dec << std::endl;
+		//		std::cout << "ub_EVENT_RECORD___TMP:: gps deltatime OF THIS EVENT (sec,micro,nano):  " << gps_t_adj.second << ", " << gps_t_adj.micro <<  ", " << gps_t_adj.nano << std::endl;
+		getGlobalHeader().setGPSEVTTime(gps_t_adj);
+	      }
+	  }
 
 	bool first_trig_fragment = (_trigger_seb_map.size()==1);
 	_trigger_counter.increment(std::get<2>(_trigger_seb_map[crate_number])->getTriggerData(),!first_trig_fragment);
