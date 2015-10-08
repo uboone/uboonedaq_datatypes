@@ -161,7 +161,7 @@ void ub_EventRecord::addFragment(raw_fragment_data_t& fragment) throw(datatypes_
         if(crate_header.local_host_time.wasSet())
           getGlobalHeader().setLocalHostTime(crate_header.local_host_time);
 
-	double gps_adj;
+	double gps_adj(0);
         if(crate_header.trigger_board_time.wasSet())
 	  {
 	    getGlobalHeader().setTriggerBoardClock(crate_header.trigger_board_time);
