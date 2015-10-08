@@ -92,11 +92,16 @@ public:
     void setGPSTime(ub_GPS_Time const& gps_time) noexcept;
     void setTriggerBoardClock(ub_TriggerBoardClock const& trigger_board_time) noexcept;
     void setLocalHostTime(ub_LocalHostTime const& localhost_time) noexcept;
+
+    void setGPSEVTTime(ub_GPS_Time const& gps_time) noexcept;
+    void setTriggerBoardEVTClock(ub_TriggerBoardClock const& trigger_board_time) noexcept;
     
     void setBeamRecord(ub_BeamRecord const& beam_record) noexcept;
     
     ub_GPS_Time const& GPSTime() const noexcept;    
     ub_TriggerBoardClock const& TriggerBoardClock() const noexcept;
+    ub_GPS_Time const& GPSEVTTime() const noexcept;    
+    ub_TriggerBoardClock const& TriggerBoardEVTClock() const noexcept;
     ub_LocalHostTime const& LocalHostTime() const noexcept;
     
     ub_BeamRecord const& beamRecord()const noexcept;
