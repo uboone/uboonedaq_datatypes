@@ -109,6 +109,12 @@ struct ub_Trigger_Data_v6 final
     uint8_t getPMTTrigData() const noexcept{
       return pmt_trig_data;
     }
+    bool Trig_PMTBeam() const noexcept{
+      return ( (pmt_trig_data&0x01) == 0x01);
+    }
+    bool Trig_PMTCosmic() const noexcept{
+      return ( (pmt_trig_data&0x02) == 0x02);
+    }
     bool Trig_PC() const noexcept{
       return pc;
     }

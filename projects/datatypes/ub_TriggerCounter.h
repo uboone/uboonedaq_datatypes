@@ -21,6 +21,8 @@ using namespace gov::fnal::uboone;
 
 
  typedef struct {
+   uint32_t pmt_beam;
+   uint32_t pmt_cosmic;
    uint32_t pc;
    uint32_t ext;
    uint32_t active;
@@ -39,7 +41,15 @@ class ub_TriggerCounter final{
     template<class Archive>
     void serialize(Archive & ar, const unsigned int version)
     {
-      if(version>=9)
+      if(version>=10)
+	ar & _n_total
+	   & _tc.pmt_beam & _tc.pmt_cosmic
+	   & _tc.pc & _tc.ext & _tc.active
+	   & _tc.gate2 & _tc.gate1 
+	   & _tc.veto & _tc.calib
+	   & _tc.gatefake & _tc.beamfake
+	   & _tc.spare1;
+      else if(version>=9)
 	ar & _n_total
 	   & _tc.pc & _tc.ext & _tc.active
 	   & _tc.gate2 & _tc.gate1 
@@ -63,17 +73,19 @@ public:
     void reset();
     void increment( ub_Trigger_Data_v6 const& td, bool same_total=false);
 
-    uint32_t get_N_Total()    const { return _n_total; }
-    uint32_t get_N_PC()       const { return _tc.pc; }
-    uint32_t get_N_EXT()      const { return _tc.ext; }
-    uint32_t get_N_Active()   const { return _tc.active; }
-    uint32_t get_N_Gate2()    const { return _tc.gate2; }
-    uint32_t get_N_Gate1()    const { return _tc.gate1; }
-    uint32_t get_N_Veto()     const { return _tc.veto; }
-    uint32_t get_N_Calib()    const { return _tc.calib; }
-    uint32_t get_N_GateFake() const { return _tc.gatefake; }
-    uint32_t get_N_BeamFake() const { return _tc.beamfake; }
-    uint32_t get_N_Spare1()   const { return _tc.spare1; }
+    uint32_t get_N_Total()      const { return _n_total; }
+    uint32_t get_N_PMT_Beam()   const { return _tc.pmt_beam; }
+    uint32_t get_N_PMT_Cosmic() const { return _tc.pmt_cosmic; }
+    uint32_t get_N_PC()         const { return _tc.pc; }
+    uint32_t get_N_EXT()        const { return _tc.ext; }
+    uint32_t get_N_Active()     const { return _tc.active; }
+    uint32_t get_N_Gate2()      const { return _tc.gate2; }
+    uint32_t get_N_Gate1()      const { return _tc.gate1; }
+    uint32_t get_N_Veto()       const { return _tc.veto; }
+    uint32_t get_N_Calib()      const { return _tc.calib; }
+    uint32_t get_N_GateFake()   const { return _tc.gatefake; }
+    uint32_t get_N_BeamFake()   const { return _tc.beamfake; }
+    uint32_t get_N_Spare1()     const { return _tc.spare1; }
 
     std::string debugInfo()const noexcept;
 
