@@ -83,7 +83,7 @@ uint32_t ub_GlobalHeader::getSeconds() const noexcept {
     return gps_evt_time.second;
 }
 
-uint16_t ub_GlobalHeader::getMicroSeconds() const noexcept {
+uint32_t ub_GlobalHeader::getMicroSeconds() const noexcept {
     return gps_evt_time.micro;
 }
 uint16_t ub_GlobalHeader::getNanoSeconds() const noexcept {
@@ -157,6 +157,15 @@ ub_TriggerBoardClock const& ub_GlobalHeader::getTriggerBoardEVTClock() const noe
 }
 
 
+float ub_GlobalHeader::getGPSEVT_LocalHist_Diff_ms() const noexcept{
+
+  float second_diff = 1000.*( (int)(gps_evt_time.second) - (int)(local_host_time.seb_time_sec));
+  float micro_diff = ((float)gps_evt_time.micro+(float)(gps_evt_time.nano)/1000.) 
+    - ((float)(local_host_time.seb_time_usec)+0.5);//add 0.5 to the local host to account for nanosecond errors.
+
+  return second_diff + (micro_diff/1000.);
+}
+
 std::string ub_GlobalHeader::debugInfo()const noexcept
 {
     std::ostringstream os;
@@ -194,6 +203,9 @@ std::string ub_GlobalHeader::debugInfo()const noexcept
     os << trigger_board_time.debugInfo();
     os << "\n Trigger Board Clock Time FROM EVENT:";
     os << trigger_board_evt_time.debugInfo();
+
+    os << "\n Difference in GPSEVT and LocalHost (ms):";
+    os << getGPSEVT_LocalHist_Diff_ms();
 
     return os.str();
 }
