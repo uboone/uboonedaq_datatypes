@@ -85,7 +85,7 @@ public:
     uint32_t getEventNumber() const noexcept;
     uint32_t getEventNumberCrate() const noexcept;
     uint32_t getSeconds() const noexcept;
-    uint16_t getMicroSeconds() const noexcept;
+    uint32_t getMicroSeconds() const noexcept;
     uint16_t getNanoSeconds() const noexcept;
     uint32_t getNumberOfBytesInRecord() const noexcept;
     uint8_t getNumberOfSEBs() const noexcept;
@@ -99,7 +99,8 @@ public:
 
     ub_GPS_Time const& getGPSEVTTime() const noexcept;    
     ub_TriggerBoardClock const& getTriggerBoardEVTClock() const noexcept;
-    
+
+    float getGPSEVT_LocalHist_Diff_ms() const noexcept;  
     bool isComplete() const noexcept;
 
     std::string debugInfo()const noexcept;
