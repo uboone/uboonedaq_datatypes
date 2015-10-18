@@ -161,6 +161,20 @@ void ub_EventRecord::addFragment(raw_fragment_data_t& fragment) throw(datatypes_
         if(crate_header.local_host_time.wasSet())
           getGlobalHeader().setLocalHostTime(crate_header.local_host_time);
 
+
+	auto const trigMaptmp = getTRIGSEBMap();
+	if (trigMaptmp.size()==1)
+	  {
+	    auto const hdr2 = trigMaptmp.begin()->second.getTriggerHeader();
+	    int  frame2  = hdr2.getFrame();
+	    int  sample2 = hdr2.get2MHzSampleNumber();
+	    int  div2    = hdr2.get16MHzRemainderNumber();
+	    //	    std::cout << "\n ub_EVENT_RECORD___TMP:: Trigger Clock OF THIS EVENT (" << crate_header.event_number << "): (frame2,sample2,div2) " << (int) frame2 << ", " << (int) sample2 << ", " << (int) div2 << std::endl;  	
+	    getGlobalHeader().setTriggerBoardEVTClock(ub_TriggerBoardClock(frame2,sample2,div2));
+	  }
+
+
+
 	double gps_adj(0);
         if(crate_header.trigger_board_time.wasSet())
 	  {
@@ -175,8 +189,8 @@ void ub_EventRecord::addFragment(raw_fragment_data_t& fragment) throw(datatypes_
 		int  frame  = hdr.getFrame();
 		int  sample = hdr.get2MHzSampleNumber();
 		int  div    = hdr.get16MHzRemainderNumber();
-		//		std::cout << "\n ub_EVENT_RECORD___TMP:: Trigger Clock OF THIS EVENT: (frame,sample,div) " << (int) frame << ", " << (int) sample << ", " << (int) div << std::endl;  	
-		getGlobalHeader().setTriggerBoardEVTClock(ub_TriggerBoardClock(frame,sample,div));
+		//		std::cout << "\n ub_EVENT_RECORD___TMP:: Trigger Clock OF THIS EVENT (" << crate_header.event_number << "): (frame,sample,div) " << (int) frame << ", " << (int) sample << ", " << (int) div << std::endl;  	
+		//     getGlobalHeader().setTriggerBoardEVTClock(ub_TriggerBoardClock(frame,sample,div));
 		gps_adj = (frame-framePPSMap)*1600. + (sample-samplePPSMap)*0.5 + (div-divPPSMap)*0.00624;   // musec
 	      }
 	  }
