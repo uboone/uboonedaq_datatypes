@@ -199,7 +199,7 @@ std::string ub_GlobalHeader::debugInfo()const noexcept
     os << "\n Localhost Time:";
     os << local_host_time.debugInfo();
     
-    os << "\n Trigger Board Clock Time FROM PPS MSP:";
+    os << "\n Trigger Board Clock Time FROM PPS MAP:";
     os << trigger_board_time.debugInfo();
     os << "\n Trigger Board Clock Time FROM EVENT:";
     os << trigger_board_evt_time.debugInfo();
