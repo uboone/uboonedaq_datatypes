@@ -191,7 +191,7 @@ void ub_EventRecord::addFragment(raw_fragment_data_t& fragment) throw(datatypes_
 		int  div    = hdr.get16MHzRemainderNumber();
 		//		std::cout << "\n ub_EVENT_RECORD___TMP:: Trigger Clock OF THIS EVENT (" << crate_header.event_number << "): (frame,sample,div) " << (int) frame << ", " << (int) sample << ", " << (int) div << std::endl;  	
 		//     getGlobalHeader().setTriggerBoardEVTClock(ub_TriggerBoardClock(frame,sample,div));
-		gps_adj = (frame-framePPSMap)*1600. + (sample-samplePPSMap)*0.5 + (div-divPPSMap)*0.00624;   // musec
+		gps_adj = ((frame-framePPSMap)*1600. + (sample-samplePPSMap)*0.5 + (div-divPPSMap)*0.00624)*1.0E-6;   // musec->sec
 	      }
 	  }
         if(crate_header.gps_time.wasSet())
@@ -199,12 +199,13 @@ void ub_EventRecord::addFragment(raw_fragment_data_t& fragment) throw(datatypes_
 	    getGlobalHeader().setGPSTime(crate_header.gps_time);
 	    if (crate_header.trigger_board_time.wasSet())
 	      {
-		double gpsPPSMap = crate_header.gps_time.second*1.0E6 + crate_header.gps_time.micro + crate_header.gps_time.nano*(1.E-3);
-		double gps_evt = ( gpsPPSMap + gps_adj ) * 1.E-6;
-		double dec = gps_evt - (double)(int)gps_evt; // rhs of decimal
-		ub_GPS_Time gps_t_adj(int(gps_evt),int(dec*1.E6),int(dec*1.E9)-int(int(dec*1.E9)/1000.)*1000);
-		//		std::cout << "ub_EVENT_RECORD___TMP:: gps deltatime OF THIS EVENT:  " << dec << std::endl;
-		//		std::cout << "ub_EVENT_RECORD___TMP:: gps deltatime OF THIS EVENT (sec,micro,nano):  " << gps_t_adj.second << ", " << gps_t_adj.micro <<  ", " << gps_t_adj.nano << std::endl;
+		double gpsPPSMap = crate_header.gps_time.second + crate_header.gps_time.micro*(1.0E-6) + crate_header.gps_time.nano*(1.0E-9);
+		double gps_evt = gpsPPSMap + gps_adj ;
+		int musec_adj = gps_evt*1.0E6 - ((int) gps_evt)*1.0E6; // will mod 1E6 this later too ...
+		// possible loss of precision in lsb's requires going back to first quantities for nsec
+		int nsec_adj  = crate_header.gps_time.nano + gps_adj*1.0E9; 
+		ub_GPS_Time gps_t_adj(int(gps_evt ), musec_adj%1000000, nsec_adj%1000) ;
+		std::cout << "ub_EVENT_RECORD:: gps deltatime OF THIS EVENT (sec,micro,nano):  " << gps_t_adj.second << ", " << gps_t_adj.micro <<  ", " << gps_t_adj.nano << std::endl;
 		getGlobalHeader().setGPSEVTTime(gps_t_adj);
 	      }
 	  }

@@ -101,6 +101,7 @@ public:
     ub_TriggerBoardClock const& getTriggerBoardEVTClock() const noexcept;
 
     float getGPSEVT_LocalHist_Diff_ms() const noexcept;  
+    float getGPSPPS_LocalHist_Diff_ms() const noexcept;  
     bool isComplete() const noexcept;
 
     std::string debugInfo()const noexcept;
