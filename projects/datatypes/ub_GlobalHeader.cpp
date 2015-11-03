@@ -166,6 +166,15 @@ float ub_GlobalHeader::getGPSEVT_LocalHist_Diff_ms() const noexcept{
   return second_diff + (micro_diff/1000.);
 }
 
+float ub_GlobalHeader::getGPSPPS_LocalHist_Diff_ms() const noexcept{
+
+  float second_diff = 1000.*( (int)(gps_time.second) - (int)(local_host_time.seb_time_sec));
+  float micro_diff = ((float)gps_time.micro+(float)(gps_time.nano)/1000.) 
+    - ((float)(local_host_time.seb_time_usec)+0.5);//add 0.5 to the local host to account for nanosecond errors.
+
+  return second_diff + (micro_diff/1000.);
+}
+
 std::string ub_GlobalHeader::debugInfo()const noexcept
 {
     std::ostringstream os;
