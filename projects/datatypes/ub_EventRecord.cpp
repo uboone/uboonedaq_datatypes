@@ -175,7 +175,7 @@ void ub_EventRecord::addFragment(raw_fragment_data_t& fragment) throw(datatypes_
 
 
 
-	double gps_adj(0);
+	double gps_adj(0.0);
         if(crate_header.trigger_board_time.wasSet())
 	  {
 	    getGlobalHeader().setTriggerBoardClock(crate_header.trigger_board_time);
@@ -204,7 +204,8 @@ void ub_EventRecord::addFragment(raw_fragment_data_t& fragment) throw(datatypes_
 		int musec_adj = gps_evt*1.0E6 - ((int) gps_evt)*1.0E6; // will mod 1E6 this later too ...
 		// possible loss of precision in lsb's requires going back to first quantities for nsec
 		int nsec_adj  = crate_header.gps_time.nano + gps_adj*1.0E9; 
-		ub_GPS_Time gps_t_adj(int(gps_evt ), musec_adj%1000000, nsec_adj%1000) ;
+		gps_sign_adjust(musec_adj,nsec_adj);
+		ub_GPS_Time gps_t_adj(int(gps_evt ), musec_adj, nsec_adj) ;
 		std::cout << "ub_EVENT_RECORD:: gps deltatime OF THIS EVENT (sec,micro,nano):  " << gps_t_adj.second << ", " << gps_t_adj.micro <<  ", " << gps_t_adj.nano << std::endl;
 		getGlobalHeader().setGPSEVTTime(gps_t_adj);
 	      }
@@ -302,6 +303,21 @@ void ub_EventRecord::addFragment(raw_fragment_data_t& fragment) throw(datatypes_
 
            throw datatypes_exception(os.str());
     }    
+}
+
+void ub_EventRecord::gps_sign_adjust(int mu, int nano)
+{
+  int mu_here = mu%1000000;  // always positive. Make no correction if it's 0.
+  int nano_here = nano%1000; // this can be either sign in C++ (not so in python).
+  if ( nano_here<0 && mu_here>0 )
+    {
+      mu_here-=1;
+      nano_here+=1000;
+    }
+
+  // mod again and force to be positive just to be sure.
+  mu = std::max(mu_here%1000000,0); 
+  nano = std::max(nano_here%1000,0);
 }
 
 const ub_EventRecord::tpc_map_t ub_EventRecord::getTPCSEBMap() const noexcept
