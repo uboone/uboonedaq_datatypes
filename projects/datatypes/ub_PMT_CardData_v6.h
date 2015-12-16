@@ -7,6 +7,8 @@
 #include "ub_PMT_CardHeaderTrailer_v6.h"
 #include "ub_CrateHeader_v6.h"
 
+#include <limits>
+
 namespace gov {
 namespace fnal {
 namespace uboone {
@@ -34,6 +36,8 @@ public:
     uint32_t getTrigFrame() const noexcept;
     uint16_t getDataStartMarker() const noexcept;
     uint16_t getDataEndMarker() const noexcept;
+
+    uint16_t getCardTriggerValue( size_t i_begin, size_t i_end, uint16_t max_value=std::numeric_limits<uint16_t>::max() ) const noexcept;
 
     ub_PMT_CardData_v6 ( ub_PMT_CardData_v6  && ) = default;
     

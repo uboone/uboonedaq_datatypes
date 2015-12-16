@@ -1,5 +1,6 @@
 #include "ub_PMT_CardData_v6.h"
 #include <mutex>
+#include <utility>
 
 using namespace gov::fnal::uboone::datatypes;
 
@@ -110,4 +111,33 @@ uint16_t ub_PMT_CardData_v6::getDataStartMarker() const noexcept {
 }
 uint16_t ub_PMT_CardData_v6::getDataEndMarker() const noexcept {
     return trailer().getDataEndMarker();
+}
+
+uint16_t ub_PMT_CardData_v6::getCardTriggerValue( size_t i_begin, size_t i_end, uint16_t max_value) const noexcept {
+
+  //std::vector< std::pair< std::vector<uint16_t>::const_iterator, std::vector<uint16_t>::const_iterator > > my_waveforms;
+  std::vector< std::vector<uint16_t> > my_waveforms;
+  uint16_t my_frame=0; uint32_t my_sample=0;
+
+  for(auto const& chan : getChannels()){
+    if(chan.getChannelNumber()>31) continue; //ignore non-PMT channels
+    for(auto const& window : chan.getWindows()){
+      if(window.header().getDiscriminantor()!=ub_PMT_DiscriminatorTypes_v6::BEAM && 
+	 window.header().getDiscriminantor()!=ub_PMT_DiscriminatorTypes_v6::BEAM_GATE) continue; //ignore non-BEAM signals
+      if(my_frame==0 && my_sample==0){
+	my_frame = window.header().getFrame();
+	my_sample = window.header().getSample();
+      }
+      else if(window.header().getFrame()!=my_frame || window.header().getSample()!=my_sample) break;
+
+      //my_waveforms.emplace_back( std::make_pair(window.data().begin()+i_begin,window.data().begin()+i_end) );
+      my_waveforms.emplace_back(window.data().begin()+i_begin,window.data().begin()+i_end);
+      
+    }
+  }
+
+  //return trig_thresh_val(my_waveforms,max_value);
+
+  return max_value;
+
 }
