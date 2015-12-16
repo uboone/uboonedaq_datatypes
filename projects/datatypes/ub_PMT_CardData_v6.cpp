@@ -113,7 +113,7 @@ uint16_t ub_PMT_CardData_v6::getDataEndMarker() const noexcept {
     return trailer().getDataEndMarker();
 }
 
-uint16_t ub_PMT_CardData_v6::getCardTriggerValue( size_t i_begin, size_t i_end, uint16_t max_value) const noexcept {
+uint32_t ub_PMT_CardData_v6::getCardTriggerValue( size_t i_begin, size_t i_end, uint32_t max_value) const noexcept {
 
   //std::vector< std::pair< std::vector<uint16_t>::const_iterator, std::vector<uint16_t>::const_iterator > > my_waveforms;
   std::vector< std::vector<uint16_t> > my_waveforms;
@@ -136,8 +136,39 @@ uint16_t ub_PMT_CardData_v6::getCardTriggerValue( size_t i_begin, size_t i_end, 
     }
   }
 
-  //return trig_thresh_val(my_waveforms,max_value);
+  return trig_thresh_val(my_waveforms,max_value);
 
-  return max_value;
+  //return max_value;
+
+}
+
+uint32_t ub_PMT_CardData_v6::trig_thresh_val(std::vector< std::vector<uint16_t> > const& Wave, uint32_t ThreshVal) const noexcept{
+
+  size_t diff_val = 3;
+  std::vector<uint32_t> TotesADC(Wave.at(0).size());
+  uint32_t Max = 0;
+    
+  for (size_t i=0 ; i<Wave.size(); ++i) {
+    //cerr<< "i: "<< i << endl;
+    for (size_t j=diff_val ; j<Wave[i].size(); ++j) {
+            
+      //uint16_t ADC = Wave[i][j];
+      //TotesADC[j] += ADC;
+      if((Wave[i][j-diff_val]&0xfff) > (Wave[i][j]&0xfff))
+	continue;
+
+      TotesADC[j] += ( (Wave[i][j]&0xfff) - (Wave[i][j-diff_val]&0xfff));            
+      if (TotesADC[j]>ThreshVal) {
+	return TotesADC[j];
+      }
+
+      if (TotesADC[j]>Max) {
+	Max = TotesADC[j];
+	//std::cout<< "\t\t\t\tMax: "<< Max << " at " << j << " in waveform " << i << std::endl;
+      }
+    }
+  }
+    
+  return Max;
 
 }
