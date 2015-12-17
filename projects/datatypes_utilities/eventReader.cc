@@ -8,15 +8,23 @@
 #include <stdio.h>
 #include <string>
 #include <unistd.h>
+#include <chrono>
+#include <random>
 
 #include "datatypes/raw_data_access.h"
 #include <boost/archive/binary_iarchive.hpp>
 #include "datatypes/ub_EventRecord.h"
+#include "datatypes/uboone_data_utils.h"
 
 using namespace gov::fnal::uboone::datatypes;
 
 int main(int argc, char **argv)
 {
+  peek_at_next_event<ub_TPC_CardData_v6>(false);
+  peek_at_next_event<ub_PMT_CardData_v6>(false);
+  handle_missing_words<ub_TPC_CardData_v6>(true);
+  handle_missing_words<ub_PMT_CardData_v6>(true);  
+
   std::string fileName;
   
   switch(argc-1)
@@ -30,6 +38,8 @@ int main(int argc, char **argv)
   
   std::ifstream is ( fileName , std::ios::binary | std::ios::in);
   int i{0};
+  std::default_random_engine generator;
+  std::uniform_real_distribution<double> distribution(0.0,1.0);
   try{
   while(true){
 
@@ -48,6 +58,22 @@ int main(int argc, char **argv)
     ia >> eventRecord;
     std::cout << "+++++ Event: " << ++i << "\n";
 
+    std::chrono::steady_clock::time_point evtrigger_start{std::chrono::steady_clock::now()};
+    double random = distribution(generator);
+    uint16_t trig_value = std::numeric_limits<uint16_t>::max();
+    if(eventRecord.getPMTSEBMap().size()>0){
+      auto const& pmt_crate = eventRecord.getPMTSEBMap().begin()->second;
+      if(pmt_crate.getCards().size()>0){
+	auto const& pmt_card = pmt_crate.getCards().at(0);
+	trig_value = pmt_card.getCardTriggerValue(128,384);
+	//std::cout << "\t\t\tWe made it in here and see " << trig_value << std::endl;
+      }
+    }
+    std::chrono::steady_clock::time_point evtrigger_end{std::chrono::steady_clock::now()};
+    double trigger_time_milliseconds{(double)std::chrono::duration_cast<std::chrono::microseconds>(evtrigger_end-evtrigger_start).count()};
+
+    std::cout << "\t\tTrigger..." << random << " " << trigger_time_milliseconds << " " << trig_value << std::endl;
+
     /*
       Debug info:
       You can use this as a utility to print what's in
@@ -63,6 +89,8 @@ int main(int argc, char **argv)
     */
     global_header_t const& globalHeader = eventRecord.getGlobalHeader();
     std::cout << globalHeader.debugInfo();
+
+    //continue;
 
     /*
       Accessing SEB fragments:
