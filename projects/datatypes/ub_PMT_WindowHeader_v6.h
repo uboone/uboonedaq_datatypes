@@ -21,7 +21,7 @@ namespace datatypes {
 #pragma GCC diagnostic ignored "-Wpedantic"
 
 enum ub_PMT_DiscriminatorTypes_v6 {
-  COSMIC=0,
+  COSMIC=1,
   MICHEL,
   BEAM,
   BEAM_GATE
