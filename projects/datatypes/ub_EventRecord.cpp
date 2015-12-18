@@ -305,7 +305,7 @@ void ub_EventRecord::addFragment(raw_fragment_data_t& fragment) throw(datatypes_
     }    
 }
 
-void ub_EventRecord::gps_sign_adjust(int mu, int nano)
+void ub_EventRecord::gps_sign_adjust(int& mu, int& nano)
 {
   int mu_here = mu%1000000;  // always positive. Make no correction if it's 0.
   int nano_here = nano%1000; // this can be either sign in C++ (not so in python).
