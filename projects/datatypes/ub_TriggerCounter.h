@@ -34,6 +34,22 @@ using namespace gov::fnal::uboone;
    uint32_t beamfake;
    uint32_t spare1;
  } ub_TriggerSummary_t;
+
+ typedef struct {
+   std::map<unsigned int, float> pmt_beam;
+   std::map<unsigned int, float> pmt_cosmic;
+   std::map<unsigned int, float> pc;
+   std::map<unsigned int, float> ext;
+   std::map<unsigned int, float> active;
+   std::map<unsigned int, float> gate2;
+   std::map<unsigned int, float> gate1;
+   std::map<unsigned int, float> veto;
+   std::map<unsigned int, float> calib;
+   std::map<unsigned int, float> gatefake;
+   std::map<unsigned int, float> beamfake;
+   std::map<unsigned int, float> spare1;
+   std::map<unsigned int, float> all;
+ } ub_TriggerThreshold_t;
  
 class ub_TriggerCounter final{
     friend class boost::serialization::access;
@@ -90,12 +106,13 @@ public:
     std::string debugInfo()const noexcept;
 
     bool prescalePass( ub_TriggerSummary_t const& );
-
+    // bool thresholdPass( ub_TriggerThreshold_t const& );
 
 private:
 
     uint32_t _n_total;
     ub_TriggerSummary_t _tc;
+    
 
 };
 
