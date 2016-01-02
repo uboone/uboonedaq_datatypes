@@ -71,6 +71,7 @@ public:
     trigger_counter_t const& getTriggerCounter() noexcept;
     void setTriggerCounter( trigger_counter_t const& ) noexcept;
     void resetTriggerCounter() noexcept;
+    trig_data_t const& getTriggerData() noexcept;
     bool passesSoftwarePrescale( ub_TriggerSummary_t const& ) noexcept; 
 
     std::string debugInfo()const noexcept;
@@ -122,6 +123,7 @@ private:
     ub_event_header    _bookkeeping_header;
     ub_event_trailer   _bookkeeping_trailer;
     global_header_t    _global_header;
+    trig_data_t        _trigger_data;
     trigger_counter_t  _trigger_counter;
     tpc_seb_map_t      _tpc_seb_map;
     pmt_seb_map_t      _pmt_seb_map;

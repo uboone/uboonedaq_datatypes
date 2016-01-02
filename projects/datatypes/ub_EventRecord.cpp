@@ -7,6 +7,7 @@ ub_EventRecord::ub_EventRecord()
     :_bookkeeping_header(),
      _bookkeeping_trailer(),
      _global_header(),
+     _trigger_data(),
      _trigger_counter(),
      _tpc_seb_map(),
      _pmt_seb_map(),
@@ -62,6 +63,11 @@ void ub_EventRecord::resetTriggerCounter() noexcept {
 void ub_EventRecord::setTriggerCounter( trigger_counter_t const& tc) noexcept {
   _trigger_counter = tc;
 }
+
+trig_data_t const& ub_EventRecord::getTriggerData() noexcept {
+  return _trigger_data;
+}
+
 bool ub_EventRecord::passesSoftwarePrescale(ub_TriggerSummary_t const& ps) noexcept{
   return _trigger_counter.prescalePass(ps);
 }
@@ -212,7 +218,8 @@ void ub_EventRecord::addFragment(raw_fragment_data_t& fragment) throw(datatypes_
 	  }
 
 	bool first_trig_fragment = (_trigger_seb_map.size()==1);
-	_trigger_counter.increment(std::get<2>(_trigger_seb_map[crate_number])->getTriggerData(),!first_trig_fragment);
+        _trigger_data = std::get<2>(_trigger_seb_map[crate_number])->getTriggerData();
+	_trigger_counter.increment(_trigger_data, !first_trig_fragment);
       }
     else if(crate_type == SystemDesignator::PMT_SYSTEM)
     {
