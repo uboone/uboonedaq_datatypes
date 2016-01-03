@@ -68,8 +68,8 @@ trig_data_t const& ub_EventRecord::getTriggerData() noexcept {
   return _trigger_data;
 }
 
-bool ub_EventRecord::passesSoftwarePrescale(ub_TriggerSummary_t const& ps) noexcept{
-  return _trigger_counter.prescalePass(ps);
+bool ub_EventRecord::passesSoftwarePrescale( std::map< uint16_t, float> const& ps, uint16_t trig_value, double random ) noexcept{
+  return _trigger_counter.prescalePass(ps, trig_value, random);
 }
 
 void ub_EventRecord::setGPSTime(ub_GPS_Time const& gps_time) noexcept{

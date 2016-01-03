@@ -72,7 +72,7 @@ public:
     void setTriggerCounter( trigger_counter_t const& ) noexcept;
     void resetTriggerCounter() noexcept;
     trig_data_t const& getTriggerData() noexcept;
-    bool passesSoftwarePrescale( ub_TriggerSummary_t const& ) noexcept; 
+    bool passesSoftwarePrescale( std::map< uint16_t, float> const&, uint16_t, double ) noexcept; 
 
     std::string debugInfo()const noexcept;
 
