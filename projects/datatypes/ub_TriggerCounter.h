@@ -36,20 +36,36 @@ using namespace gov::fnal::uboone;
  } ub_TriggerSummary_t;
 
  typedef struct {
-   std::map<unsigned int, float> pmt_beam;
-   std::map<unsigned int, float> pmt_cosmic;
-   std::map<unsigned int, float> pc;
-   std::map<unsigned int, float> ext;
-   std::map<unsigned int, float> active;
-   std::map<unsigned int, float> gate2;
-   std::map<unsigned int, float> gate1;
-   std::map<unsigned int, float> veto;
-   std::map<unsigned int, float> calib;
-   std::map<unsigned int, float> gatefake;
-   std::map<unsigned int, float> beamfake;
-   std::map<unsigned int, float> spare1;
-   std::map<unsigned int, float> all;
+   std::map<uint16_t, float> pmt_beam;
+   std::map<uint16_t, float> pmt_cosmic;
+   std::map<uint16_t, float> pc;
+   std::map<uint16_t, float> ext;
+   std::map<uint16_t, float> active;
+   std::map<uint16_t, float> gate2;
+   std::map<uint16_t, float> gate1;
+   std::map<uint16_t, float> veto;
+   std::map<uint16_t, float> calib;
+   std::map<uint16_t, float> gatefake;
+   std::map<uint16_t, float> beamfake;
+   std::map<uint16_t, float> spare1;
+   std::map<uint16_t, float> all;
  } ub_TriggerThreshold_t;
+
+ typedef struct {
+   std::map<uint16_t, uint16_t> pmt_beam;
+   std::map<uint16_t, uint16_t> pmt_cosmic;
+   std::map<uint16_t, uint16_t> pc;
+   std::map<uint16_t, uint16_t> ext;
+   std::map<uint16_t, uint16_t> active;
+   std::map<uint16_t, uint16_t> gate2;
+   std::map<uint16_t, uint16_t> gate1;
+   std::map<uint16_t, uint16_t> veto;
+   std::map<uint16_t, uint16_t> calib;
+   std::map<uint16_t, uint16_t> gatefake;
+   std::map<uint16_t, uint16_t> beamfake;
+   std::map<uint16_t, uint16_t> spare1;
+   std::map<uint16_t, uint16_t> all;
+ } ub_TriggerWindow_t;
  
 class ub_TriggerCounter final{
     friend class boost::serialization::access;
@@ -105,8 +121,7 @@ public:
 
     std::string debugInfo()const noexcept;
 
-    bool prescalePass( ub_TriggerSummary_t const& );
-    // bool thresholdPass( ub_TriggerThreshold_t const& );
+    bool prescalePass( std::map< uint16_t, float > const&, uint16_t, double );
 
 private:
 
