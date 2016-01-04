@@ -19,6 +19,21 @@ using namespace gov::fnal::uboone;
  * assembler, before prescaling.
  ***/
 
+ enum ub_TriggerType {
+   pmt_beam = 0,
+   pmt_cosmic,
+   pc,
+   ext,
+   active,
+   gate2,
+   gate1,
+   veto,
+   calib,
+   gatefake,
+   beamfake,
+   spare1,
+   all
+ };
 
  typedef struct {
    uint32_t pmt_beam;
@@ -35,38 +50,6 @@ using namespace gov::fnal::uboone;
    uint32_t spare1;
  } ub_TriggerSummary_t;
 
- typedef struct {
-   std::map<uint16_t, float> pmt_beam;
-   std::map<uint16_t, float> pmt_cosmic;
-   std::map<uint16_t, float> pc;
-   std::map<uint16_t, float> ext;
-   std::map<uint16_t, float> active;
-   std::map<uint16_t, float> gate2;
-   std::map<uint16_t, float> gate1;
-   std::map<uint16_t, float> veto;
-   std::map<uint16_t, float> calib;
-   std::map<uint16_t, float> gatefake;
-   std::map<uint16_t, float> beamfake;
-   std::map<uint16_t, float> spare1;
-   std::map<uint16_t, float> all;
- } ub_TriggerThreshold_t;
-
- typedef struct {
-   std::map<uint16_t, uint16_t> pmt_beam;
-   std::map<uint16_t, uint16_t> pmt_cosmic;
-   std::map<uint16_t, uint16_t> pc;
-   std::map<uint16_t, uint16_t> ext;
-   std::map<uint16_t, uint16_t> active;
-   std::map<uint16_t, uint16_t> gate2;
-   std::map<uint16_t, uint16_t> gate1;
-   std::map<uint16_t, uint16_t> veto;
-   std::map<uint16_t, uint16_t> calib;
-   std::map<uint16_t, uint16_t> gatefake;
-   std::map<uint16_t, uint16_t> beamfake;
-   std::map<uint16_t, uint16_t> spare1;
-   std::map<uint16_t, uint16_t> all;
- } ub_TriggerWindow_t;
- 
 class ub_TriggerCounter final{
     friend class boost::serialization::access;
 
