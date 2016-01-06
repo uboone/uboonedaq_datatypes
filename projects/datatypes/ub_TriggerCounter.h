@@ -32,7 +32,8 @@ using namespace gov::fnal::uboone;
    gatefake,
    beamfake,
    spare1,
-   all
+   all,
+   ntriggers
  };
 
  typedef struct {
