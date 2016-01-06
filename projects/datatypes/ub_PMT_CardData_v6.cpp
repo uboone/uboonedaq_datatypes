@@ -113,12 +113,85 @@ uint16_t ub_PMT_CardData_v6::getDataEndMarker() const noexcept {
     return trailer().getDataEndMarker();
 }
 
-uint32_t ub_PMT_CardData_v6::getCardTriggerValue( size_t i_begin, size_t i_end, uint32_t max_value) const noexcept {
-
+uint32_t ub_PMT_CardData_v6::getCardTriggerValue( uint16_t hw_trigger_sample,
+						  uint32_t hw_trigger_frame,
+						  size_t i_begin, size_t i_end, 
+						  uint32_t max_value) const noexcept {
   //std::vector< std::pair< std::vector<uint16_t>::const_iterator, std::vector<uint16_t>::const_iterator > > my_waveforms;
   std::vector< std::vector<uint16_t> > my_waveforms;
-  uint16_t my_frame=0; uint32_t my_sample=0;
+  uint64_t target_time =0;
+  uint64_t min_dt = 1e12; //FIXME this should be set to max integer value from compiler
+  static const uint32_t frame_size = 102400;
+  static const uint32_t beam_window_size = 1501;  
+  const uint64_t trigger_time = hw_trigger_frame * frame_size + hw_trigger_sample;
+ 
+  if(i_begin > beam_window_size || i_end > beam_window_size || i_end < i_begin) {
+    std::cout << "please go to hell" << std::endl;
+    throw std::exception();
+  }
+ 
+  // First search the target timing
+  for(auto const& ch_data : getChannels()){
 
+    for(auto const& window : chan.getWindows()) {
+
+      if(window.header().getDiscriminantor()!=ub_PMT_DiscriminatorTypes_v6::BEAM && 
+	 window.header().getDiscriminantor()!=ub_PMT_DiscriminatorTypes_v6::BEAM_GATE) 
+	continue; //ignore non-BEAM signals
+      
+      int64_t window_time = window.header().getFrame() * frame_size + window.header().getSample();
+
+      uint64_t window_trigger_dt = 
+	( window_time < trigger_time ? trigger_time - window_time : window_time - trigger_time );
+      
+      if( min_dt > window_trigger_dt ) {
+	min_dt      = window_trigger_dt;
+	target_time = window.header().getFrame() * frame_size + window.header().getSample();
+      }
+    }
+  }
+  // Reaching here, my_frame && my_sample is non-zero, 
+  // then you found a candidate beam gate start (i.e. size == expected size & closest to trigger)
+  if(!target_time) {
+    std::cout << "Could not locate beam gate window!!!" << std::endl;
+    throw std::exception();
+  }
+  
+  for(auto const& chan : getChannels()) {
+
+    if(chan.getChannelNumber()>31) continue;  //ignore non-PMT channels
+
+    for(auto const& window : chan.getWindows()) {
+
+      uint64_t window_time = window.header().getFrame() * frame_size + window.header().getSample();
+
+      // Exactly same timing
+      if(window_time == target_time) {
+	if(window.data().size() < beam_window_size) {
+	  std::cout << "Unexpected readout window (same timing as beamgate but too short)" << std::endl;
+	  throw std::exception();
+	}
+	my_waveforms.emplace_back(window.data().begin()+i_begin,
+				  window.data().begin()+i_end);	
+	break;
+      }
+       
+      // Concatinated waveform
+      if( target_time > window_time && 
+	  target_time < (window_time + window.data().size()) ) {
+	
+	my_waveforms.emplace_back(window.data().begin() + i_begin + (target_time - window_time),
+				  window.data().begin() + i_end   + (target_time - window_time) );
+	break;
+      }
+    }
+  }
+
+  if(my_waveforms.size() != 32) {
+    std::cout << "Lacking some channel..." << std::endl;
+    throw std::exception();
+  }
+  /*
   for(auto const& chan : getChannels()){
     if(chan.getChannelNumber()>31) continue; //ignore non-PMT channels
     for(auto const& window : chan.getWindows()){
@@ -135,6 +208,7 @@ uint32_t ub_PMT_CardData_v6::getCardTriggerValue( size_t i_begin, size_t i_end, 
       
     }
   }
+  */
 
   return trig_thresh_val(my_waveforms,max_value);
 
