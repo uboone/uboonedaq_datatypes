@@ -63,9 +63,12 @@ int main(int argc, char **argv)
     uint16_t trig_value = std::numeric_limits<uint16_t>::max();
     if(eventRecord.getPMTSEBMap().size()>0){
       auto const& pmt_crate = eventRecord.getPMTSEBMap().begin()->second;
-      if(pmt_crate.getCards().size()>0){
+      auto const& trig_map  = eventRecord.getTRIGSEBMap();
+      if ( pmt_crate.getCards().size()>0 && trig_map.size() == 1 ){
+        auto const& trig_header = trig_map.begin()->second.getTriggerHeader();
 	auto const& pmt_card = pmt_crate.getCards().at(0);
-	trig_value = pmt_card.getCardTriggerValue(128,384);
+	trig_value = pmt_card.getCardTriggerValue( trig_header.getFrame(), trig_header.get2MHzSampleNumber(), 128, 384);
+        std::cout << "\t\t\tNote we look at the PMT waveform from tick 128 to tick 384." << std::endl;
 	//std::cout << "\t\t\tWe made it in here and see " << trig_value << std::endl;
       }
     }
