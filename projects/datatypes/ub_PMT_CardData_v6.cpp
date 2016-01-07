@@ -126,20 +126,19 @@ uint32_t ub_PMT_CardData_v6::getCardTriggerValue( uint16_t hw_trigger_sample,
   const uint64_t trigger_time = hw_trigger_frame * frame_size + hw_trigger_sample;
  
   if(i_begin > beam_window_size || i_end > beam_window_size || i_end < i_begin) {
-    std::cout << "please go to hell" << std::endl;
-    throw std::exception();
+    throw datatypes_exception("The configuration of the region of interest of the PMT waveform doesn't make sense!");
   }
  
   // First search the target timing
   for(auto const& ch_data : getChannels()){
 
-    for(auto const& window : chan.getWindows()) {
+    for(auto const& window : ch_data.getWindows()) {
 
       if(window.header().getDiscriminantor()!=ub_PMT_DiscriminatorTypes_v6::BEAM && 
 	 window.header().getDiscriminantor()!=ub_PMT_DiscriminatorTypes_v6::BEAM_GATE) 
 	continue; //ignore non-BEAM signals
       
-      int64_t window_time = window.header().getFrame() * frame_size + window.header().getSample();
+      uint64_t window_time = window.header().getFrame() * frame_size + window.header().getSample();
 
       uint64_t window_trigger_dt = 
 	( window_time < trigger_time ? trigger_time - window_time : window_time - trigger_time );
@@ -150,11 +149,12 @@ uint32_t ub_PMT_CardData_v6::getCardTriggerValue( uint16_t hw_trigger_sample,
       }
     }
   }
+  std::cout << "target_time: " << target_time << std::endl;
   // Reaching here, my_frame && my_sample is non-zero, 
   // then you found a candidate beam gate start (i.e. size == expected size & closest to trigger)
   if(!target_time) {
     std::cout << "Could not locate beam gate window!!!" << std::endl;
-    throw std::exception();
+    return 0;
   }
   
   for(auto const& chan : getChannels()) {
@@ -169,7 +169,7 @@ uint32_t ub_PMT_CardData_v6::getCardTriggerValue( uint16_t hw_trigger_sample,
       if(window_time == target_time) {
 	if(window.data().size() < beam_window_size) {
 	  std::cout << "Unexpected readout window (same timing as beamgate but too short)" << std::endl;
-	  throw std::exception();
+	  return 0;
 	}
 	my_waveforms.emplace_back(window.data().begin()+i_begin,
 				  window.data().begin()+i_end);	
@@ -179,7 +179,8 @@ uint32_t ub_PMT_CardData_v6::getCardTriggerValue( uint16_t hw_trigger_sample,
       // Concatinated waveform
       if( target_time > window_time && 
 	  target_time < (window_time + window.data().size()) ) {
-	
+
+        std::cout << "window_time: " <<	window_time << ", window_size: " << window.data().size() << std::endl;
 	my_waveforms.emplace_back(window.data().begin() + i_begin + (target_time - window_time),
 				  window.data().begin() + i_end   + (target_time - window_time) );
 	break;
@@ -188,8 +189,7 @@ uint32_t ub_PMT_CardData_v6::getCardTriggerValue( uint16_t hw_trigger_sample,
   }
 
   if(my_waveforms.size() != 32) {
-    std::cout << "Lacking some channel..." << std::endl;
-    throw std::exception();
+    throw datatypes_exception("Lacking some channel...");
   }
   /*
   for(auto const& chan : getChannels()){
