@@ -66,14 +66,15 @@ int main(int argc, char **argv)
       auto const& pmt_crate = eventRecord.getPMTSEBMap().begin()->second;
       if(pmt_crate.getCards().size()>0){
 	auto const& pmt_card = pmt_crate.getCards().at(0);
-	trig_value = pmt_card.getCardTriggerValue(128,384);
+	//trig_value = pmt_card.getCardTriggerValue(128,384);
+	trig_value = pmt_card.getCardTriggerValue(0,500);
 	//std::cout << "\t\t\tWe made it in here and see " << trig_value << std::endl;
       }
     }
     std::chrono::steady_clock::time_point evtrigger_end{std::chrono::steady_clock::now()};
     double trigger_time_milliseconds{(double)std::chrono::duration_cast<std::chrono::microseconds>(evtrigger_end-evtrigger_start).count()};
 
-    //std::cout << "\t\tTrigger..." << random << " " << trigger_time_milliseconds << " " << trig_value << std::endl;
+    std::cout << "\t\tTrigger..." << random << " " << trigger_time_milliseconds << " maxhit " << trig_value.vmaxhit[0]<< " maxdiff" << trig_value.vmaxdiff[0]<< std::endl;
 
     /*
       Debug info:

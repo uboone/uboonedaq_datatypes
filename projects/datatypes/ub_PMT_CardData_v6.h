@@ -88,8 +88,8 @@ public:
     short fFrontBuffer = 20;
     short fWindowSize = 103;
 
-    short fTriggerWinStartTick = 300;
-      
+    //short fTriggerWinStartTick = 300;
+    short fTriggerWinStartTick = 300;      
     short fTriggerThresMult  = 4;
     short fTriggerThresPHMAX = 80;    
     short fTriggerModuleWinStartTick;
