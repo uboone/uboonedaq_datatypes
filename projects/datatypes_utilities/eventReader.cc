@@ -61,7 +61,7 @@ int main(int argc, char **argv)
     std::chrono::steady_clock::time_point evtrigger_start{std::chrono::steady_clock::now()};
     double random = distribution(generator);
     //uint16_t trig_value = std::numeric_limits<uint16_t>::max();
-    FEMBeamTriggerOutput trig_value;
+    ub_FEMBeamTriggerOutput trig_value;
     if(eventRecord.getPMTSEBMap().size()>0){
       auto const& pmt_crate = eventRecord.getPMTSEBMap().begin()->second;
       if(pmt_crate.getCards().size()>0){
@@ -74,7 +74,7 @@ int main(int argc, char **argv)
     std::chrono::steady_clock::time_point evtrigger_end{std::chrono::steady_clock::now()};
     double trigger_time_milliseconds{(double)std::chrono::duration_cast<std::chrono::microseconds>(evtrigger_end-evtrigger_start).count()};
 
-    std::cout << "\t\tTrigger..." << random << " " << trigger_time_milliseconds << " maxhit " << trig_value.vmaxhit[0]<< " maxdiff" << trig_value.vmaxdiff[0]<< std::endl;
+    std::cout << "\t\tTrigger..." << random << " " << trigger_time_milliseconds << " maxhit " << trig_value.maxhit<< " maxdiff " << trig_value.maxdiff<< std::endl;
 
     /*
       Debug info:

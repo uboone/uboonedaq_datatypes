@@ -13,7 +13,9 @@ ub_EventRecord::ub_EventRecord()
      _pmt_seb_map(),
      _trigger_seb_map(),
      _laser_seb_map(),
-     _beam_record() {
+     _beam_record(),
+     _swtrigger_output_vector()
+{
 }
 
 void ub_EventRecord::setCrateSerializationMask(uint16_t mask) throw (datatypes_exception)
@@ -70,6 +72,14 @@ trig_data_t const& ub_EventRecord::getTriggerData() noexcept {
 
 bool ub_EventRecord::passesSoftwarePrescale( std::map< uint16_t, float> const& ps, uint16_t trig_value, double random ) noexcept{
   return _trigger_counter.prescalePass(ps, trig_value, random);
+}
+
+
+void ub_EventRecord::addSWTriggerOutput( ub_FEMBeamTriggerOutput const& to) noexcept{
+  _swtrigger_output_vector.emplace_back(to);
+}
+std::vector<ub_FEMBeamTriggerOutput> const& ub_EventRecord::getSWTriggerOutputVector() noexcept{
+  return _swtrigger_output_vector;
 }
 
 void ub_EventRecord::setGPSTime(ub_GPS_Time const& gps_time) noexcept{
@@ -505,6 +515,11 @@ std::string ub_EventRecord::debugInfo()const noexcept {
         os << "\n" <<  crate_header_t::getHeaderFromFragment(data).debugInfo();
         os << "\n" <<  std::get<std::unique_ptr<trig_crate_data_t>>(trg.second)->debugInfo();
     }
+
+    os << "\tSWTrigger Outputs";
+    for (auto const& o : _swtrigger_output_vector)
+      os << o.debugInfo();
+
     os << _beam_record.debugInfo() << std::endl;
 
     os << "\nTPC fragments";

@@ -6,6 +6,7 @@
 #include "ub_PMT_ChannelData_v6.h"
 #include "ub_PMT_CardHeaderTrailer_v6.h"
 #include "ub_CrateHeader_v6.h"
+#include "ub_FEMBeamTriggerOutput.h"
 
 #include <limits>
 
@@ -13,31 +14,6 @@ namespace gov {
 namespace fnal {
 namespace uboone {
 namespace datatypes {
-
- class FEMBeamTriggerOutput {
-    
-    public:
-    
-      /// Default ctor
-    FEMBeamTriggerOutput(const size_t nwindows=0) //change here, originally has nwindows as argument
-      : window_start_v ( nwindows,  0 ) //orignally has (nwindow,0) I don't think we need this, it seems it's just a fix number all the time
-     , window_end_v    ( nwindows,  0 ) //same as the start?
-     , vmaxdiff        ( nwindows,  0 )   
-     , vmaxhit         ( nwindows,  0 )     
-     , fire_time_v     ( nwindows, -1 )  
-     {}
-      
-      /// Default dtor
-      ~FEMBeamTriggerOutput() {}
-      
-      std::vector <size_t> window_start_v; ///< Window start tick
-      std::vector <size_t> window_end_v;   ///< Window end   tick
-      std::vector <short>  vmaxdiff;       ///< PHMAX sum vector
-      std::vector <short>  vmaxhit;        ///< Multiplicity sum vector
-      std::vector <int>    fire_time_v;    ///< Trigger decision times (-1 means not fired)
-      
-    };
-
 
 class ub_PMT_CardData_v6 final: public ub_MarkedRawCardData<ub_PMT_ChannelData_v6,ub_PMT_CardHeader_v6,ub_PMT_CardTrailer_v6> {
 public:
@@ -63,10 +39,10 @@ public:
     uint16_t getDataEndMarker() const noexcept;
 
     //FEMBeamTriggerOutput getCardTriggerValue( size_t i_begin, size_t i_end, uint32_t max_value=std::numeric_limits<uint32_t>::max() ) const noexcept;
-    FEMBeamTriggerOutput getCardTriggerValue( size_t i_begin, size_t i_end) const noexcept;
+    ub_FEMBeamTriggerOutput getCardTriggerValue( size_t i_begin, size_t i_end) const noexcept;
     //uint32_t trig_thresh_val(std::vector< std::vector<uint16_t> > const& Wave, uint32_t ThreshVal) const noexcept;
     
-    FEMBeamTriggerOutput trig_thresh_val(std::vector< std::vector<uint16_t> > const& Wave) const noexcept;
+    ub_FEMBeamTriggerOutput trig_thresh_val(std::vector< std::vector<uint16_t> > const& Wave) const noexcept;
     
     ub_PMT_CardData_v6 ( ub_PMT_CardData_v6  && ) = default;
     

@@ -113,7 +113,7 @@ uint16_t ub_PMT_CardData_v6::getDataEndMarker() const noexcept {
     return trailer().getDataEndMarker();
 }
 
-FEMBeamTriggerOutput ub_PMT_CardData_v6::getCardTriggerValue( size_t i_begin, size_t i_end) const noexcept {
+ub_FEMBeamTriggerOutput ub_PMT_CardData_v6::getCardTriggerValue( size_t i_begin, size_t i_end) const noexcept {
 
   //std::vector< std::pair< std::vector<uint16_t>::const_iterator, std::vector<uint16_t>::const_iterator > > my_waveforms;
   std::vector< std::vector<uint16_t> > my_waveforms;
@@ -173,7 +173,7 @@ FEMBeamTriggerOutput ub_PMT_CardData_v6::getCardTriggerValue( size_t i_begin, si
 
   }*/
 
-FEMBeamTriggerOutput ub_PMT_CardData_v6::trig_thresh_val(std::vector< std::vector<uint16_t> > const& Wave) const noexcept{
+ub_FEMBeamTriggerOutput ub_PMT_CardData_v6::trig_thresh_val(std::vector< std::vector<uint16_t> > const& Wave) const noexcept{
   size_t diff_val0 = 3;
   size_t diff_val3 = 3;
   std::vector<short> diffvec0(Wave.at(0).size(),0); //define the size here...should it be short???
@@ -193,7 +193,7 @@ FEMBeamTriggerOutput ub_PMT_CardData_v6::trig_thresh_val(std::vector< std::vecto
   disc3_max_tick = fWindowSize + disc3_min_tick;
   
   for (size_t i=0 ; i<Wave.size(); ++i) {//number of channels
-    std::cout<< "i: "<< i << " / " << Wave.size()-1 << std::endl;
+    //std::cout<< "i: "<< i << " / " << Wave.size()-1 << std::endl;
     
     /*define the diff vector 0 and 3*/
     
@@ -245,7 +245,7 @@ FEMBeamTriggerOutput ub_PMT_CardData_v6::trig_thresh_val(std::vector< std::vecto
 	     ( tick+1 >= (short)disc3_min_tick && tick+1 <= (short)disc3_max_tick )
 	     ) {
 	  ttrig3.push_back( tick+1 );
-	  std::cout << "[fememu::emulate] ttrig3 @ tick " << tick+1 << std::endl;
+	  //std::cout << "[fememu::emulate] ttrig3 @ tick " << tick+1 << std::endl;
 	  // // find maxdiff
 	  short tmaxdiff = diffvec3[ttrig0.back()];//diff3[tick+1];
 	  short tend1 = std::min( (short)(ttrig0.back()+fDiscr3width), (short)(diffvec3.size()-1));
@@ -259,12 +259,12 @@ FEMBeamTriggerOutput ub_PMT_CardData_v6::trig_thresh_val(std::vector< std::vecto
 	    }
 	    
 	  }
-	  std::cout << "[fememu::emulate] tmax discr 3 fire: " << tmaxdiff << " " << diffvec3.at(tick+1) << " " << tick+1 << std::endl;
+	  //std::cout << "[fememu::emulate] tmax discr 3 fire: " << tmaxdiff << " " << diffvec3.at(tick+1) << " " << tick+1 << std::endl;
 	}
       }/****************************************/
     }//end of wfm loop for trigger and accumulators
-    if(!ttrig3.empty())
-      std::cout << "[fememu::emulate] found disc3 " << ttrig3.size() << " fires for "  << i << std::endl;
+    //if(!ttrig3.empty())
+      //std::cout << "[fememu::emulate] found disc3 " << ttrig3.size() << " fires for "  << i << std::endl;
   }//end of i loop, which is the channel loop
  
 
@@ -283,11 +283,11 @@ FEMBeamTriggerOutput ub_PMT_CardData_v6::trig_thresh_val(std::vector< std::vecto
   }
 
   // Prepare output (initialize in a way less change in mem seg)
-  FEMBeamTriggerOutput result(1);
+  ub_FEMBeamTriggerOutput result;
 
   //fill trigger output
-  short winstart = fTriggerWinStartTick;
-  short winend   = winstart + fWindowSize + fDiscr3width;
+  result.window_start = fTriggerWinStartTick;
+  result.window_end = result.window_start + fWindowSize + fDiscr3width;
 
   /***what should I do here??
   if ( (size_t)winend>=Wave.at(0).size()) {
@@ -299,7 +299,7 @@ FEMBeamTriggerOutput ub_PMT_CardData_v6::trig_thresh_val(std::vector< std::vecto
   short winmaxdiff  = 0;
   int   fire_time   = -1;
 
-  for (short tick=winstart; tick<=winend; tick++) {
+  for (size_t tick=result.window_start; tick<=result.window_end; tick++) {
     auto const& maxdiff_ = _chdiff_sum[tick];
     auto const& nhit_ = _chhit_sum[tick];
     
@@ -311,25 +311,23 @@ FEMBeamTriggerOutput ub_PMT_CardData_v6::trig_thresh_val(std::vector< std::vecto
        maxdiff_  >= fTriggerThresPHMAX &&
        nhit_     >= fTriggerThresMult)
       {fire_time = tick; // fire time should be related to trig0 firing.
-    
+	/*
 	std::cout << "    "
 			  << "@ tick "   << tick     << "  "
 			  << "mult = "   << nhit_    << "  "
 			  << "phmax = "  << maxdiff_ << "  "
-		  << std::endl;}
+			  << std::endl;*/}
   }
 
 
 
   // store results
-  result.window_start_v[0] = winstart;
-  result.window_end_v[0] = winend;
-  result.vmaxdiff[0] = winmaxdiff;
-  result.vmaxhit[0]  = winmaxmulti;
-  result.fire_time_v[0] = fire_time;
-  std::cout << " maxdiff=" << winmaxdiff << " maxhit=" << winmaxmulti << std::endl;
-  if(fire_time >= 0)
-    std::cout << "[fememu::emulate] Trigger fired @ " << fire_time << " !" << std::endl;
+  result.maxdiff = winmaxdiff;
+  result.maxhit  = winmaxmulti;
+  result.fire_time = fire_time;
+  //std::cout << " maxdiff=" << winmaxdiff << " maxhit=" << winmaxmulti << std::endl;
+  //if(fire_time >= 0)
+  //std::cout << "[fememu::emulate] Trigger fired @ " << fire_time << " !" << std::endl;
   
   return result;
 }
