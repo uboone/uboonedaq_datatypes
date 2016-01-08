@@ -199,16 +199,6 @@ FEMBeamTriggerOutput ub_PMT_CardData_v6::trig_thresh_val(std::vector< std::vecto
     
     for (size_t j=0; j+diff_val0<Wave[i].size(); ++j) {
       
-      if(i==31){
-	//for (size_t j=0; j<50; ++j) {
-	std::cout << " " << (Wave[i][j]&0xfff);
-	  if(j%10==9) std::cout << "\n";
-	  //}
-      }
-
-
-      //uint16_t ADC = Wave[i][j];
-      //TotesADC[j] += ADC;
       if((Wave[i][j]&0xfff) > (Wave[i][j+diff_val0]&0xfff))
 	continue;
       diffvec0[j] = std::max((Wave[i][j+diff_val0]&0xfff) - (Wave[i][j]&0xfff),0);
@@ -216,16 +206,9 @@ FEMBeamTriggerOutput ub_PMT_CardData_v6::trig_thresh_val(std::vector< std::vecto
     for (size_t j=0; j+diff_val3<Wave[i].size(); ++j) {
       if((Wave[i][j]&0xfff) > (Wave[i][j+diff_val3]&0xfff))
 	continue;
-      diffvec3[j] = std::max(Wave[i][j+diff_val3] - Wave[i][j],0);
+      diffvec3[j] = std::max((Wave[i][j+diff_val3]&0xfff) - (Wave[i][j]&0xfff),0);
     }
 
-    if(i==31){
-      std::cout << std::endl;
-      for (size_t j=0; j<100; ++j) {
-	std::cout << " " << diffvec0[j];
-	if(j%10==9) std::cout << "\n";
-      }
-    }
     /********************************/
     std::vector<short> tgth0;
     std::vector<short> ttrig0;
@@ -239,10 +222,10 @@ FEMBeamTriggerOutput ub_PMT_CardData_v6::trig_thresh_val(std::vector< std::vecto
 	     ) {
 	  // form discr0 trigger
 	  ttrig0.push_back( tick+1 );
-	  std::cout << "[fememu::emulate] ttrig0 @ tick " << tick+1 << std::endl;
+	  //std::cout << "[fememu::emulate] ttrig0 @ tick " << tick+1 << std::endl;
 	}
 	tgth0.push_back( tick+1 );
-	std::cout << "[fememu::emulate] tgth0 @ tick " << tick+1 << std::endl;
+	//std::cout << "[fememu::emulate] tgth0 @ tick " << tick+1 << std::endl;
       } // end of if discr0 fires
       
       //decriminator 3
@@ -255,8 +238,6 @@ FEMBeamTriggerOutput ub_PMT_CardData_v6::trig_thresh_val(std::vector< std::vecto
       // I consider the following only valid if the beam window is far enough from the edge of the beam
       // gate, if the Discr3width is not too big, and if Discr0deadtime == 0.
       if ( diffvec3[tick+1]>=fDiscr3threshold && diffvec3[tick]<fDiscr3threshold ) {
-
-	std::cout << "\tMade it here?" << std::endl;
 
 	// must be within discr0 prewindow and outside of past discr3 deadtime and inside beam spill window(s)
 	if ( ( !ttrig0.empty() && tick+1 < fDiscr0deadtime + ttrig0.back() ) &&
@@ -287,26 +268,19 @@ FEMBeamTriggerOutput ub_PMT_CardData_v6::trig_thresh_val(std::vector< std::vecto
   }//end of i loop, which is the channel loop
  
 
-  std::cout << "\tHow 'bout Here?" << std::endl;
-
   //fill sum vector
 
   for(size_t tick=0; tick<Wave.at(0).size(); ++tick) { //this is originally wfmsize, which I think is the varible of the total number ticks, so I use ch0
     short phmax_sum = 0;
     short mult_sum  = 0;
     
-    for(size_t ch=0; ch<Wave.size(); ++ch) {
-
-      std::cout << " ch size is " << Wave.at(ch).size() << std::endl;
-
+    for(size_t ch=0; ch<Wave.size(); ++ch) { 
       phmax_sum += _chdiff[ch][tick];
       mult_sum  += _chhit[ch][tick];
     }
     _chdiff_sum[tick] = phmax_sum;
     _chhit_sum[tick]  = mult_sum;
   }
-
-  std::cout << "\tAnd here?" << std::endl;
 
   // Prepare output (initialize in a way less change in mem seg)
   FEMBeamTriggerOutput result(1);
@@ -325,8 +299,6 @@ FEMBeamTriggerOutput ub_PMT_CardData_v6::trig_thresh_val(std::vector< std::vecto
   short winmaxdiff  = 0;
   int   fire_time   = -1;
 
-  std::cout << "\tGonna try this?" << std::endl;
-
   for (short tick=winstart; tick<=winend; tick++) {
     auto const& maxdiff_ = _chdiff_sum[tick];
     auto const& nhit_ = _chhit_sum[tick];
@@ -337,15 +309,14 @@ FEMBeamTriggerOutput ub_PMT_CardData_v6::trig_thresh_val(std::vector< std::vecto
       winmaxmulti = nhit_;
     if(fire_time < 0 &&
        maxdiff_  >= fTriggerThresPHMAX &&
-       nhit_     >= fTriggerThresMult &&
-       tick >= fTriggerModuleWinStartTick && tick <= fTriggerModuleWinStartTick + fTriggerModuleWindowSize)
-      fire_time = tick; // fire time should be related to trig0 firing.
+       nhit_     >= fTriggerThresMult)
+      {fire_time = tick; // fire time should be related to trig0 firing.
     
-    std::cout << "    "
+	std::cout << "    "
 			  << "@ tick "   << tick     << "  "
 			  << "mult = "   << nhit_    << "  "
 			  << "phmax = "  << maxdiff_ << "  "
-			  << std::endl;
+		  << std::endl;}
   }
 
 
