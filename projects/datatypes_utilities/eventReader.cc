@@ -60,7 +60,8 @@ int main(int argc, char **argv)
 
     std::chrono::steady_clock::time_point evtrigger_start{std::chrono::steady_clock::now()};
     double random = distribution(generator);
-    uint16_t trig_value = std::numeric_limits<uint16_t>::max();
+    //uint16_t trig_value = std::numeric_limits<uint16_t>::max();
+    FEMBeamTriggerOutput trig_value;
     if(eventRecord.getPMTSEBMap().size()>0){
       auto const& pmt_crate = eventRecord.getPMTSEBMap().begin()->second;
       if(pmt_crate.getCards().size()>0){
@@ -72,7 +73,7 @@ int main(int argc, char **argv)
     std::chrono::steady_clock::time_point evtrigger_end{std::chrono::steady_clock::now()};
     double trigger_time_milliseconds{(double)std::chrono::duration_cast<std::chrono::microseconds>(evtrigger_end-evtrigger_start).count()};
 
-    std::cout << "\t\tTrigger..." << random << " " << trigger_time_milliseconds << " " << trig_value << std::endl;
+    //std::cout << "\t\tTrigger..." << random << " " << trigger_time_milliseconds << " " << trig_value << std::endl;
 
     /*
       Debug info:
@@ -88,7 +89,7 @@ int main(int argc, char **argv)
       See ub_GlobalHeader.h for the members.
     */
     global_header_t const& globalHeader = eventRecord.getGlobalHeader();
-    std::cout << globalHeader.debugInfo();
+    //std::cout << globalHeader.debugInfo();
 
     //continue;
 
@@ -120,7 +121,7 @@ int main(int argc, char **argv)
       tpc_crate_data_t const& tpc_crate = seb.second;
 
       //Note, you can print out the info for that tpc crate!
-      std::cout << tpc_crate.debugInfo();
+      //std::cout << tpc_crate.debugInfo();
       
       //The tpc crate data object contains access to a header, trailer, and the internal data.
       //You have to follow the typedefs, but the header and trailer for the TPC crate data are
