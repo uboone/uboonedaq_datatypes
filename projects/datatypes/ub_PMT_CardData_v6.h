@@ -38,12 +38,9 @@ public:
     uint16_t getDataStartMarker() const noexcept;
     uint16_t getDataEndMarker() const noexcept;
 
-    //FEMBeamTriggerOutput getCardTriggerValue( size_t i_begin, size_t i_end, uint32_t max_value=std::numeric_limits<uint32_t>::max() ) const noexcept;
-    ub_FEMBeamTriggerOutput getCardTriggerValue( size_t i_begin, size_t i_end) const noexcept;
-    //uint32_t trig_thresh_val(std::vector< std::vector<uint16_t> > const& Wave, uint32_t ThreshVal) const noexcept;
-    
+    ub_FEMBeamTriggerOutput getCardTriggerValue( uint16_t hw_trigger_sample, uint32_t hw_trigger_frame, size_t i_begin, size_t i_end) const noexcept;
     ub_FEMBeamTriggerOutput trig_thresh_val(std::vector< std::vector<uint16_t> > const& Wave) const noexcept;
-    
+
     ub_PMT_CardData_v6 ( ub_PMT_CardData_v6  && ) = default;
     
     short Discr0delay = 3;
