@@ -7,12 +7,15 @@ ub_EventRecord::ub_EventRecord()
     :_bookkeeping_header(),
      _bookkeeping_trailer(),
      _global_header(),
+     _trigger_data(),
      _trigger_counter(),
      _tpc_seb_map(),
      _pmt_seb_map(),
      _trigger_seb_map(),
      _laser_seb_map(),
-     _beam_record() {
+     _beam_record(),
+     _swtrigger_output_vector()
+{
 }
 
 void ub_EventRecord::setCrateSerializationMask(uint16_t mask) throw (datatypes_exception)
@@ -62,8 +65,21 @@ void ub_EventRecord::resetTriggerCounter() noexcept {
 void ub_EventRecord::setTriggerCounter( trigger_counter_t const& tc) noexcept {
   _trigger_counter = tc;
 }
-bool ub_EventRecord::passesSoftwarePrescale(ub_TriggerSummary_t const& ps) noexcept{
-  return _trigger_counter.prescalePass(ps);
+
+trig_data_t const& ub_EventRecord::getTriggerData() noexcept {
+  return _trigger_data;
+}
+
+bool ub_EventRecord::passesSoftwarePrescale( std::map< uint16_t, float> const& ps, uint16_t trig_value, double random ) noexcept{
+  return _trigger_counter.prescalePass(ps, trig_value, random);
+}
+
+
+void ub_EventRecord::addSWTriggerOutput( ub_FEMBeamTriggerOutput const& to) noexcept{
+  _swtrigger_output_vector.emplace_back(to);
+}
+std::vector<ub_FEMBeamTriggerOutput> const& ub_EventRecord::getSWTriggerOutputVector() noexcept{
+  return _swtrigger_output_vector;
 }
 
 void ub_EventRecord::setGPSTime(ub_GPS_Time const& gps_time) noexcept{
@@ -212,7 +228,8 @@ void ub_EventRecord::addFragment(raw_fragment_data_t& fragment) throw(datatypes_
 	  }
 
 	bool first_trig_fragment = (_trigger_seb_map.size()==1);
-	_trigger_counter.increment(std::get<2>(_trigger_seb_map[crate_number])->getTriggerData(),!first_trig_fragment);
+        _trigger_data = std::get<2>(_trigger_seb_map[crate_number])->getTriggerData();
+	_trigger_counter.increment(_trigger_data, !first_trig_fragment);
       }
     else if(crate_type == SystemDesignator::PMT_SYSTEM)
     {
@@ -498,6 +515,11 @@ std::string ub_EventRecord::debugInfo()const noexcept {
         os << "\n" <<  crate_header_t::getHeaderFromFragment(data).debugInfo();
         os << "\n" <<  std::get<std::unique_ptr<trig_crate_data_t>>(trg.second)->debugInfo();
     }
+
+    os << "\tSWTrigger Outputs";
+    for (auto const& o : _swtrigger_output_vector)
+      os << o.debugInfo();
+
     os << _beam_record.debugInfo() << std::endl;
 
     os << "\nTPC fragments";

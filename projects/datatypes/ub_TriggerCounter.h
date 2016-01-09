@@ -19,6 +19,22 @@ using namespace gov::fnal::uboone;
  * assembler, before prescaling.
  ***/
 
+ enum ub_TriggerType {
+   pmt_beam = 0,
+   pmt_cosmic,
+   pc,
+   ext,
+   active,
+   gate2,
+   gate1,
+   veto,
+   calib,
+   gatefake,
+   beamfake,
+   spare1,
+   all,
+   ntriggers
+ };
 
  typedef struct {
    uint32_t pmt_beam;
@@ -34,7 +50,7 @@ using namespace gov::fnal::uboone;
    uint32_t beamfake;
    uint32_t spare1;
  } ub_TriggerSummary_t;
- 
+
 class ub_TriggerCounter final{
     friend class boost::serialization::access;
 
@@ -89,13 +105,13 @@ public:
 
     std::string debugInfo()const noexcept;
 
-    bool prescalePass( ub_TriggerSummary_t const& );
-
+    bool prescalePass( std::map< uint16_t, float > const&, uint16_t, double );
 
 private:
 
     uint32_t _n_total;
     ub_TriggerSummary_t _tc;
+    
 
 };
 
