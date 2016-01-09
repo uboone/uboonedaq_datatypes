@@ -10,6 +10,7 @@
 #include "boostSerialization.h"
 #include "raw_data_access.h"
 
+#include "ub_FEMBeamTriggerOutput.h"
 
 /***
     The ub_EventRecord is meant to house all of the components of the
@@ -71,10 +72,13 @@ public:
     trigger_counter_t const& getTriggerCounter() noexcept;
     void setTriggerCounter( trigger_counter_t const& ) noexcept;
     void resetTriggerCounter() noexcept;
-    bool passesSoftwarePrescale( ub_TriggerSummary_t const& ) noexcept; 
+    trig_data_t const& getTriggerData() noexcept;
+    bool passesSoftwarePrescale( std::map< uint16_t, float> const&, uint16_t, double ) noexcept; 
 
+    void addSWTriggerOutput( ub_FEMBeamTriggerOutput const& ) noexcept;
+    std::vector<ub_FEMBeamTriggerOutput> const& getSWTriggerOutputVector() noexcept;
+    
     std::string debugInfo()const noexcept;
-
     
 
     bool compare(ub_EventRecord const& event_record, bool do_rethrow) const throw(datatypes_exception);
@@ -87,8 +91,6 @@ public:
 
     std::size_t getFragmentCount() const noexcept;
     void updateDTHeader() throw (datatypes_exception);
-
-
     
     void setGPSTime(ub_GPS_Time const& gps_time) noexcept;
     void setTriggerBoardClock(ub_TriggerBoardClock const& trigger_board_time) noexcept;
@@ -122,6 +124,7 @@ private:
     ub_event_header    _bookkeeping_header;
     ub_event_trailer   _bookkeeping_trailer;
     global_header_t    _global_header;
+    trig_data_t        _trigger_data;
     trigger_counter_t  _trigger_counter;
     tpc_seb_map_t      _tpc_seb_map;
     pmt_seb_map_t      _pmt_seb_map;
@@ -129,6 +132,8 @@ private:
     laser_map_t        _laser_seb_map;
 
     ub_BeamRecord        _beam_record;
+
+    std::vector< ub_FEMBeamTriggerOutput > _swtrigger_output_vector;
     
     mutable std::atomic<uint16_t> _crate_serialization_mask={0xFFFF};
     static int eventRecordVersion;
@@ -170,7 +175,13 @@ private:
 
         // write remaining event details
 
-	if(version>=9){
+	if(version>=11){
+	  ar << _global_header;
+	  ar << _trigger_counter;
+	  ar << _laser_seb_map;
+	  ar << _swtrigger_output_vector;
+	}
+	else if(version>=9){
 	  ar << _global_header;
 	  ar << _trigger_counter;
 	  ar << _laser_seb_map;
@@ -222,7 +233,13 @@ private:
         //END SERIALIZE RAW EVENT FRAGMENT DATA
 
         // write remaining event details
-	if(version>=9){
+	if(version>=11){
+	  ar >> _global_header;
+	  ar >> _trigger_counter;
+	  ar >> _laser_seb_map;
+	  ar >> _swtrigger_output_vector;
+	}
+	else if(version>=9){
 	  ar >> _global_header;
 	  ar >> _trigger_counter;
 	  ar >> _laser_seb_map;

@@ -6,6 +6,7 @@
 #include "ub_PMT_ChannelData_v6.h"
 #include "ub_PMT_CardHeaderTrailer_v6.h"
 #include "ub_CrateHeader_v6.h"
+#include "ub_FEMBeamTriggerOutput.h"
 
 #include <limits>
 
@@ -37,10 +38,35 @@ public:
     uint16_t getDataStartMarker() const noexcept;
     uint16_t getDataEndMarker() const noexcept;
 
-    uint32_t getCardTriggerValue( size_t i_begin, size_t i_end, uint32_t max_value=std::numeric_limits<uint32_t>::max() ) const noexcept;
-    uint32_t trig_thresh_val(std::vector< std::vector<uint16_t> > const& Wave, uint32_t ThreshVal) const noexcept;
+    ub_FEMBeamTriggerOutput getCardTriggerValue( uint16_t hw_trigger_sample, uint32_t hw_trigger_frame, size_t i_begin, size_t i_end) const noexcept;
+    ub_FEMBeamTriggerOutput trig_thresh_val(std::vector< std::vector<uint16_t> > const& Wave) const noexcept;
+
     ub_PMT_CardData_v6 ( ub_PMT_CardData_v6  && ) = default;
     
+    short Discr0delay = 3;
+    short fDiscr3delay = 3;
+    
+    short fDiscr0threshold = 5;
+    short fDiscr3threshold = 10;
+    
+    short fDiscr0precount = 3;
+    
+    short fDiscr0deadtime = 6;
+    short fDiscr3deadtime = 6;
+    
+    short fDiscr0width = 6;
+    short fDiscr3width = 6;
+    
+    short fMinReadoutTicks = 500;
+    short fFrontBuffer = 20;
+    short fWindowSize = 103;
+
+    //short fTriggerWinStartTick = 300;
+    short fTriggerWinStartTick = 300;      
+    short fTriggerThresMult  = 4;
+    short fTriggerThresPHMAX = 80;    
+    short fTriggerModuleWinStartTick;
+    short fTriggerModuleWindowSize;
     static constexpr auto typeName="PMT";
 };
 
