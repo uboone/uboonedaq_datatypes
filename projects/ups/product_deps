@@ -1,9 +1,10 @@
 # The parent line must be the first non-comment line in the file
 # This line defines the product name and version
 
-parent uboonedaq_datatypes   v6_17_00
+parent uboonedaq_datatypes   v6_17_00_e9
 
-defaultqual        e7
+
+defaultqual        e9
 
 # These optional lines define the installed directories where
 # headers, libraries, and executables will be found
@@ -22,20 +23,21 @@ fcldir      -
 
 #
 product		version		optional
-boost		v1_57_0
-cetbuildtools	v4_09_02	-	only_for_build
+boost		v1_57_0a
+cetbuildtools	v4_14_02   -   only_for_build
 end_product_list
 
 # e6  - with gcc 4.9.1 and -std=c++1y
 # e7  - with gcc 4.9.2 and -std=c++1y
+# e9 - with gcc 4.9.3 and -std=c++14
 # -nq- here means there is no qualifier
 # a "-" here means the dependent product is not required by the parent and will not be setup
 
 qualifier   boost
-e6:debug    e6:debug
-e6:prof     e6:prof
 e7:debug    e7:debug
 e7:prof     e7:prof
+e9:prof     e9:prof
+e9:debug    e9:debug
 end_qualifier_list
 
 # Preserve tabs and formatting in emacs and vi / vim:
