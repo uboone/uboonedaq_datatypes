@@ -27,19 +27,11 @@ namespace datatypes {
     template<class Archive>
       void serialize(Archive & ar, const unsigned int version)
       {
-	if(version>=11)
-	  ar & window_start
-	    & window_end
-	    & maxdiff
-	    & maxhit
-	    & fire_time;
-	
-	else if(version>0)
-	  ar & window_start
-	    & window_end
-	    & maxdiff
-	    & maxhit
-	    & fire_time;
+        if ( version >= 12 )
+          ar & pass
+             & amplitude
+             & multiplicity
+             & time;
       }
     
   public:
@@ -47,21 +39,20 @@ namespace datatypes {
     
     /// Default ctor
   ub_FEMBeamTriggerOutput() //change here, originally has nwindows as argument
-    : window_start ( 0 ) //orignally has (nwindow,0) I don't think we need this, it seems it's just a fix number all the time
-      , window_end    ( 0 ) //same as the start?
-      , maxdiff       ( 0 )   
-      , maxhit        ( 0 )     
-      , fire_time     ( -1 )  
+    : pass ( 0 )
+      , amplitude    ( 0 )
+      , multiplicity ( 0 )   
+      , time         ( -1 )  
       {}
     
     /// Default dtor
     ~ub_FEMBeamTriggerOutput() {}
     
-    size_t window_start; ///< Window start tick
-    size_t window_end;   ///< Window end   tick
-    short maxdiff;       ///< PHMAX sum vector
-    short maxhit;        ///< Multiplicity sum vector
-    int fire_time;    ///< Trigger decision times (-1 means not fired)
+    bool  pass;         ///< Triggered yes/no
+    short amplitude;    ///< PHMAX sum
+    short multiplicity; ///< Multiplicity sum
+    int   time;         ///< Trigger decision times (-1 means not fired)
+
     
     std::string debugInfo() const noexcept;
     
