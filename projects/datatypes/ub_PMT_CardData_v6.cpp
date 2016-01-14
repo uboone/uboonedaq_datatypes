@@ -113,6 +113,7 @@ uint16_t ub_PMT_CardData_v6::getDataEndMarker() const noexcept {
     return trailer().getDataEndMarker();
 }
 
+/*
 ub_FEMBeamTriggerOutput ub_PMT_CardData_v6::getCardTriggerValue( uint16_t hw_trigger_sample,
 								 uint32_t hw_trigger_frame,
 								 size_t i_begin, size_t i_end) const noexcept {
@@ -191,31 +192,13 @@ ub_FEMBeamTriggerOutput ub_PMT_CardData_v6::getCardTriggerValue( uint16_t hw_tri
   if(my_waveforms.size() != 32) {
     throw datatypes_exception("Lacking some channel...");
   }
-  /*
-  for(auto const& chan : getChannels()){
-    if(chan.getChannelNumber()>31) continue; //ignore non-PMT channels
-    for(auto const& window : chan.getWindows()){
-      if(window.header().getDiscriminantor()!=ub_PMT_DiscriminatorTypes_v6::BEAM && 
-	 window.header().getDiscriminantor()!=ub_PMT_DiscriminatorTypes_v6::BEAM_GATE) continue; //ignore non-BEAM signals
-      if(my_frame==0 && my_sample==0){
-	my_frame = window.header().getFrame();
-	my_sample = window.header().getSample();
-      }
-      else if(window.header().getFrame()!=my_frame || window.header().getSample()!=my_sample) break;
-
-      //my_waveforms.emplace_back( std::make_pair(window.data().begin()+i_begin,window.data().begin()+i_end) );
-      my_waveforms.emplace_back(window.data().begin()+i_begin,window.data().begin()+i_end);
-      
-    }
-  }
-  */
 
   return trig_thresh_val(my_waveforms);
 
   //return max_value;
 
 }
-
+*/
 /*uint32_t ub_PMT_CardData_v6::trig_thresh_val(std::vector< std::vector<uint16_t> > const& Wave, uint32_t ThreshVal) const noexcept{
 
   size_t diff_val = 3;
@@ -246,7 +229,7 @@ ub_FEMBeamTriggerOutput ub_PMT_CardData_v6::getCardTriggerValue( uint16_t hw_tri
   return Max;
 
   }*/
-
+/*
 ub_FEMBeamTriggerOutput ub_PMT_CardData_v6::trig_thresh_val(std::vector< std::vector<uint16_t> > const& Wave) const noexcept{
   size_t diff_val0 = 3;
   size_t diff_val3 = 3;
@@ -269,7 +252,7 @@ ub_FEMBeamTriggerOutput ub_PMT_CardData_v6::trig_thresh_val(std::vector< std::ve
   for (size_t i=0 ; i<Wave.size(); ++i) {//number of channels
     //std::cout<< "i: "<< i << " / " << Wave.size()-1 << std::endl;
     
-    /*define the diff vector 0 and 3*/
+    // define the diff vector 0 and 3
     
     for (size_t j=0; j+diff_val0<Wave[i].size(); ++j) {
       
@@ -283,12 +266,12 @@ ub_FEMBeamTriggerOutput ub_PMT_CardData_v6::trig_thresh_val(std::vector< std::ve
       diffvec3[j] = std::max((Wave[i][j+diff_val3]&0xfff) - (Wave[i][j]&0xfff),0);
     }
 
-    /********************************/
+    // ***********************
     std::vector<short> tgth0;
     std::vector<short> ttrig0;
     std::vector<short> ttrig3;
     for (short tick=0; (tick+1)<(short)Wave[i].size(); tick++) {
-      /*define the trigger*/
+      // define the trigger
       //discriminator 0 
       if ( diffvec0[tick+1]>=fDiscr0threshold && diffvec0[tick]<fDiscr0threshold ) {
 	if ( ( tgth0.size()==0 || tgth0.back() + fDiscr0precount < tick+1 ) &&
@@ -335,7 +318,7 @@ ub_FEMBeamTriggerOutput ub_PMT_CardData_v6::trig_thresh_val(std::vector< std::ve
 	  }
 	  //std::cout << "[fememu::emulate] tmax discr 3 fire: " << tmaxdiff << " " << diffvec3.at(tick+1) << " " << tick+1 << std::endl;
 	}
-      }/****************************************/
+      }// ****************************************
     }//end of wfm loop for trigger and accumulators
     //if(!ttrig3.empty())
       //std::cout << "[fememu::emulate] found disc3 " << ttrig3.size() << " fires for "  << i << std::endl;
@@ -363,11 +346,11 @@ ub_FEMBeamTriggerOutput ub_PMT_CardData_v6::trig_thresh_val(std::vector< std::ve
   result.window_start = fTriggerWinStartTick;
   result.window_end = result.window_start + fWindowSize + fDiscr3width;
 
-  /***what should I do here??
+  // ***what should I do here??
   if ( (size_t)winend>=Wave.at(0).size()) {
     std::cout << "[fememu::emulate] wiend>=wfmsize\n\n\n\n\n" << std::endl;	
     continue;
-    }***********/
+    }*********** //
 
   short winmaxmulti = 0;
   short winmaxdiff  = 0;
@@ -385,12 +368,12 @@ ub_FEMBeamTriggerOutput ub_PMT_CardData_v6::trig_thresh_val(std::vector< std::ve
        maxdiff_  >= fTriggerThresPHMAX &&
        nhit_     >= fTriggerThresMult)
       {fire_time = tick; // fire time should be related to trig0 firing.
-	/*
+	
 	std::cout << "    "
 			  << "@ tick "   << tick     << "  "
 			  << "mult = "   << nhit_    << "  "
 			  << "phmax = "  << maxdiff_ << "  "
-			  << std::endl;*/}
+			  << std::endl;}
   }
 
 
@@ -405,4 +388,4 @@ ub_FEMBeamTriggerOutput ub_PMT_CardData_v6::trig_thresh_val(std::vector< std::ve
   
   return result;
 }
-   
+*/   
