@@ -113,6 +113,119 @@ uint16_t ub_PMT_CardData_v6::getDataEndMarker() const noexcept {
     return trailer().getDataEndMarker();
 }
 
+uint32_t ub_PMT_CardData_v6::rollOver(uint32_t ref,
+				      uint32_t subject) const
+{
+  // Return "ref" which lower "nbits" are replaced by that of "subject"
+  // Takes care of roll over effect.
+  // For speed purpose we only accept pre-defined nbits values.
+  const unsigned int nbits = 3;
+  unsigned int diff=3; // max diff should be (2^(nbits)-2)/2
+  unsigned int mask=0x7; // mask to extract lower nbits from subject ... should be 2^(nbits)-1
+  
+  subject = ( (ref>>nbits) << nbits) + (subject & mask);
+  //std::cout<<ref<<" : "<<subject<<" : "<<nbits<< " : "<<diff<<std::endl;
+  // If exactly same, return
+  if(subject == ref) return subject;
+  
+  // If subject is bigger than ref by a predefined diff value, inspect difference
+
+  else if ( subject > ref && (subject - ref) > diff)
+    
+    subject = subject - (mask + 1);
+  
+  // If subject is smaller than ref by a predefined diff value, inspect difference
+  else if ( subject < ref && (ref - subject) > diff)
+    
+    subject = subject + (mask + 1);
+  
+  return subject;
+}
+
+ub_PMT_CardData_v6::WaveformArray_t 
+ub_PMT_CardData_v6::getBeamWindowWaveforms(uint32_t hw_trigger_sample,
+					   uint32_t hw_trigger_frame,
+					   uint32_t beam_window_size) const
+{
+
+  WaveformArray_t result;
+  uint64_t target_time =0;
+  uint64_t min_dt = 1e12; //FIXME this should be set to max integer value from compiler
+  static const uint32_t frame_size = 102400;
+  const uint64_t trigger_time = hw_trigger_frame * frame_size + hw_trigger_sample;
+ 
+  // First search the target timing
+  for(auto const& ch_data : getChannels()){
+
+    for(auto const& window : ch_data.getWindows()) {
+
+      if(window.header().getDiscriminantor()!=ub_PMT_DiscriminatorTypes_v6::BEAM && 
+	 window.header().getDiscriminantor()!=ub_PMT_DiscriminatorTypes_v6::BEAM_GATE) 
+	continue; //ignore non-BEAM signals
+      
+      uint64_t window_time = rollOver(this->getFrame(), window.header().getFrame()) * frame_size;
+      window_time += window.header().getSample();
+
+      uint64_t window_trigger_dt = 
+	( window_time < trigger_time ? trigger_time - window_time : window_time - trigger_time );
+      
+      if( min_dt > window_trigger_dt ) {
+	min_dt      = window_trigger_dt;
+	target_time = window.header().getFrame() * frame_size + window.header().getSample();
+      }
+    }
+  }
+  //std::cout << "target_time: " << target_time << std::endl;
+  // Reaching here, my_frame && my_sample is non-zero, 
+  // then you found a candidate beam gate start (i.e. size == expected size & closest to trigger)
+  if(!target_time) {
+    //std::cout << "Could not locate beam gate window!!!" << std::endl;
+    return result;
+  }
+  
+  for(auto const& chan : getChannels()) {
+
+    if(chan.getChannelNumber()>31) continue;  //ignore non-PMT channels
+
+    for(auto const& window : chan.getWindows()) {
+
+      uint64_t window_time = rollOver(this->getFrame(), window.header().getFrame()) * frame_size;
+      window_time += window.header().getSample();
+
+      // Exactly same timing
+      if(window_time == target_time) {
+	if(window.data().size() < beam_window_size) {
+	  //std::cout << "Unexpected readout window (same timing as beamgate but too short)" << std::endl;
+	  return result;
+	}
+	result.emplace_back(window.data().begin(),window.data().begin() + beam_window_size);
+				  
+	break;
+      }
+       
+      // Concatinated waveform
+      if( target_time > window_time && 
+	  target_time < (window_time + window.data().size()) ) {
+
+	if(window.data().size() < (target_time - window_time) + beam_window_size) {
+	  //std::cout << "Unexpected readout window (same timing as beamgate but too short)" << std::endl;
+	  return result;
+	}
+
+        //std::cout << "window_time: " <<	window_time << ", window_size: " << window.data().size() << std::endl;
+	result.emplace_back(window.data().begin() + (target_time - window_time),
+			    window.data().begin() + (target_time - window_time) + beam_window_size);
+	break;
+      }
+    }
+  }
+
+  if(result.size() != 32) {
+    throw datatypes_exception("Lacking some channel...");
+  }
+
+  return result;
+}
 /*
 ub_FEMBeamTriggerOutput ub_PMT_CardData_v6::getCardTriggerValue( uint16_t hw_trigger_sample,
 								 uint32_t hw_trigger_frame,
