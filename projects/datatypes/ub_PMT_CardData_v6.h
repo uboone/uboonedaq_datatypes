@@ -41,10 +41,9 @@ public:
     //
     // Added a function (and type) to retrieve time-aligned beam window waveform.
     //
-    typedef std::vector<std::vector<uint16_t> > WaveformArray_t;
-    WaveformArray_t getBeamWindowWaveforms(uint32_t hw_trigger_sample,
-					   uint32_t hw_trigger_frame,
-					   uint32_t beam_window_size=1500) const;
+    void fillBeamWindowWaveforms(const uint32_t hw_trigger_frame,
+				 const uint32_t hw_trigger_sample,
+				 std::vector<std::vector<uint16_t> >& wf_v) const;
     uint32_t rollOver(uint32_t ref, uint32_t subject) const;
 
     // ub_FEMBeamTriggerOutput getCardTriggerValue( uint16_t hw_trigger_sample, uint32_t hw_trigger_frame, size_t i_begin, size_t i_end) const noexcept;
