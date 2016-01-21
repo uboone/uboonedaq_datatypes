@@ -25,7 +25,7 @@ enum ub_SEBFragmentType {
 
 namespace constants
 {
-  const int DATATYPES_VERSION = 11; // A dB query eventually. // NJT: shouldn't this match major version number for datatypes package?
+  const int DATATYPES_VERSION = 12; // A dB query eventually. // NJT: shouldn't this match major version number for datatypes package?
 // ... other related constants
 
 } // namespace constants
