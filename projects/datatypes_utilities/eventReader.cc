@@ -69,7 +69,7 @@ int main(int argc, char **argv)
         auto const& trig_header = trig_map.begin()->second.getTriggerHeader();
 	auto const& pmt_card = pmt_crate.getCards().at(0);
 	//trig_value = pmt_card.getCardTriggerValue(0,500);
-	trig_value = pmt_card.getCardTriggerValue( trig_header.getFrame(), trig_header.get2MHzSampleNumber(), 128, 384);
+	// trig_value = pmt_card.getCardTriggerValue( trig_header.getFrame(), trig_header.get2MHzSampleNumber(), 128, 384);
 	//        std::cout << "\t\t\tNote we look at the PMT waveform from tick 128 to tick 384." << std::endl;
 	//std::cout << "\t\t\tWe made it in here and see " << trig_value << std::endl;
       }
@@ -77,7 +77,7 @@ int main(int argc, char **argv)
     std::chrono::steady_clock::time_point evtrigger_end{std::chrono::steady_clock::now()};
     double trigger_time_milliseconds{(double)std::chrono::duration_cast<std::chrono::microseconds>(evtrigger_end-evtrigger_start).count()};
 
-    std::cout << "\t\tTrigger..." << random << " " << trigger_time_milliseconds << " maxhit " << trig_value.maxhit<< " maxdiff " << trig_value.maxdiff<< std::endl;
+    // std::cout << "\t\tTrigger..." << random << " " << trigger_time_milliseconds << " maxhit " << trig_value.maxhit<< " maxdiff " << trig_value.maxdiff<< std::endl;
 
     /*
       Debug info:
