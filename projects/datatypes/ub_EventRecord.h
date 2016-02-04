@@ -68,6 +68,8 @@ public:
     void setGlobalHeader (global_header_t const& header) noexcept;
 
     void addFragment(raw_fragment_data_t & fragment) throw(datatypes_exception,data_size_exception);
+    void addFragment_TPC_or_LASER(raw_fragment_data_t & fragment) throw(datatypes_exception,data_size_exception);
+    void addFragment_PMT_or_TRIG(raw_fragment_data_t & fragment) throw(datatypes_exception,data_size_exception);
 
     trigger_counter_t const& getTriggerCounter() noexcept;
     void setTriggerCounter( trigger_counter_t const& ) noexcept;
