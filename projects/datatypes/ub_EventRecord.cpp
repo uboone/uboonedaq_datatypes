@@ -1,4 +1,17 @@
 #include "ub_EventRecord.h"
+#include <memory>
+
+#ifdef __clang__
+// Only the most recent GCC compiler has this defined in the standard library. 
+// I wish you guys wouldn't always use bleeding-edge syntactic sugar.  --Nathaniel
+namespace std {
+  template<typename T, typename ...Args>
+  std::unique_ptr<T> make_unique( Args&& ...args )
+  {
+      return std::unique_ptr<T>( new T( std::forward<Args>(args)... ) );
+  }
+}
+#endif
 
 using namespace gov::fnal::uboone::datatypes;
 
@@ -583,19 +596,19 @@ void ub_EventRecord::getFragments(fragment_references_t& fragments) const noexce
     for(auto& tpc : _tpc_seb_map)
     {
         if(CHECK_BIT(serialization_mask,tpc.first))
-            fragments.emplace_back(&std::get<raw_fragment_data_t>(tpc.second));
+            fragments.emplace_back(&std::get<0>(tpc.second));
     }
     
     for(auto& pmt : _pmt_seb_map)
     {
         if(CHECK_BIT(serialization_mask,pmt.first))
-            fragments.emplace_back(&std::get<raw_fragment_data_t>(pmt.second));
+            fragments.emplace_back(&std::get<0>(pmt.second));
     }    
   
     for(auto& trg : _trigger_seb_map)
     {
         // if(CHECK_BIT(serialization_mask,trg.first))       // NJT: Always keep trigger data!
-            fragments.emplace_back(&std::get<raw_fragment_data_t>(trg.second));
+            fragments.emplace_back(&std::get<0>(trg.second));
     }
 
 }
@@ -617,7 +630,7 @@ void ub_EventRecord::updateDTHeader() throw (datatypes_exception)
         _bookkeeping_header.event_fragment_count=fragments.size();
 
         _bookkeeping_header.raw_event_fragments_wordcount=std::accumulate(
-        fragments.begin(),fragments.end(),0u,[](auto total, auto const& fragment) {
+        fragments.begin(),fragments.end(),0u,[](size_t total, raw_fragment_data_t const* fragment) {
             return total+fragment->size()*sizeof(fragment_value_type_t);
         });
 
@@ -721,10 +734,10 @@ std::string ub_EventRecord::debugInfo()const noexcept {
     os << _trigger_counter.debugInfo();
     os << "\nTRG fragments";
     for(auto const& trg : _trigger_seb_map){
-        raw_fragment_data_t const& tpm_fragment=std::get<raw_fragment_data_t>(trg.second);
+        raw_fragment_data_t const& tpm_fragment=std::get<0>(trg.second);
         ub_RawData data(tpm_fragment.begin(),tpm_fragment.end());
         os << "\n" <<  crate_header_t::getHeaderFromFragment(data).debugInfo();
-        os << "\n" <<  std::get<std::unique_ptr<trig_crate_data_t>>(trg.second)->debugInfo();
+        os << "\n" <<  std::get<2>(trg.second)->debugInfo();
     }
 
     os << "\tSWTrigger Outputs";
@@ -735,18 +748,18 @@ std::string ub_EventRecord::debugInfo()const noexcept {
 
     os << "\nTPC fragments";
     for(auto const& tpc : _tpc_seb_map){
-        raw_fragment_data_t const& tpm_fragment=std::get<raw_fragment_data_t>(tpc.second);
+        raw_fragment_data_t const& tpm_fragment=std::get<0>(tpc.second);
         ub_RawData data(tpm_fragment.begin(),tpm_fragment.end());
         os << "\n" <<  crate_header_t::getHeaderFromFragment(data).debugInfo();
-        os << "\n" <<  std::get<std::unique_ptr<tpc_crate_data_t>>(tpc.second)->debugInfo();
+        os << "\n" <<  std::get<2>(tpc.second)->debugInfo();
     }
 
     os << "\nPMT fragments";
     for(auto const& pmt : _pmt_seb_map){
-        raw_fragment_data_t const& tpm_fragment=std::get<raw_fragment_data_t>(pmt.second);
+        raw_fragment_data_t const& tpm_fragment=std::get<0>(pmt.second);
         ub_RawData data(tpm_fragment.begin(),tpm_fragment.end());
         os << "\n" <<  crate_header_t::getHeaderFromFragment(data).debugInfo();
-        os << "\n" <<  std::get<std::unique_ptr<pmt_crate_data_t>>(pmt.second)->debugInfo();
+        os << "\n" <<  std::get<2>(pmt.second)->debugInfo();
     }
 
     os << "\nLASER fragments";
