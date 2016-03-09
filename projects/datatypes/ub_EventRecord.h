@@ -68,6 +68,8 @@ public:
     void setGlobalHeader (global_header_t const& header) noexcept;
 
     void addFragment(raw_fragment_data_t & fragment) throw(datatypes_exception,data_size_exception);
+    void addFragment_TPC_or_LASER(raw_fragment_data_t & fragment) throw(datatypes_exception,data_size_exception);
+    void addFragment_PMT_or_TRIG(raw_fragment_data_t & fragment) throw(datatypes_exception,data_size_exception);
 
     trigger_counter_t const& getTriggerCounter() noexcept;
     void setTriggerCounter( trigger_counter_t const& ) noexcept;
@@ -158,7 +160,7 @@ private:
         
         assert(bookkeeping_header.event_fragment_count==fragments.size());
         assert(bookkeeping_header.raw_event_fragments_wordcount==std::accumulate(
-        fragments.begin(),fragments.end(),0u,[](auto total, auto const& fragment) {
+        fragments.begin(),fragments.end(),0u,[](size_t total, raw_fragment_data_t const* fragment) {
             return total+fragment->size()*sizeof(fragment_value_type_t);
         }));
 
@@ -227,7 +229,7 @@ private:
         fragment_references_t fragments;
         getFragments(fragments);
         assert(_bookkeeping_header.raw_event_fragments_wordcount==std::accumulate(
-        fragments.begin(),fragments.end(),0u,[](auto total, auto const& fragment) {
+        fragments.begin(),fragments.end(),0u,[](size_t total, raw_fragment_data_t const* fragment) {
             return total+fragment->size()*sizeof(fragment_value_type_t);
         }));
         //END SERIALIZE RAW EVENT FRAGMENT DATA

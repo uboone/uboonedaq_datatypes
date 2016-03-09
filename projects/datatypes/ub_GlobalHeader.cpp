@@ -20,7 +20,8 @@ ub_GlobalHeader::ub_GlobalHeader()
     number_of_sebs {0},
     is_event_complete(1),
     daq_version_label {""},
-    daq_version_quals {""}
+    daq_version_quals {""},
+    use_gps_time{false}
 {
 }
 
@@ -80,15 +81,29 @@ uint32_t ub_GlobalHeader::getEventNumberCrate() const noexcept {
     return event_number_crate;
 }
 uint32_t ub_GlobalHeader::getSeconds() const noexcept {
-    return gps_evt_time.second;
+  if(use_gps_time) return gps_evt_time.second;
+  else return local_host_time.seb_time_sec;
 }
 
 uint32_t ub_GlobalHeader::getMicroSeconds() const noexcept {
-    return gps_evt_time.micro;
+  if(use_gps_time) return gps_evt_time.micro;
+  else return local_host_time.seb_time_usec;
 }
 uint16_t ub_GlobalHeader::getNanoSeconds() const noexcept {
-    return gps_evt_time.nano;
+  if(use_gps_time) return gps_evt_time.nano;
+  else return 0;
 }
+
+bool ub_GlobalHeader::usingGPSTime() const noexcept{
+  return use_gps_time;
+}
+void ub_GlobalHeader::useGPSTime() noexcept{
+  use_gps_time = true;
+}
+void ub_GlobalHeader::useLocalHostTime() noexcept{
+  use_gps_time = false;
+}
+
 uint32_t ub_GlobalHeader::getNumberOfBytesInRecord() const noexcept {
     return numberOfBytesInRecord;
 }
@@ -195,7 +210,8 @@ std::string ub_GlobalHeader::debugInfo()const noexcept
     os << " event_type=" << (int) event_type;
 
     os << "\n Event Time:" ;           
-    os << " seconds=" << (int) getSeconds();
+    os << " using gps time? " << usingGPSTime();
+    os << "\n  seconds=" << (int) getSeconds();
     os << " micro_seconds=" << (int) getMicroSeconds();
     os << " nano_seconds=" << (int) getNanoSeconds();
     
