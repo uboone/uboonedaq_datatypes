@@ -28,7 +28,15 @@ class ub_GlobalHeader final{
     template<class Archive>
     void serialize(Archive & ar, const unsigned int version)
     {
-      if(version>=10)
+      if(version>=14)
+	ar & record_type & record_origin & event_type 
+	   & daq_version_label & daq_version_quals
+	   & run_number & subrun_number & event_number & event_number_crate
+	   & numberOfBytesInRecord & number_of_sebs & is_event_complete 
+	   & local_host_time & trigger_board_time & gps_time  
+	   & trigger_board_evt_time & gps_evt_time & use_gps_time;            
+
+      else if(version>=10)
 	ar & record_type & record_origin & event_type 
 	   & daq_version_label & daq_version_quals
 	   & run_number & subrun_number & event_number & event_number_crate
@@ -92,6 +100,10 @@ public:
     std::string getDAQVersionLabel() const noexcept;
     std::string getDAQVersionQualifiers() const noexcept;
 
+    bool usingGPSTime() const noexcept;
+    void useGPSTime() noexcept;
+    void useLocalHostTime() noexcept;
+
 
     ub_GPS_Time const& getGPSTime() const noexcept;    
     ub_TriggerBoardClock const& getTriggerBoardClock() const noexcept;
@@ -129,7 +141,8 @@ private:
 
     std::string daq_version_label;
     std::string daq_version_quals;
-    
+
+    bool use_gps_time;
 
 };
 
