@@ -456,6 +456,10 @@ void ub_EventRecord::addFragment_PMT_or_TRIG(raw_fragment_data_t& fragment) thro
         getGlobalHeader().setNumberOfBytesInRecord(getGlobalHeader().getNumberOfBytesInRecord()+crate_header.size*sizeof(raw_data_type));
         getGlobalHeader().setEventNumberCrate (crate_header.event_number);            
     }
+
+    getGlobalHeader().setNumberOfSEBs((uint8_t)(_tpc_seb_map.size() + _pmt_seb_map.size()));    
+    updateDTHeader();
+
     } catch(datatypes_exception &e) {
 	throw ;
     }catch(std::exception &ex) {
