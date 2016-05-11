@@ -53,7 +53,11 @@ struct ub_PMT_WindowHeader_v6 final
         return discriminator;
     }
     std::string getDiscriminatorType() const noexcept{
-      return ub_PMT_DiscriminatorType_v6ToString.at(discriminator);
+      auto it = ub_PMT_DiscriminatorType_v6ToString.find(discriminator);
+      if(it==ub_PMT_DiscriminatorType_v6ToString.end())
+	return "UNKNOWN";
+      return it->second;
+      //return ub_PMT_DiscriminatorType_v6ToString.at(discriminator);
     }
     uint8_t getMarker1() const noexcept{
       return marker1;
