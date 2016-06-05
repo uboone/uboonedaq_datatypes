@@ -2,9 +2,9 @@
 # This line defines the product name and version
 
 
-parent uboonedaq_datatypes   v6_19_00a_e9
+parent uboonedaq_datatypes   v6_19_00a_e10
 
-defaultqual        e9
+defaultqual        e10
 
 # These optional lines define the installed directories where
 # headers, libraries, and executables will be found
@@ -23,7 +23,7 @@ fcldir      -
 
 #
 product		version		optional
-boost		v1_57_0a
+boost		v1_61_0
 cetbuildtools	v4_14_02   -   only_for_build
 end_product_list
 
@@ -38,6 +38,8 @@ e7:debug    e7:debug
 e7:prof     e7:prof
 e9:prof     e9:prof
 e9:debug    e9:debug
+e10:prof     e10:prof
+e10:debug    e10:debug
 end_qualifier_list
 
 # Preserve tabs and formatting in emacs and vi / vim:
