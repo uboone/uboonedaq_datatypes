@@ -96,14 +96,58 @@ void ub_TPC_ChannelData_v6::decompress(std::vector<T>& uncompressed) const throw
       // b -> increment zero 
       // c -> +3 adc counts.
       
-      uint16_t outword;
-      size_t zero_count = 0;
-      bool   non_zero_found = false;
 
       // set terminating bit in bit 14.
       // This is a hack to allow the end-of-pattern to be found.
       // We COULD rewrite everything, but this is easier right now.
-      word = word | (1<<14);
+      word = (word&0x3fff) | 0x4000; // (1<<14)
+      // skip padding in right-hand (lsb) bits.  
+      if     ((word & 0x1   ) == 0x1    ) { word = word>>1; }
+      else if((word & 0x3   ) == 0x2    ) { word = word>>2; }
+      else if((word & 0x7   ) == 0x4    ) { word = word>>3; }
+      else if((word & 0xF   ) == 0x8    ) { word = word>>4; }
+      else if((word & 0x1F  ) == 0x10   ) { word = word>>5; }
+      else if((word & 0x3F  ) == 0x20   ) { word = word>>6; }
+      else if((word & 0x7f  ) == 0x40   ) { word = word>>7; }
+      else if((word & 0xff  ) == 0x80   ) { word = word>>8; }
+      else if((word & 0x1ff ) == 0x100  ) { word = word>>9; }
+      else if((word & 0x3ff ) == 0x200  ) { word = word>>10; }
+      else if((word & 0x7ff ) == 0x400  ) { word = word>>11; }
+      else if((word & 0xfff ) == 0x800  ) { word = word>>12; }
+      else if((word & 0x1fff) == 0x1000 ) { word = word>>13; }
+      else if((word & 0x3fff) == 0x2000 ) { word = word>>14; }
+
+
+      while(word!=0) {
+        if     ((word & 0x1)  == 0x1  ) {                            uncompressed.push_back((T)(last_uncompressed_word)); word = word>>1; }
+        else if((word & 0x3)  == 0x2  ) { last_uncompressed_word-=1; uncompressed.push_back((T)(last_uncompressed_word)); word = word>>2; }
+        else if((word & 0x7)  == 0x4  ) { last_uncompressed_word+=1; uncompressed.push_back((T)(last_uncompressed_word)); word = word>>3; }
+        else if((word & 0xF)  == 0x8  ) { last_uncompressed_word-=2; uncompressed.push_back((T)(last_uncompressed_word)); word = word>>4; }
+        else if((word & 0x1F) == 0x10 ) { last_uncompressed_word+=2; uncompressed.push_back((T)(last_uncompressed_word)); word = word>>5; }
+        else if((word & 0x3F) == 0x20 ) { last_uncompressed_word-=3; uncompressed.push_back((T)(last_uncompressed_word)); word = word>>6; }
+        else if((word & 0x7F) == 0x40 ) { last_uncompressed_word+=3; uncompressed.push_back((T)(last_uncompressed_word)); word = word>>7; }
+        else {
+          // std::cout << "Huffman decompress unrecoginized bit pattern " << (std::bitset<16>) word << std::endl;
+          // std::cout << "\n----\n";
+          // std::cout << debugInfo();
+          std::stringstream ss;
+          ss << "Huffman decompress unrecoginized bit pattern:" << hex(4,*it) << " on word number " << (it-raw.begin());
+            throw datatypes_exception(ss.str());
+        }
+      }
+      
+      
+      /*
+      // Old code.  About 5% slower than code above.
+      
+      // set terminating bit in bit 14.
+      // This is a hack to allow the end-of-pattern to be found.
+      // We COULD rewrite everything, but this is easier right now.
+      word = word | 0x4000; // (1<<14)
+      
+      uint16_t outword;
+      size_t zero_count = 0;
+      bool   non_zero_found = false;
 
       // Then read everything up to and including bit 14.
       for(size_t index=0; index<15; ++index){
@@ -140,8 +184,9 @@ void ub_TPC_ChannelData_v6::decompress(std::vector<T>& uncompressed) const throw
           }
         }
 
-        word = word >> 1; // Shift a bit to look at the next one.      
-      }      
+        word = word >> 1; // Shift a bit to look at the next one.
+      }
+      */
 
 
       
