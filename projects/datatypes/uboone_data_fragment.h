@@ -3,7 +3,13 @@
 
 #include <fstream>
 #include <vector>
+#if __APPLE__
+#define COMMON_DIGEST_FOR_OPENSSL
+#include <CommonCrypto/CommonDigest.h>
+#undef COMMON_DIGEST_FOR_OPENSSL
+#else
 #include <openssl/md5.h>
+#endif
 #include <algorithm>
 #include <iterator>
 
