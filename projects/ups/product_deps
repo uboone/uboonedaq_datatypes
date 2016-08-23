@@ -2,7 +2,7 @@
 # This line defines the product name and version
 
 
-parent uboonedaq_datatypes   v6_19_00a_e9
+parent uboonedaq_datatypes   v6_19_00a_e9_deh-fix
 
 defaultqual        e9
 
