@@ -79,17 +79,17 @@ int main(int argc, char **argv)
     is.clear();
     is.seekg(0,is.beg);
 
-    std::cout << " There are " << std::dec << nevents << " events in this file." << std::endl;
-    if (eventNumber > nevents) eventNumber = nevents;
 
     if (!closedCleanly) // walk evt-by-evt
       {
 	while(true){
+	  if (eventNumber < 1) eventNumber = 1;
 	  boost::archive::binary_iarchive ia ( is );      
 	  ub_EventRecord  eventRecord;
 	  ia >> eventRecord;
 	  ++i;
 	  if (i != eventNumber) continue;
+
 	  std::cout << "eventRecord.size is " << sizeof(eventRecord) << std::endl;
 	  global_header_t const& globalHeader = eventRecord.getGlobalHeader();
 	  std::cout << globalHeader.debugInfo() << std::endl;
@@ -101,6 +101,9 @@ int main(int argc, char **argv)
 
     else // ffwd to desired event
       {
+	std::cout << " There are " << std::dec << nevents << " events in this file." << std::endl;
+	if (eventNumber > nevents) eventNumber = nevents;
+
 	boost::archive::binary_iarchive ia ( is );      
 	ub_EventRecord  eventRecord;
 	size_t offset (0);
@@ -123,6 +126,29 @@ int main(int argc, char **argv)
   }catch(...){
     std::cout << "Done. closedCleanly?: " << closedCleanly << std::endl;
     status = 2;
+
+    if (!closedCleanly && i>0)
+      {
+	int j(0);
+	std::cout << "This file was not closedCleanly and we were not able to read as high as your requested " << eventNumber << ", though we were able to read up through event " << i-1 << ". Its header follows below." << std::endl ;
+	is.clear();
+	is.seekg(0,is.beg);
+
+        while(true){
+	  boost::archive::binary_iarchive ia ( is );
+          ub_EventRecord  eventRecord;
+          ia >> eventRecord;
+          ++j;
+          if (j != i-1) continue;
+
+	  std::cout << "eventRecord.size is " << sizeof(eventRecord) << std::endl;
+          global_header_t const& globalHeader = eventRecord.getGlobalHeader();
+	  std::cout << globalHeader.debugInfo() << std::endl;
+	  status = 0;
+          break;
+	
+	}
+      }
   }
 
   return status;
