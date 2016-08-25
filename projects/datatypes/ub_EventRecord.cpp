@@ -235,7 +235,7 @@ void ub_EventRecord::addFragment(raw_fragment_data_t& fragment) throw(datatypes_
 		int nsec_adj  = crate_header.gps_time.nano + gps_adj*1.0E9; 
 		gps_sign_adjust(musec_adj,nsec_adj);
 		ub_GPS_Time gps_t_adj(int(gps_evt ), musec_adj, nsec_adj) ;
-		std::cout << "ub_EVENT_RECORD:: gps deltatime OF THIS EVENT (sec,micro,nano):  " << gps_t_adj.second << ", " << gps_t_adj.micro <<  ", " << gps_t_adj.nano << std::endl;
+		//std::cout << "ub_EVENT_RECORD:: gps deltatime OF THIS EVENT (sec,micro,nano):  " << gps_t_adj.second << ", " << gps_t_adj.micro <<  ", " << gps_t_adj.nano << std::endl;
 		getGlobalHeader().setGPSEVTTime(gps_t_adj);
 	      }
 	  }
@@ -419,7 +419,7 @@ void ub_EventRecord::addFragment_PMT_or_TRIG(raw_fragment_data_t& fragment) thro
 		int nsec_adj  = crate_header.gps_time.nano + gps_adj*1.0E9; 
 		gps_sign_adjust(musec_adj,nsec_adj);
 		ub_GPS_Time gps_t_adj(int(gps_evt ), musec_adj, nsec_adj) ;
-		std::cout << "ub_EVENT_RECORD:: gps deltatime OF THIS EVENT (sec,micro,nano):  " << gps_t_adj.second << ", " << gps_t_adj.micro <<  ", " << gps_t_adj.nano << std::endl;
+		//std::cout << "ub_EVENT_RECORD:: gps deltatime OF THIS EVENT (sec,micro,nano):  " << gps_t_adj.second << ", " << gps_t_adj.micro <<  ", " << gps_t_adj.nano << std::endl;
 		getGlobalHeader().setGPSEVTTime(gps_t_adj);
 	      }
 	  }
