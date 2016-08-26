@@ -23,6 +23,7 @@ ub_EventRecord::ub_EventRecord()
      _trigger_data(),
      _trigger_counter(),
      _tpc_seb_map(),
+     _tpc_sn_seb_map(),
      _pmt_seb_map(),
      _trigger_seb_map(),
      _laser_seb_map(),
@@ -53,6 +54,10 @@ ub_EventRecord::~ub_EventRecord()
     for(auto& tpc : _tpc_seb_map)
             std::get<0>(tpc.second).clear();
     _tpc_seb_map.clear();
+    
+    for(auto& tpc : _tpc_sn_seb_map)
+            std::get<0>(tpc.second).clear();
+    _tpc_sn_seb_map.clear();
 
     for(auto& trg : _trigger_seb_map)
             std::get<0>(trg.second).clear();
@@ -148,7 +153,7 @@ return _beam_record;
 }
 
 std::size_t ub_EventRecord::getFragmentCount() const noexcept{
-  return _pmt_seb_map.size()+_tpc_seb_map.size()+_trigger_seb_map.size();
+  return _pmt_seb_map.size()+_tpc_seb_map.size()+_tpc_sn_seb_map.size()+_trigger_seb_map.size();
 }
 
 void ub_EventRecord::addFragment(raw_fragment_data_t& fragment) throw(datatypes_exception,data_size_exception)
@@ -314,7 +319,7 @@ void ub_EventRecord::addFragment(raw_fragment_data_t& fragment) throw(datatypes_
       _laser_seb_map.emplace(crate_number,mydata);
     }
 
-    getGlobalHeader().setNumberOfSEBs((uint8_t)(_tpc_seb_map.size() + _pmt_seb_map.size()));    
+    getGlobalHeader().setNumberOfSEBs((uint8_t)(_tpc_sn_seb_map.size() + _tpc_seb_map.size() + _pmt_seb_map.size()));    
     updateDTHeader();
 
     } catch(datatypes_exception &e) {
@@ -457,7 +462,7 @@ void ub_EventRecord::addFragment_PMT_or_TRIG(raw_fragment_data_t& fragment) thro
         getGlobalHeader().setEventNumberCrate (crate_header.event_number);            
     }
 
-    getGlobalHeader().setNumberOfSEBs((uint8_t)(_tpc_seb_map.size() + _pmt_seb_map.size()));    
+    getGlobalHeader().setNumberOfSEBs((uint8_t)(_tpc_sn_seb_map.size() + _tpc_seb_map.size() + _pmt_seb_map.size()));    
     updateDTHeader();
 
     } catch(datatypes_exception &e) {
@@ -477,6 +482,67 @@ void ub_EventRecord::addFragment_PMT_or_TRIG(raw_fragment_data_t& fragment) thro
            throw datatypes_exception(os.str());
     }    
 }
+
+void ub_EventRecord::addFragment_SN(raw_fragment_data_t& fragment) throw(datatypes_exception,data_size_exception)
+{
+  try {
+
+    crate_header_t const & crate_header= crate_header_t::getHeaderFromFragment(ub_RawData(fragment.begin(),fragment.end()));
+
+    int crate_number {crate_header.crate_number};
+    uint8_t crate_type {crate_header.crate_type};
+
+    if(crate_type == SystemDesignator::TPC_SN_SYSTEM)
+    {
+      _tpc_sn_seb_map.emplace(crate_number,std::make_tuple(
+                                            raw_fragment_data_t(),
+                                            std::unique_ptr<ub_RawData>(nullptr),
+                                            std::unique_ptr<tpc_sn_crate_data_t>(nullptr)));
+
+      std::get<0>(_tpc_sn_seb_map[crate_number]).swap(fragment);
+      
+      raw_fragment_data_t& tpm_fragment=std::get<0>(_tpc_sn_seb_map[crate_number]);
+
+      artdaq_fragment_header const* artdaq_header= reinterpret_cast<artdaq_fragment_header const*>(&* tpm_fragment.begin());
+      ub_RawData data(tpm_fragment.begin(),tpm_fragment.end());
+      crate_header_t const & crate_header= crate_header_t::getHeaderFromFragment(data);
+      
+      if(!crate_header.complete)
+        markAsIncompleteEvent();
+    
+      auto raw_data = std::make_unique<ub_RawData>(tpm_fragment.begin()+artdaq_header->metadata_word_count+
+        artdaq_fragment_header::num_words(),tpm_fragment.end());
+      std::get<1>(_tpc_sn_seb_map[crate_number]).swap(raw_data);
+     
+      auto crate_data = std::make_unique<tpc_sn_crate_data_t>(*std::get<1>(_tpc_sn_seb_map[crate_number])); //do not recreate crate header
+      auto header=std::make_unique<crate_header_t>(crate_header);
+      crate_data->crateHeader().swap(header); //use crate header created by a seb         
+      std::get<2>(_tpc_sn_seb_map[crate_number]).swap(crate_data);
+      getGlobalHeader().setNumberOfBytesInRecord(getGlobalHeader().getNumberOfBytesInRecord()+crate_header.size*sizeof(raw_data_type));
+      getGlobalHeader().setEventNumberCrate (crate_header.event_number);                
+    }
+
+    getGlobalHeader().setNumberOfSEBs((uint8_t)(_tpc_seb_map.size() + _tpc_sn_seb_map.size() + _pmt_seb_map.size()));    
+    updateDTHeader();
+
+  } catch(datatypes_exception &e) {
+    throw ;
+  }catch(std::exception &ex) {
+    std::ostringstream os;
+    os << "Caught exception in  ub_EventRecord::addFragment(). Message:";
+    os << ex.what();
+    std::cerr << os.str() << std::endl;
+   
+    throw datatypes_exception(os.str());
+  } catch(...) {
+    std::ostringstream os;
+    os << "Caught unknown exception in  ub_EventRecord::addFragment()";
+    std::cerr << os.str() << std::endl;
+
+    throw datatypes_exception(os.str());
+  }  
+}
+
 
 void ub_EventRecord::addFragment_TPC_or_LASER(raw_fragment_data_t& fragment) throw(datatypes_exception,data_size_exception)
 {
@@ -529,7 +595,7 @@ void ub_EventRecord::addFragment_TPC_or_LASER(raw_fragment_data_t& fragment) thr
       _laser_seb_map.emplace(crate_number,mydata);
     }
 
-    getGlobalHeader().setNumberOfSEBs((uint8_t)(_tpc_seb_map.size() + _pmt_seb_map.size()));    
+    getGlobalHeader().setNumberOfSEBs((uint8_t)(_tpc_sn_seb_map.size() + _tpc_seb_map.size() + _pmt_seb_map.size()));    
     updateDTHeader();
 
     } catch(datatypes_exception &e) {
@@ -572,6 +638,15 @@ const ub_EventRecord::tpc_map_t ub_EventRecord::getTPCSEBMap() const noexcept
         retMap.emplace(tpc.first,*std::get<2>(tpc.second));
     return retMap;
 }
+
+const ub_EventRecord::tpc_sn_map_t ub_EventRecord::getTpcSnSEBMap() const noexcept
+{
+    tpc_sn_map_t retMap;
+    for(auto& tpc : _tpc_sn_seb_map)
+        retMap.emplace(tpc.first,*std::get<2>(tpc.second));
+    return retMap;
+}
+
 const ub_EventRecord::pmt_map_t ub_EventRecord::getPMTSEBMap() const noexcept
 {
     pmt_map_t retMap;
@@ -598,6 +673,11 @@ void ub_EventRecord::getFragments(fragment_references_t& fragments) const noexce
     uint16_t serialization_mask=_crate_serialization_mask.load();
 
     for(auto& tpc : _tpc_seb_map)
+    {
+        if(CHECK_BIT(serialization_mask,tpc.first))
+            fragments.emplace_back(&std::get<0>(tpc.second));
+    }
+    for(auto& tpc : _tpc_sn_seb_map)
     {
         if(CHECK_BIT(serialization_mask,tpc.first))
             fragments.emplace_back(&std::get<0>(tpc.second));
@@ -667,6 +747,9 @@ bool ub_EventRecord::compare(ub_EventRecord const& event_record, bool do_rethrow
         //compare binary data
         if(_tpc_seb_map.size() !=event_record._tpc_seb_map.size())
             throw datatypes_exception(make_compare_message("_tpc_seb_map", "size", _tpc_seb_map.size(),event_record._tpc_seb_map.size()));
+
+        if(_tpc_sn_seb_map.size() !=event_record._tpc_sn_seb_map.size())
+            throw datatypes_exception(make_compare_message("_tpc_sn_seb_map", "size", _tpc_sn_seb_map.size(),event_record._tpc_sn_seb_map.size()));
 
         if(_pmt_seb_map.size() !=event_record._pmt_seb_map.size())
             throw datatypes_exception( make_compare_message("_pmt_seb_map", "size", _pmt_seb_map.size(),event_record._pmt_seb_map.size()));
@@ -757,6 +840,14 @@ std::string ub_EventRecord::debugInfo()const noexcept {
         os << "\n" <<  crate_header_t::getHeaderFromFragment(data).debugInfo();
         os << "\n" <<  std::get<2>(tpc.second)->debugInfo();
     }
+    os << "\nTPC Supernova fragments";
+    for(auto const& tpc : _tpc_sn_seb_map){
+        raw_fragment_data_t const& tpm_fragment=std::get<0>(tpc.second);
+        ub_RawData data(tpm_fragment.begin(),tpm_fragment.end());
+        os << "\n" <<  crate_header_t::getHeaderFromFragment(data).debugInfo();
+        os << "\n" <<  std::get<2>(tpc.second)->debugInfo();
+    }
+    
 
     os << "\nPMT fragments";
     for(auto const& pmt : _pmt_seb_map){

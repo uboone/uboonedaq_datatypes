@@ -1,7 +1,7 @@
 #include "uboone_data_utils.h"
 #include "uboone_data_internals.h"
 #include "ub_ChannelDataCreatorHelperClass.h"
-#include "ub_TPC_ChannelData_v6.h"
+#include "ub_TPC_SN_ChannelData_v6.h"
 #include <mutex>
 
 namespace gov {
@@ -9,12 +9,12 @@ namespace fnal {
 namespace uboone {
 namespace datatypes {
 
-extern std::once_flag flagtpcmcht, flagtpcch;
+std::once_flag flagtpcmcht, flagtpcch;
 
 template<>
-void ub_ChannelDataCreatorHelperClass<ub_TPC_ChannelData_v6>::populateChannelDataVector(std::vector<ub_TPC_ChannelData_v6> & channelDataVector)
+void ub_ChannelDataCreatorHelperClass<ub_TPC_SN_ChannelData_v6>::populateChannelDataVector(std::vector<ub_TPC_SN_ChannelData_v6> & channelDataVector)
 {
-    std::vector<ub_TPC_ChannelData_v6> retValue;
+    std::vector<ub_TPC_SN_ChannelData_v6> retValue;
     std::size_t tpc_card_channel_count = 64;    
     retValue.reserve(tpc_card_channel_count);    
 

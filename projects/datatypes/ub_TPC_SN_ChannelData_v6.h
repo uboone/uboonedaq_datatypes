@@ -1,8 +1,8 @@
-#ifndef _UBOONE_TYPES_TPCCHANELDATA_V6_H
-#define _UBOONE_TYPES_TPCCHANELDATA_V6_H 1
+#ifndef _UBOONE_TYPES_TPC_SN_CHANELDATA_V6_H
+#define _UBOONE_TYPES_TPC_SN_CHANELDATA_V6_H 1
 
 #include "ub_MarkedRawChannelData.h"
-#include "ub_TPC_ChannelHeaderTrailer_v0.h"
+#include "ub_TPC_SN_ChannelHeaderTrailer_v0.h"
 #include <bitset>
 
 namespace gov {
@@ -10,14 +10,14 @@ namespace fnal {
 namespace uboone {
 namespace datatypes {
 
-class ub_TPC_ChannelData_v6 final: public ub_MarkedRawChannelData<ub_TPC_ChannelHeader,ub_TPC_ChannelTrailer>
+class ub_TPC_SN_ChannelData_v6 final: public ub_MarkedRawChannelData<ub_TPC_SN_ChannelHeader,ub_TPC_SN_ChannelTrailer>
 {
 public:
-    ub_TPC_ChannelData_v6(ub_RawData const& rawdata);
-    ub_TPC_ChannelData_v6 ( ub_TPC_ChannelData_v6 && ) = default;
+    ub_TPC_SN_ChannelData_v6(ub_RawData const& rawdata);
+    ub_TPC_SN_ChannelData_v6 ( ub_TPC_SN_ChannelData_v6 && ) = default;
 
     uint16_t getChannelHeaderWord() const noexcept;
-    uint16_t getChannelTrailerWord() const noexcept;
+    // uint16_t getChannelTrailerWord() const noexcept;
 
     /// Huffman decompression. Available as T= uint_16, int16, uint_32, int32, float, and double. 
     template<typename T>
@@ -27,7 +27,7 @@ public:
 
 
 template<typename T>
-void ub_TPC_ChannelData_v6::decompress(std::vector<T>& uncompressed) const throw(datatypes_exception)
+void ub_TPC_SN_ChannelData_v6::decompress(std::vector<T>& uncompressed) const throw(datatypes_exception)
 {
   /// 
   /// Huffman decompression.
@@ -59,8 +59,8 @@ void ub_TPC_ChannelData_v6::decompress(std::vector<T>& uncompressed) const throw
   uncompressed.reserve(kMaxBufferSize);  // Enlarge if buffer is too small. No effect if buffer is already large.
 
   auto end_point = data().end();
-  if( (getChannelTrailerWord() & 0x5000) != 0x5000 )
-    end_point = rawdata().end();
+  // if( (getChannelTrailerWord() & 0x5000) != 0x5000 )
+  //   end_point = rawdata().end();
   const ub_RawData& raw{data().begin(),end_point};
   ub_RawData::const_iterator it;
   uint16_t last_uncompressed_word = 0;

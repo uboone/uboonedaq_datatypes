@@ -14,9 +14,9 @@
 #include "ub_PMT_WindowData_v6.h"
 
 #include "ub_TPC_ChannelData_v6.h"
-
 #include "ub_TPC_CardHeader_v6.h"
 #include "ub_TPC_CardData_v6.h"
+
 
 #include "ub_PMT_CardHeaderTrailer_v6.h"
 #include "ub_PMT_CardData_v6.h"
@@ -37,6 +37,11 @@
 #include "ub_GPS_DataTypes.h"
 #include "ub_GlobalHeader.h"
 #include "ub_BeamRecord.h"
+
+#include "ub_TPC_SN_ChannelData_v6.h"
+#include "ub_TPC_SN_CardData_v6.h"
+#include "ub_TPC_SN_CrateData_v6.h"
+
 
 #endif //_UBOONE_DATATYPES_V6_HEADERS_H
 
