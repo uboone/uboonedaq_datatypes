@@ -108,7 +108,7 @@ struct ub_TPC_CardHeader_v6 final
     uint32_t getTrigFrameMod16()const noexcept {
         return tf3;
     }
-    std::string debugInfo()const noexcept;
+   std::string debugInfo()const noexcept;
 };
 #pragma GCC diagnostic pop
 

@@ -3,7 +3,7 @@
 
 #include "ub_MarkedRawCardData.h"
 #include "ub_TPC_SN_ChannelData_v6.h"
-#include "ub_TPC_CardHeader_v6.h"
+#include "ub_TPC_SN_CardHeader_v6.h"
 #include "ub_CrateHeader_v6.h"
 
 namespace gov {
@@ -11,7 +11,7 @@ namespace fnal {
 namespace uboone {
 namespace datatypes {
 
-class ub_TPC_SN_CardData_v6 final: public ub_MarkedRawCardData<ub_TPC_SN_ChannelData_v6,ub_TPC_CardHeader_v6,empty_trailer> {
+class ub_TPC_SN_CardData_v6 final: public ub_MarkedRawCardData<ub_TPC_SN_ChannelData_v6,ub_TPC_SN_CardHeader_v6,empty_trailer> {
 public:
     typedef ub_CrateHeader_v6 ub_CrateHeader;
 

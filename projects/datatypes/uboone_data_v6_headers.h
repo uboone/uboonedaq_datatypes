@@ -40,6 +40,7 @@
 
 #include "ub_TPC_SN_ChannelData_v6.h"
 #include "ub_TPC_SN_CardData_v6.h"
+#include "ub_TPC_SN_CardHeader_v6.h"
 #include "ub_TPC_SN_CrateData_v6.h"
 
 

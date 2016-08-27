@@ -94,11 +94,11 @@ public:
     bool compare(ub_EventRecord const& event_record, bool do_rethrow) const throw(datatypes_exception);
     void gps_sign_adjust (int&, int&);
     
-    const tpc_map_t  getTPCSEBMap() const noexcept;
+    const tpc_map_t     getTPCSEBMap() const noexcept;
     const tpc_sn_map_t  getTpcSnSEBMap() const noexcept;
-    const pmt_map_t  getPMTSEBMap() const noexcept;
-    const trig_map_t getTRIGSEBMap() const noexcept;
-    laser_map_t const& getLASERSEBMap() const noexcept;
+    const pmt_map_t     getPMTSEBMap() const noexcept;
+    const trig_map_t    getTRIGSEBMap() const noexcept;
+    laser_map_t const&  getLASERSEBMap() const noexcept;
 
     std::size_t getFragmentCount() const noexcept;
     void updateDTHeader() throw (datatypes_exception);

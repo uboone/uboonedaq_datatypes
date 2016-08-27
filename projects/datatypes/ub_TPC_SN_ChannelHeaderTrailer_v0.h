@@ -33,20 +33,6 @@ struct ub_TPC_SN_ChannelHeader final
 } ;
 static_assert (sizeof(ub_TPC_SN_ChannelHeader) == 2, "ub_ChannelHeader structure size is not correct.");
 
-struct ub_TPC_SN_ChannelTrailer final
-{   
-    int dummy[0];
-
-    uint16_t getChannelNumber() const noexcept{
-        return 0xFF;
-    }
-    uint16_t getTrailerMark() const noexcept{
-        return 0xDEAD;
-    }
-    std::string debugInfo()const noexcept;
-} ;
-
-static_assert (sizeof(ub_TPC_SN_ChannelTrailer) == 0, "ub_ChannelTrailer structure size is not correct.");
 #pragma GCC diagnostic pop
 
 }  // end of namespace datatypes

@@ -10,10 +10,10 @@ namespace datatypes {
   extern std::once_flag flagtpccs,flagtpccsd;
 
 template<>
-bool ub_MarkedRawCardData<ub_TPC_SN_ChannelData_v6,ub_TPC_CardHeader_v6,empty_trailer>::_do_dissect=true;
+bool ub_MarkedRawCardData<ub_TPC_SN_ChannelData_v6,ub_TPC_SN_CardHeader_v6,empty_trailer>::_do_dissect=true;
 
 template<>
-bool ub_MarkedRawCardData<ub_TPC_SN_ChannelData_v6,ub_TPC_CardHeader_v6,empty_trailer>::isValid() noexcept
+bool ub_MarkedRawCardData<ub_TPC_SN_ChannelData_v6,ub_TPC_SN_CardHeader_v6,empty_trailer>::isValid() noexcept
 {
     bool returnIsValid{true};
 
@@ -62,7 +62,7 @@ uint32_t ub_TPC_SN_CardData_v6::getTrigFrame() const noexcept
 bool ub_TPC_SN_CardData_v6::compare(ub_TPC_SN_CardData_v6 const& card_data,bool do_rethrow ) const throw(datatypes_exception)
 {
     try {
-        return ub_MarkedRawCardData<ub_TPC_SN_ChannelData_v6,ub_TPC_CardHeader_v6,empty_trailer>::compare(card_data,do_rethrow);
+        return ub_MarkedRawCardData<ub_TPC_SN_ChannelData_v6,ub_TPC_SN_CardHeader_v6,empty_trailer>::compare(card_data,do_rethrow);
     } catch(datatypes_exception &ex) {
         std::cerr << ex.what();
         if(do_rethrow)
@@ -81,7 +81,7 @@ bool ub_TPC_SN_CardData_v6::compare(ub_TPC_SN_CardData_v6 const& card_data,bool 
 
 
 ub_TPC_SN_CardData_v6::ub_TPC_SN_CardData_v6(ub_RawData const& rawdata):
-    ub_MarkedRawCardData<ub_TPC_SN_ChannelData_v6,ub_TPC_CardHeader_v6,empty_trailer>(rawdata)
+    ub_MarkedRawCardData<ub_TPC_SN_ChannelData_v6,ub_TPC_SN_CardHeader_v6,empty_trailer>(rawdata)
 {
 }
 

@@ -30,7 +30,7 @@ public:
         return trailer().raw_data;
     }
 
-    static constexpr auto typeName="TPC";
+    static constexpr auto typeName="TPCSN";
 };
 
 }  // end of namespace datatypes

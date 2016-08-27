@@ -12,9 +12,3 @@ std::string ub_TPC_SN_ChannelHeader::debugInfo()const noexcept
     return os.str();
 }
 
-std::string ub_TPC_SN_ChannelTrailer::debugInfo()const noexcept
-{
-    std::ostringstream os;
-    os << "Object " << demangle(typeid(this))<< "."<< std::endl;
-    return os.str();
-}

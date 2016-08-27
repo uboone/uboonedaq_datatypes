@@ -7,18 +7,41 @@ namespace fnal {
 namespace uboone {
 namespace datatypes {
 
+  template<>
+  bool ub_MarkedRawChannelData<ub_TPC_SN_ChannelHeader,empty_trailer>::isValid() noexcept
+  {
+      if( header().header_mark!=0x40 )
+          return false;
 
-template<>
-bool ub_MarkedRawChannelData<ub_TPC_SN_ChannelHeader,ub_TPC_SN_ChannelTrailer>::isValid() noexcept
-{
-    if( header().header_mark!=0x40 )
-        return false;
-    // if( trailer().trailer_mark==0x50 && header().channel_number != trailer().channel_number )
-    //   return false;
+      return true;
+  }
+
+  void ub_TPC_SN_ChannelData_v6::dissectPackets() throw(datatypes_exception)
+  {
+    packets_.clear();
+    ub_RawData curr_rawData {data().begin(),data().end()};
+    uint16_t header_word = *curr_rawData.begin();
+      // Look at first word, does it match a window marker?
+      // 0x4??? Beginning of channel (wire) data. It contains the FEM channel number in the 5:0 bits and the frame number in the 11:6 bits.
+      // Note there is not “end of channel data” word unlike the NU stream. Here, the end of channel data is marked by the appearance of the
+      // next beginning of channel data word,
+
+    if((header_word & 0xf000)!=0x1000) {
+       std::stringstream ss; ss << "Invalid SN packet header: " <<hex(4,header_word) << " (expected 0x1xxx)";
+       throw datatypes_exception(ss.str());
+    }
+          
+    while(curr_rawData.size()>0) {
+      // look for next header to end the block:
+      ub_RawData::const_iterator curr_position=curr_rawData.begin()+1;
+      while( (curr_position != curr_rawData.end()) && (((*curr_position)&0xf000)!=0x1000) ){ curr_position++; };
+      ub_RawData data {curr_rawData.begin(),curr_position};                            
+      packets_.push_back(data);
+      curr_rawData=ub_RawData {curr_position,curr_rawData.end()};
+      
+    }
+  }
     
-    return true;
-}
-
 }  // end of namespace datatypes
 }  // end of namespace uboone
 }  // end of namespace fnal
