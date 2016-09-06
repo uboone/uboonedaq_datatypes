@@ -18,20 +18,24 @@ struct ub_TPC_SN_ChannelHeader final
 {
     union {
         struct {
-            uint16_t channel_number :8;
-            uint16_t header_mark    :8;
+            uint16_t channel_number :6;
+            uint16_t frame_number  :6; 
+            uint16_t header_mark    :4;
         } ;
         uint16_t channel_mark=0xDEAD;
     } ;
     uint16_t getChannelNumber() const noexcept{
         return channel_number;
     }
+    uint16_t getFrameNumber_6bit() const noexcept{
+        return frame_number;
+    }
     uint16_t getHeaderMark() const noexcept{
         return header_mark;
     }
     std::string debugInfo()const noexcept;
 } ;
-static_assert (sizeof(ub_TPC_SN_ChannelHeader) == 2, "ub_ChannelHeader structure size is not correct.");
+static_assert (sizeof(ub_TPC_SN_ChannelHeader) == 2, "ub_TPC_SN_ChannelHeader structure size is not correct.");
 
 #pragma GCC diagnostic pop
 

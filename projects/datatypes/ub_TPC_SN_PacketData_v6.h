@@ -21,8 +21,16 @@ struct ub_TPC_SN_PacketHeader final
         } ;
         uint16_t channel_mark=0xDEAD;
     } ;
+    
+    bool isCarryOverFromLastFrame() const noexcept { 
+      return (header_mark == 0x4); 
+    }
+
     uint16_t getSampleNumber() const noexcept{
-        return sample_number;
+      // Special case: if it's the first sample, it might not have a header. 
+      // The first sample's header is the same as the frame header, which begins with 0x4???
+      if(isCarryOverFromLastFrame()) return 0;
+      return sample_number;
     }
     uint16_t getHeaderMark() const noexcept{
         return header_mark;

@@ -25,10 +25,17 @@ namespace datatypes {
       // 0x4??? Beginning of channel (wire) data. It contains the FEM channel number in the 5:0 bits and the frame number in the 11:6 bits.
       // Note there is not “end of channel data” word unlike the NU stream. Here, the end of channel data is marked by the appearance of the
       // next beginning of channel data word,
-
+    
     if((header_word & 0xf000)!=0x1000) {
-       std::stringstream ss; ss << "Invalid SN packet header: " <<hex(4,header_word) << " (expected 0x1xxx)";
-       throw datatypes_exception(ss.str());
+        if(curr_rawData.begin() == data().begin() ) {
+          // Special case: this is mid-packet.  It should be uncompressed, though. 
+          // Back up 1 word and use the card header as the packet-header word. 
+          curr_rawData = ub_RawData{rawdata().begin(),data().end()};
+        } else {
+         // There's no header.  This might be OK 
+          std::stringstream ss; ss << "Invalid SN packet header: " <<hex(4,header_word) << " (expected 0x1xxx)";
+          throw datatypes_exception(ss.str());          
+        }
     }
           
     while(curr_rawData.size()>0) {
