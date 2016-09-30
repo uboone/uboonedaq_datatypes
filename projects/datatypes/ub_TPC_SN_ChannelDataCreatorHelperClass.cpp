@@ -52,6 +52,10 @@ void ub_ChannelDataCreatorHelperClass<ub_TPC_SN_ChannelData_v6>::populateChannel
 
       ub_RawData::const_iterator curr_position=curr_rawData.begin();
       while( (curr_position != curr_rawData.end()) && (*curr_position!=next_header) ){ curr_position++; };
+      if(curr_position == curr_rawData.end()) {
+        std::cout << "Premature end of channel data?  Channel number " << channel << std::endl;
+        break;
+      }
       ub_RawData data {curr_rawData.begin(),curr_position};                            
       retValue.push_back(data);
       // Fixme: add try..catch around next line so a single bad packet doesn' invalidate the whole card.

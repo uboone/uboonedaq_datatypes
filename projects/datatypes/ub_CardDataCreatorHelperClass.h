@@ -173,6 +173,7 @@ void ub_CardDataCreatorHelperClass<MRCD>::populateCardDataVector(std::vector<MRC
 
       ub_RawData data {curr_rawData.begin(),curr_rawData.begin()+card_raw_data_size};
       retValue.emplace_back(data);
+      std::cout << "Got card " << (int)( quick_cast<typename MRCD::card_header_type>(data.begin()).getModule() )  << std::endl;
       curr_rawData=ub_RawData {curr_rawData.begin()+card_raw_data_size,curr_rawData.end()};
 
       if( handle_missing_words<MRCD>() ){

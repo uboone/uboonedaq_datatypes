@@ -41,14 +41,14 @@ struct ub_TPC_SN_CardHeader_v6 final
     union {
         struct {
             uint32_t wc2  		:12;
-            uint32_t  			:4;
+            uint32_t  			  :4;
             uint32_t wc1  		:12;
             uint32_t       		:4;
         };
         uint32_t word_count=0xDEADBEEF;
     } ;
     uint32_t getWordCount()const noexcept {
-      return (wc2<<12) + wc1 - 2;
+      return (wc2<<12) + wc1 -2;
     }
 
     union {
