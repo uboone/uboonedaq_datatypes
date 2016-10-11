@@ -10,10 +10,8 @@ namespace datatypes {
   template<>
   bool ub_MarkedRawChannelData<ub_TPC_SN_PacketHeader,empty_trailer>::isValid() noexcept
   {
-      if( header().header_mark!=0x1 )
-          return false;
-
-      return true;
+    // FIXME
+    return true;
   }
 
      

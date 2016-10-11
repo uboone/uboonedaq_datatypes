@@ -33,7 +33,7 @@ void ub_ChannelDataCreatorHelperClass<ub_TPC_SN_ChannelData_v6>::populateChannel
   std::cout << "Unpack SN card" << std::endl;
   try{
     uint16_t framenumber = (*curr_rawData.begin() & 0xfff) >> 6;
-    next_header = 0x4000 + (framenumber << 6); // Channel 0 is the first one we expect.
+    next_header = 0x1000 + (framenumber << 6); // Channel 0 is the first one we expect.
     
     for(size_t channel=0; channel < tpc_card_channel_count; channel++)
     {
@@ -67,7 +67,7 @@ void ub_ChannelDataCreatorHelperClass<ub_TPC_SN_ChannelData_v6>::populateChannel
         throw datatypes_exception("Junk data: Corrupt or truncated channel data");
 
     }//end loop over n_channels
-    
+    std::cout << "Got a total of " << std::dec << retValue.size() << " channels." << std::endl;;
     
     ganglia::Metric<ganglia::RATE,uint32_t>::named("TPC-missing-channel-trailer-rate","Count/sec")->publish(missing_trailer_counter);
     ganglia::Metric<ganglia::VALUE,uint32_t>::named("TPC-channel-per-event","Channels/event")->publish(channel_per_event_counter);

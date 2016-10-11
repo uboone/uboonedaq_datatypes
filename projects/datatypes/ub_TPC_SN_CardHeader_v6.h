@@ -48,7 +48,7 @@ struct ub_TPC_SN_CardHeader_v6 final
         uint32_t word_count=0xDEADBEEF;
     } ;
     uint32_t getWordCount()const noexcept {
-      return (wc2<<12) + wc1 -2;
+      return (wc2<<12) + wc1 + 1;
     }
 
     union {

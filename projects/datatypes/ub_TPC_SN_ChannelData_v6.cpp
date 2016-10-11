@@ -22,7 +22,7 @@ namespace datatypes {
     ub_RawData curr_rawData {data().begin(),data().end()};
     uint16_t header_word = *curr_rawData.begin();
       // Look at first word, does it match a window marker?
-      // 0x4??? Beginning of channel (wire) data. It contains the FEM channel number in the 5:0 bits and the frame number in the 11:6 bits.
+      // 0x1??? Beginning of channel (wire) data. It contains the FEM channel number in the 5:0 bits and the frame number in the 11:6 bits.
       // Note there is not “end of channel data” word unlike the NU stream. Here, the end of channel data is marked by the appearance of the
       // next beginning of channel data word,
     
