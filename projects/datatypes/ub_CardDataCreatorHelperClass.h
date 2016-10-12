@@ -92,8 +92,6 @@ void ub_CardDataCreatorHelperClass<MRCD>::populateCardDataVector(std::vector<MRC
     while ( curr_rawData.size() > MRCD::size_of_data_overhead() )
     {   
       counter++;
-      std::cout << "Overhead: " << std::dec << MRCD::size_of_data_overhead() << std::endl;
-      std::cout << "carddata: " << quick_cast<typename MRCD::card_header_type>(curr_rawData.begin()).getWordCount() << std::endl;
       card_raw_data_size = MRCD::size_of_data_overhead() +
         quick_cast<typename MRCD::card_header_type>(curr_rawData.begin()).getWordCount();
 
@@ -176,7 +174,6 @@ void ub_CardDataCreatorHelperClass<MRCD>::populateCardDataVector(std::vector<MRC
       ub_RawData data {curr_rawData.begin(),curr_rawData.begin()+card_raw_data_size};
       MRCD card(data);
       retValue.emplace_back(data);
-      std::cout << "Got card " << (int)( quick_cast<typename MRCD::card_header_type>(data.begin()).getModule() )  << std::endl;
       curr_rawData=ub_RawData {curr_rawData.begin()+card_raw_data_size,curr_rawData.end()};
 
       if( handle_missing_words<MRCD>() ){
