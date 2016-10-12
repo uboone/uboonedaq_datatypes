@@ -30,7 +30,7 @@ void ub_ChannelDataCreatorHelperClass<ub_TPC_SN_ChannelData_v6>::populateChannel
   std::call_once(flagtpcmcht, [](){ganglia::Metric<ganglia::RATE,uint32_t>::named("TPC-missing-channel-trailer-rate","Count/sec")->publish(0);});
   std::call_once(flagtpcch, [](){ganglia::Metric<ganglia::VALUE,uint32_t>::named("TPC-channel-per-event","Channels/event")->publish(64);});
 
-  std::cout << "Unpack SN card" << std::endl;
+  // std::cout << "Unpack SN card" << std::endl;
   try{
     uint16_t framenumber = (*curr_rawData.begin() & 0xfff) >> 6;
     next_header = 0x1000 + (framenumber << 6); // Channel 0 is the first one we expect.
@@ -46,14 +46,14 @@ void ub_ChannelDataCreatorHelperClass<ub_TPC_SN_ChannelData_v6>::populateChannel
         ss << "); remaining data size=" << std::dec << curr_rawData.size();
         throw datatypes_exception(ss.str());
       } else {
-        std::cout << "--Looked for " << hex(4,headerword) << " and got it." << std::endl;
+        // std::cout << "--Looked for " << hex(4,headerword) << " and got it." << std::endl;
       }
       next_header++;
 
       ub_RawData::const_iterator curr_position=curr_rawData.begin();
       while( (curr_position != curr_rawData.end()) && (*curr_position!=next_header) ){ curr_position++; };
       if(curr_position == curr_rawData.end()) {
-        std::cout << "Premature end of channel data?  Channel number " << channel << std::endl;
+        std::cout << "Unpack SN Card: Premature end of channel data.  Channel number " << std::dec << channel << std::endl;
         break;
       }
       ub_RawData data {curr_rawData.begin(),curr_position};                            

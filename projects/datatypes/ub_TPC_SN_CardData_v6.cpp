@@ -24,7 +24,7 @@ bool ub_MarkedRawCardData<ub_TPC_SN_ChannelData_v6,ub_TPC_SN_CardHeader_v6,empty
       int checksum_diff = checksum_difference( data(), header().getChecksum() );
         if(checksum_diff!=0) {
 	  if( (checksum_diff+0x503f) != 0 ){
-            std::cerr << "Wrong checksum.\n";
+            // std::cerr << "Wrong checksum.\n";
 	    ganglia::Metric<ganglia::RATE,uint32_t>::named("TPC-checksum-error-count","Errors/sec")->publish(1);            
 	    ganglia::Metric<ganglia::VALUE,int>::named("TPC-checksum-diff","Difference")->publish(checksum_diff);            
             _validChecksum=false;

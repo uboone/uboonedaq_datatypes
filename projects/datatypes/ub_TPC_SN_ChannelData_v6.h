@@ -32,7 +32,7 @@ public:
 template<typename T>
 void ub_TPC_SN_ChannelData_v6::decompress(std::vector<T>& uncompressed) const throw(datatypes_exception)
 {
-  const size_t kMaxBufferSize = 9600;
+  const size_t kMaxBufferSize = 3200;
   
   uncompressed.resize(0); // Set size.
   uncompressed.reserve(kMaxBufferSize);  // Enlarge if buffer is too small. No effect if buffer is already large.

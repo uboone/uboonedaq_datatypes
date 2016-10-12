@@ -17,7 +17,7 @@ struct ub_TPC_SN_PacketHeader final
   uint16_t header_word;    
 
     bool isCarryOverFromLastFrame() const noexcept { 
-      return ((header_word&0xF000) == 0x1000); 
+      return ((header_word&0xc000) != 0x4000); 
     }
 
     uint16_t getSampleNumber() const noexcept{
