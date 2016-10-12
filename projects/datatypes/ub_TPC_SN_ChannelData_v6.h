@@ -23,6 +23,8 @@ public:
     std::vector<ub_TPC_SN_PacketData_v6> packets_;
 
     /// Huffman decompression. Available as T= uint_16, int16, uint_32, int32, float, and double. 
+    /// This creates a single waveform for the whole 3200-word window. Wasteful, but compatable with
+    /// The regular TPC calls.
     template<typename T>
      void decompress(std::vector<T>& uncompressed) const throw(datatypes_exception);  
 

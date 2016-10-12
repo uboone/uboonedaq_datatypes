@@ -54,7 +54,7 @@ public:
     }
 
     template<typename T>
-    void decompress_into(std::vector<T>& uncompressed) const throw(datatypes_exception)
+    void decompress_into(std::vector<T>& uncompressed, bool at_timestamp=true) const throw(datatypes_exception)
     {
       /// 
       /// Huffman decompression.
@@ -64,6 +64,8 @@ public:
       /// Won't throw if output size is wrong
       /// WILL throw if there's an unrecognized bit pattern.
       ///
+      /// If at_timestamp is true (the default) it decompresses into the output vector at the position given by the T0 of this packet.
+      /// If false, it simply decompresses to the the start of the output vector.
       /// Available as T= uint_16, int16, uint_32, int32, float, and double. 
       /// Why make so many types available? Because it's a needless extra expense in both memory and 
       /// cpu time to make a copy.  Online monitor, for instance, likes to use doubles because they translate well
@@ -76,7 +78,11 @@ public:
       /// Check for valid header.
       if(header().getSampleNumber()>=9600) throw datatypes_exception(std::string("ub_TPC_SN_PacketData_v6::decompress_into() Sample number too large:" + std::to_string(header().getSampleNumber())));
       
-      uncompressed.resize(header().getSampleNumber()); // Set start.
+      if(at_timestamp)
+        uncompressed.resize(header().getSampleNumber(),(*data().begin())&0xfff); // Copy the first word of this packet into the empty space.
+      else
+        uncompressed.resize(0); // Set start.
+
       auto end_point = data().end(); // last word is special
       const ub_RawData& raw{data().begin(),end_point};
       ub_RawData::const_iterator it;
@@ -103,13 +109,7 @@ public:
           // std::cout << "\n  u" << hex(4,word);
         } else {  // huffman bit on.
           if(word ==0) continue; // padding word.
-          
-          if((word&0x8000)!=0x8000) {
-            std::stringstream ss;
-            ss << "ub_TPC_SN_PacketData_v6::decompress_into() error: huffmann bit not set " << std::hex << word;
-            throw datatypes_exception( ss.str());      
-          }
-      
+                
           // Padding in LSB
           // top 2 bits are "header" and always 10
           // Bit patterns are 1,01,001,0001,00001 etc.
