@@ -46,16 +46,19 @@ void ub_ChannelDataCreatorHelperClass<ub_TPC_SN_ChannelData_v6>::populateChannel
         ss << "); remaining data size=" << std::dec << curr_rawData.size();
         throw datatypes_exception(ss.str());
       } else {
-        // std::cout << "--Looked for " << hex(4,headerword) << " and got it." << std::endl;
+        std::cout << "--Looked for " << hex(4,headerword) << " and got it." << std::endl;
       }
       next_header++;
 
       ub_RawData::const_iterator curr_position=curr_rawData.begin();
-      while( (curr_position != curr_rawData.end()) && (*curr_position!=next_header) ){ curr_position++; };
-      if(curr_position == curr_rawData.end()) {
-        std::cout << "Unpack SN Card: Premature end of channel data.  Channel number " << std::dec << channel << std::endl;
-        break;
-      }
+
+      curr_position++;  // Move one forward from current header.
+      while( (curr_position != curr_rawData.end()) && 
+             (((*curr_position)&0xF000)!=0x1000) ){ 
+            curr_position++;    
+      };
+      std::cout << "End of card with word " << std::hex << "0x" << *curr_position <<  " pos: " << curr_position << " end: " << curr_rawData.end() << std::endl;
+
       ub_RawData data {curr_rawData.begin(),curr_position};                            
       retValue.push_back(data);
       // Fixme: add try..catch around next line so a single bad packet doesn' invalidate the whole card.
@@ -63,8 +66,10 @@ void ub_ChannelDataCreatorHelperClass<ub_TPC_SN_ChannelData_v6>::populateChannel
       ++channel_per_event_counter;
       curr_rawData=ub_RawData {curr_position,curr_rawData.end()};
                 
-      if(curr_rawData.size()!=0 && channelDataVector.back().minsize() >curr_rawData.size())
-        throw datatypes_exception("Junk data: Corrupt or truncated channel data");
+      if(curr_rawData.size()==0) { 
+        std::cout << "Unpack SN Card: Premature end of channel data.  Channel number " << std::dec << channel << std::endl;
+        break;
+      }
 
     }//end loop over n_channels
     std::cout << "Got a total of " << std::dec << retValue.size() << " channels." << std::endl;;

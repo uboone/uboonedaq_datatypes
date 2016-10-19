@@ -59,8 +59,8 @@ void ub_CardDataCreatorHelperClass<ub_TPC_SN_CardData_v6>::populateCardDataVecto
     if(  cardsize_appears_correct ) {
       std::cout << "Card header size is correct." << std::endl;
     } else {
-      std::cout << "Card header has wrong size." << std::endl;
       // OK, let's look by hand.
+      std::cout << "Card header has wrong size." << std::endl;
       mark = curr_rawData.begin() + size_of<ub_TPC_SN_CardData_v6::card_header_type>();
       bool found_next_card = false;
       while(mark != curr_rawData.end()) {
@@ -83,9 +83,11 @@ void ub_CardDataCreatorHelperClass<ub_TPC_SN_CardData_v6>::populateCardDataVecto
       } else {
         std::cout << "Found header at position " << mark- curr_rawData.begin() << std::endl;
       }
-
+      
+      std::cout << "Card header should be " << mark-curr_rawData.begin() << " was " << card_raw_data_size << " diff " << mark-curr_rawData.begin() - card_raw_data_size << std::endl;
     }
     
+    // ub_RawData this_card_data{curr_rawData.begin(),curr_rawData.begin()+card_raw_data_size-1};
     ub_RawData this_card_data{curr_rawData.begin(),mark};
     retValue.emplace_back(this_card_data);
     curr_rawData = ub_RawData{mark,curr_rawData.end()};

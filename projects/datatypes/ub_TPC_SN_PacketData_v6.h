@@ -43,7 +43,7 @@ public:
     ub_TPC_SN_PacketData_v6(ub_RawData const& rawdata);
     ub_TPC_SN_PacketData_v6 ( ub_TPC_SN_PacketData_v6 && ) = default;
 
-    bool roiIsFinished() {
+    bool roiIsFinished() const {
       // This function returns true if there is a trailer word (which I'm not putting in the trailer, because it might not exist)
       // If the trailer word isn't there, it means that the ROI continues in a packet in the next frame.
       if(data().size()>0) {
@@ -102,7 +102,8 @@ public:
           uncompressed.push_back((T)(last_uncompressed_word));
           if((word&0xF000) == 0x3000) {
             if(it!=raw.end()-1) {
-              std::cout << "Packet trailer found before end-of-packet." << std::endl;
+              std::cout << "Packet trailer found before end-of-packet. end:" << std::hex << raw.end() << " word: " << it << std::dec << std::endl;
+              std::cout << " words:" << std::hex << "0x" << word << "  nextword: 0x" << (*(it+1)) << std::dec << std::endl;
             }
           }
           
