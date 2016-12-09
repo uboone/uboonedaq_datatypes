@@ -22,8 +22,13 @@ fcldir      -
 
 #
 product		version		optional
-boost		v1_57_0
-cetbuildtools	v4_09_02	-	only_for_build
+# boost    v1_57_0
+# cetbuildtools  v4_09_02  -  only_for_build
+
+#local mods for nathaniel:
+boost    v1_61_0
+cetbuildtools  v4_19_04  -  only_for_build
+
 end_product_list
 
 # e6  - with gcc 4.9.1 and -std=c++1y
@@ -32,6 +37,10 @@ end_product_list
 # a "-" here means the dependent product is not required by the parent and will not be setup
 
 qualifier   boost
+e10:debug   e10:debug
+e10:prof    e10:prof
+e9:debug    e9:debug
+e9:prof     e9:prof
 e6:debug    e6:debug
 e6:prof     e6:prof
 e7:debug    e7:debug

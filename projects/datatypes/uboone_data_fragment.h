@@ -3,12 +3,18 @@
 
 #include <fstream>
 #include <vector>
-#include <openssl/md5.h>
 #include <algorithm>
 #include <iterator>
 
+
+
 #include "releaseInfo.h"
 #include "uboone_data_common.h"
+
+#ifndef MD5_DIGEST_LENGTH
+   #include <openssl/md5.h> // Causes conflicts when compiled against larsoft on some systems.
+#endif
+
 
 typedef uint16_t raw_data_type;
 

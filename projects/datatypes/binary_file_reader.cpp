@@ -1,3 +1,4 @@
+#include <openssl/md5.h>
 #include "uboone_data_fragment.h"
 #include "uboone_data_internals.h"
 #include <iostream>
@@ -6,6 +7,7 @@
 #include <stdexcept>
 #include  <iomanip>
 #include <cstring>
+
 
 using namespace gov::fnal::uboone::datatypes;
 
