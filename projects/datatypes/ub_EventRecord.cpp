@@ -292,9 +292,9 @@ void ub_EventRecord::addFragment(raw_fragment_data_t& fragment) throw(datatypes_
         ub_RawData data(tpm_fragment.begin(),tpm_fragment.end());
         crate_header_t const & crate_header= crate_header_t::getHeaderFromFragment(data);
         
-	if(!crate_header.complete)
-	    markAsIncompleteEvent();
-	    
+        if(!crate_header.complete)
+            markAsIncompleteEvent();
+            
         auto raw_data = std::make_unique<ub_RawData>(tpm_fragment.begin()+artdaq_header->metadata_word_count+
                         artdaq_fragment_header::num_words(),tpm_fragment.end());
         std::get<1>(_tpc_seb_map[crate_number]).swap(raw_data);
@@ -303,6 +303,35 @@ void ub_EventRecord::addFragment(raw_fragment_data_t& fragment) throw(datatypes_
         auto header=std::make_unique<crate_header_t>(crate_header);
         crate_data->crateHeader().swap(header); //use crate header created by a seb         
         std::get<2>(_tpc_seb_map[crate_number]).swap(crate_data);
+        getGlobalHeader().setNumberOfBytesInRecord(getGlobalHeader().getNumberOfBytesInRecord()+crate_header.size*sizeof(raw_data_type));
+        getGlobalHeader().setEventNumberCrate (crate_header.event_number);                
+    }
+    else if(crate_type == SystemDesignator::TPC_SN_SYSTEM)
+    {
+        _tpc_sn_seb_map.emplace(crate_number,std::make_tuple(
+                                 raw_fragment_data_t(),
+                                 std::unique_ptr<ub_RawData>(nullptr),
+                                 std::unique_ptr<tpc_sn_crate_data_t>(nullptr)));
+
+        std::get<0>(_tpc_sn_seb_map[crate_number]).swap(fragment);
+        
+        raw_fragment_data_t& tpm_fragment=std::get<0>(_tpc_sn_seb_map[crate_number]);
+
+        artdaq_fragment_header const* artdaq_header= reinterpret_cast<artdaq_fragment_header const*>(&* tpm_fragment.begin());
+        ub_RawData data(tpm_fragment.begin(),tpm_fragment.end());
+        crate_header_t const & crate_header= crate_header_t::getHeaderFromFragment(data);
+        
+        if(!crate_header.complete)
+            markAsIncompleteEvent();
+            
+        auto raw_data = std::make_unique<ub_RawData>(tpm_fragment.begin()+artdaq_header->metadata_word_count+
+                        artdaq_fragment_header::num_words(),tpm_fragment.end());
+        std::get<1>(_tpc_sn_seb_map[crate_number]).swap(raw_data);
+       
+        auto crate_data = std::make_unique<tpc_sn_crate_data_t>(*std::get<1>(_tpc_sn_seb_map[crate_number])); //do not recreate crate header
+        auto header=std::make_unique<crate_header_t>(crate_header);
+        crate_data->crateHeader().swap(header); //use crate header created by a seb         
+        std::get<2>(_tpc_sn_seb_map[crate_number]).swap(crate_data);
         getGlobalHeader().setNumberOfBytesInRecord(getGlobalHeader().getNumberOfBytesInRecord()+crate_header.size*sizeof(raw_data_type));
         getGlobalHeader().setEventNumberCrate (crate_header.event_number);                
     }
