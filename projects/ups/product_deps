@@ -1,7 +1,7 @@
 # The parent line must be the first non-comment line in the file
 # This line defines the product name and version
 
-parent uboonedaq_datatypes   v6_19_00b
+parent uboonedaq_datatypes   v6_30_00
 
 defaultqual        e7
 
@@ -22,12 +22,12 @@ fcldir      -
 
 #
 product		version		optional
-# boost    v1_57_0
-# cetbuildtools  v4_09_02  -  only_for_build
+boost    v1_57_0
+cetbuildtools  v4_09_02  -  only_for_build
 
 #local mods for nathaniel:
-boost    v1_61_0
-cetbuildtools  v4_19_04  -  only_for_build
+#boost    v1_61_0
+#cetbuildtools  v4_19_04  -  only_for_build
 
 end_product_list
 
