@@ -24,7 +24,7 @@ void ub_CardDataCreatorHelperClass<ub_TPC_SN_CardData_v6>::populateCardDataVecto
     std::cout << " //////////////////////// " << std::endl;
     // Let's run through looking for the FFFF header word for the next card, instead of relying on word count.
     if(curr_rawData.size() < ub_TPC_SN_CardData_v6::size_of_data_overhead()) {
-      std::cout << "Not enough data left to hold a card.";
+      std::cout << "Not enough data left to hold a card." << std::endl;
       cardDataVector.swap(retValue);
       _dissectableDataSize=std::distance(_rawData.begin(),curr_rawData.begin());
       return;
@@ -91,12 +91,18 @@ void ub_CardDataCreatorHelperClass<ub_TPC_SN_CardData_v6>::populateCardDataVecto
     ub_RawData this_card_data{curr_rawData.begin(),mark};
     retValue.emplace_back(this_card_data);
     curr_rawData = ub_RawData{mark,curr_rawData.end()};
-    if(curr_rawData.size() ==0) {
+    if ( *( mark -1 ) == 0xe000 && *( mark -2 ) == 0x0000 ) {
       cardDataVector.swap(retValue);
       _dissectableDataSize=std::distance(_rawData.begin(),curr_rawData.begin());
+      std::cout << "Find 0000 e000" << std::endl;
       return;
     }
-    
+    else if ( *( mark +1 ) == 0xffff && *( mark +2 ) == 0xffff ) {
+      cardDataVector.swap(retValue);
+      _dissectableDataSize=std::distance(_rawData.begin(),curr_rawData.begin());
+      std::cout << "Find ffff ffff in the next words" << std::endl;
+      return;
+    }
   }
     
 
