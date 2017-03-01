@@ -12,7 +12,7 @@ namespace datatypes {
 template<>
 void ub_CardDataCreatorHelperClass<ub_TPC_SN_CardData_v6>::populateCardDataVector(std::vector<ub_TPC_SN_CardData_v6> & cardDataVector)
 {
-  std::cout << "***Running My Special Dissector Variant***" << std::endl;
+  // std::cout << "***Running My Special Dissector Variant***" << std::endl;
   std::vector<ub_TPC_SN_CardData_v6> retValue;
   retValue.reserve(21);
     
@@ -21,20 +21,20 @@ void ub_CardDataCreatorHelperClass<ub_TPC_SN_CardData_v6>::populateCardDataVecto
 
   bool done = false;
   while(!done) {
-    std::cout << " //////////////////////// " << std::endl;
+    // std::cout << " //////////////////////// " << std::endl;
     // Let's run through looking for the FFFF header word for the next card, instead of relying on word count.
     if(curr_rawData.size() < ub_TPC_SN_CardData_v6::size_of_data_overhead()) {
-      std::cout << "Not enough data left to hold a card." << std::endl;
+      // std::cout << "Not enough data left to hold a card." << std::endl;
       cardDataVector.swap(retValue);
       _dissectableDataSize=std::distance(_rawData.begin(),curr_rawData.begin());
       return;
     }
     const ub_TPC_SN_CardData_v6::card_header_type& header = quick_cast<typename ub_TPC_SN_CardData_v6::card_header_type>(curr_rawData.begin());
-    std::cout << "Remaining: " << std::dec << curr_rawData.size() << std::endl;
-    std::cout << "Overhead:  " << std::dec << ub_TPC_SN_CardData_v6::size_of_data_overhead() << std::endl;
-    std::cout << "carddata:  " << header.getWordCount() << std::endl;
+    // std::cout << "Remaining: " << std::dec << curr_rawData.size() << std::endl;
+    // std::cout << "Overhead:  " << std::dec << ub_TPC_SN_CardData_v6::size_of_data_overhead() << std::endl;
+    // std::cout << "carddata:  " << header.getWordCount() << std::endl;
 
-    std::cout << "Card header:" << header.debugInfo() << std::endl;
+    // std::cout << "Card header:" << header.debugInfo() << std::endl;
     if(header.getMark() != 0xffff) throw(datatypes_exception("Bad card header. Mark incorrect!"));
     
     card_raw_data_size = ub_TPC_SN_CardData_v6::size_of_data_overhead() +
@@ -45,14 +45,14 @@ void ub_CardDataCreatorHelperClass<ub_TPC_SN_CardData_v6>::populateCardDataVecto
     ub_RawData::const_iterator mark=curr_rawData.begin() + card_raw_data_size;
     if(mark > curr_rawData.end()) {
        cardsize_appears_correct = false;
-       std::cout << "Card size too large; out of bounds. Size " << card_raw_data_size << " remaining: " <<  curr_rawData.size() << std::endl;
+       // std::cout << "Card size too large; out of bounds. Size " << card_raw_data_size << " remaining: " <<  curr_rawData.size() << std::endl;
     } else if(mark == curr_rawData.end()) {
        cardsize_appears_correct = true; 
     } else if( *mark == 0xFFFF ) {
       cardsize_appears_correct = true;  // Yup, looks like a card header!
     } else {
       cardsize_appears_correct = false;
-      std::cout << "Card size incorrect; no starting marker at position " << card_raw_data_size << " remaining: " <<  curr_rawData.size() << std::endl;
+      // std::cout << "Card size incorrect; no starting marker at position " << card_raw_data_size << " remaining: " <<  curr_rawData.size() << std::endl;
       
     }
     
@@ -60,7 +60,7 @@ void ub_CardDataCreatorHelperClass<ub_TPC_SN_CardData_v6>::populateCardDataVecto
       std::cout << "Card header size is correct." << std::endl;
     } else {
       // OK, let's look by hand.
-      std::cout << "Card header has wrong size." << std::endl;
+      // std::cout << "Card header has wrong size." << std::endl;
       mark = curr_rawData.begin() + size_of<ub_TPC_SN_CardData_v6::card_header_type>();
       bool found_next_card = false;
       while(mark != curr_rawData.end()) {
@@ -78,13 +78,13 @@ void ub_CardDataCreatorHelperClass<ub_TPC_SN_CardData_v6>::populateCardDataVecto
         mark++;
       }
       if(!found_next_card) {
-        std::cout << "Couldn't find next card header!" << std::endl;
+        // std::cout << "Couldn't find next card header!" << std::endl;
         mark =  curr_rawData.end();
       } else {
         std::cout << "Found header at position " << mark- curr_rawData.begin() << std::endl;
       }
       
-      std::cout << "Card header should be " << mark-curr_rawData.begin() << " was " << card_raw_data_size << " diff " << mark-curr_rawData.begin() - card_raw_data_size << std::endl;
+      // std::cout << "Card header should be " << mark-curr_rawData.begin() << " was " << card_raw_data_size << " diff " << mark-curr_rawData.begin() - card_raw_data_size << std::endl;
     }
     
     // ub_RawData this_card_data{curr_rawData.begin(),curr_rawData.begin()+card_raw_data_size-1};
@@ -94,13 +94,13 @@ void ub_CardDataCreatorHelperClass<ub_TPC_SN_CardData_v6>::populateCardDataVecto
     if ( *( mark -1 ) == 0xe000 && *( mark -2 ) == 0x0000 ) {
       cardDataVector.swap(retValue);
       _dissectableDataSize=std::distance(_rawData.begin(),curr_rawData.begin());
-      std::cout << "Find 0000 e000" << std::endl;
+      // std::cout << "Find 0000 e000" << std::endl;
       return;
     }
     else if ( *( mark +1 ) == 0xffff && *( mark +2 ) == 0xffff ) {
       cardDataVector.swap(retValue);
       _dissectableDataSize=std::distance(_rawData.begin(),curr_rawData.begin());
-      std::cout << "Find ffff ffff in the next words" << std::endl;
+      // std::cout << "Find ffff ffff in the next words" << std::endl;
       return;
     }
   }
