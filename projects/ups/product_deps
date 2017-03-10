@@ -23,7 +23,7 @@ fcldir      -
 
 #
 product		version		optional
-boost		v1_61_0
+boost		v1_63_0a
 cetbuildtools	v4_14_02   -   only_for_build
 end_product_list
 
