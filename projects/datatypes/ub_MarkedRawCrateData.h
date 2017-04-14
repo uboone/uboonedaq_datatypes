@@ -250,10 +250,10 @@ std::unique_ptr<typename CARD::ub_CrateHeader>& ub_MarkedRawCrateData<CARD,HEADE
 	  if(card.isValidChecksum())
 	    continue;
 	    
-	    crateHeader->data_transmission_header.flagChecksumAsInvalid();
-	    crateHeader->complete=false;
+	  crateHeader->data_transmission_header.flagChecksumAsInvalid();
+	  crateHeader->complete=false;
 	    
-	    break;
+	  break;
 	 }
     } else {
          crateHeader.reset(new typename CARD::ub_CrateHeader());
