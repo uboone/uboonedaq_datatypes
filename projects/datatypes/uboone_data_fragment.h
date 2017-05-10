@@ -11,10 +11,13 @@
 #include "releaseInfo.h"
 #include "uboone_data_common.h"
 
-#ifndef MD5_DIGEST_LENGTH
-   #include <openssl/md5.h> // Causes conflicts when compiled against larsoft on some systems.
+#if __APPLE__
+#define COMMON_DIGEST_FOR_OPENSSL
+#include <CommonCrypto/CommonDigest.h>
+#undef COMMON_DIGEST_FOR_OPENSSL
+#else
+#include <openssl/md5.h>
 #endif
-
 
 typedef uint16_t raw_data_type;
 

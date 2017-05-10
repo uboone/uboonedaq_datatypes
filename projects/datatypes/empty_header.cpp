@@ -1,4 +1,3 @@
-#include <openssl/md5.h>
 #include "empty_header.h"
 
 using namespace gov::fnal::uboone::datatypes;

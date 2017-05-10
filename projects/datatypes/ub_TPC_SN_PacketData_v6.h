@@ -29,7 +29,9 @@ struct ub_TPC_SN_PacketHeader final
     uint16_t getHeaderWord() const noexcept{
         return header_word;
     }
-    std::string debugInfo()const noexcept;
+    std::string debugInfo() const noexcept { 
+      return std::string("Sample ") + std::to_string(getSampleNumber()) + "(" + std::to_string(header_word) + ")";
+    };
 };
 
 
@@ -76,7 +78,11 @@ public:
       ///
       
       /// Check for valid header.
-      if(header().getSampleNumber()>=9600) throw datatypes_exception(std::string("ub_TPC_SN_PacketData_v6::decompress_into() Sample number too large:" + std::to_string(header().getSampleNumber())));
+      //  Oops! Remember that triggered data showing up in the SN stream shows up as a single readout 4 frames long!  
+      /// 4 frames x 3200 per frame = 1280 samples.
+      if(header().getSampleNumber()>=12800) throw datatypes_exception(std::string("ub_TPC_SN_PacketData_v6::decompress_into() Sample number too large:" + std::to_string(header().getSampleNumber())));
+      // This probably doesn't catch much.
+      
       
       if(at_timestamp)
         uncompressed.resize(header().getSampleNumber(),(*data().begin())&0xfff); // Copy the first word of this packet into the empty space.
@@ -102,8 +108,8 @@ public:
           uncompressed.push_back((T)(last_uncompressed_word));
           if((word&0xF000) == 0x3000) {
             if(it!=raw.end()-1) {
-              std::cout << "Packet trailer found before end-of-packet. end:" << std::hex << raw.end() << " word: " << it << std::dec << std::endl;
-              std::cout << " words:" << std::hex << "0x" << word << "  nextword: 0x" << (*(it+1)) << std::dec << std::endl;
+              std::cout << "Packet trailer found before end-of-packet. Current data word:" << std::hex << "0x" << word << "  next word: 0x" << (*(it+1)) << std::dec << std::endl;
+              // std::cout << debugInfo() << std::endl;
             }
           }
           

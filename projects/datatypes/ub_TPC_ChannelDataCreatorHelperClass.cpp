@@ -46,7 +46,7 @@ void ub_ChannelDataCreatorHelperClass<ub_TPC_ChannelData_v6>::populateChannelDat
              else
                 throw datatypes_exception(ss.str());
         }
-	curr_header++;
+        curr_header++;
 
         for(ub_RawData::const_iterator curr_position=curr_rawData.begin(); curr_position!=curr_rawData.end(); curr_position++)
         {
@@ -55,7 +55,7 @@ void ub_ChannelDataCreatorHelperClass<ub_TPC_ChannelData_v6>::populateChannelDat
                 ub_RawData data {curr_rawData.begin(),curr_position+1};                
 
                 retValue.push_back(data);
-		++channel_per_event_counter;
+                ++channel_per_event_counter;
                 
                 curr_rawData=ub_RawData {curr_position+1,curr_rawData.end()};
                 
@@ -65,18 +65,18 @@ void ub_ChannelDataCreatorHelperClass<ub_TPC_ChannelData_v6>::populateChannelDat
                 break;
             }//normal end of channel handling
 
-	    //special case for missing 503f 
-	    else if(curr_trailer==0x503f){
-	      if(std::distance(curr_position,curr_rawData.end())==1 && (*curr_position)!=curr_trailer){
+            //special case for missing 503f 
+            else if(curr_trailer==0x503f){
+              if(std::distance(curr_position,curr_rawData.end())==1 && (*curr_position)!=curr_trailer){
                 ub_RawData data {curr_rawData.begin(),curr_position+1};
-		retValue.push_back(data);
-		++channel_per_event_counter;
-		//std::cerr << "Missing 0x503f in the channel!" << std::endl;
-		++missing_trailer_counter;
+                retValue.push_back(data);
+                ++channel_per_event_counter;
+                //std::cerr << "Missing 0x503f in the channel!" << std::endl;
+                ++missing_trailer_counter;
                 curr_rawData=ub_RawData {curr_position+1,curr_rawData.end()};
-		break;
-	      }
-	    }
+                break;
+              }
+            }
 
         }//end loop over getting data from channels
     }//end loop over n_channels
@@ -93,8 +93,8 @@ void ub_ChannelDataCreatorHelperClass<ub_TPC_ChannelData_v6>::populateChannelDat
       std::cerr << debugInfo(curr_rawData) << std::endl;
 
       if(retValue.size()>0){
-	std::cerr << "\nPrevious data block: " << std::endl;
-	std::cerr << debugInfo(retValue.back().rawdata()) << std::endl;
+        std::cerr << "\nPrevious data block: " << std::endl;
+        std::cerr << debugInfo(retValue.back().rawdata()) << std::endl;
       }
       std::cerr << "\nRaw Card Data"<< std::endl;
       std::cerr << debugInfo(_rawData) << std::endl;

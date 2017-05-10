@@ -20,7 +20,7 @@ namespace datatypes {
   void ub_TPC_SN_ChannelData_v6::dissectPackets() throw(datatypes_exception)
   {
     if(data().size()==0) return;
-    std::cout << "-Packets on channel " << header().channel_number << std::endl;
+    // std::cout << "-Packets on channel " << header().channel_number << std::endl;
     packets_.clear();
     ub_RawData curr_rawData {data().begin(),data().end()};
     uint16_t header_word = *curr_rawData.begin();
@@ -51,7 +51,7 @@ namespace datatypes {
       uint16_t t = *data.begin();
       if((t&0xc000)==0x4000) t = (t&0x3fff);
       else t = 0;
-      std::cout << "--Packet t0=" << t << " size " << data.size() << std::endl;
+      // std::cout << "--Packet t0=" << t << " size " << data.size() << std::endl;
       
       
       packets_.push_back(data);

@@ -251,14 +251,13 @@ std::unique_ptr<typename CARD::ub_CrateHeader>& ub_MarkedRawCrateData<CARD,HEADE
          HasLocalHostTime().update().copyOut(crateHeader->local_host_time);
          crateHeader->updateCrateBits();
          for(auto const& card: getCards()){
-	  if(card.isValidChecksum())
-	    continue;
-	    
-	    crateHeader->data_transmission_header.flagChecksumAsInvalid();
-	    crateHeader->complete=false;
-	    
-	    break;
-	 }
+          if(card.isValidChecksum())
+            continue;
+            
+          crateHeader->data_transmission_header.flagChecksumAsInvalid();
+          crateHeader->complete=false;
+          break;
+         }
     } else {
          crateHeader.reset(new typename CARD::ub_CrateHeader());
     }
@@ -328,7 +327,7 @@ std::string ub_MarkedRawCrateData<CARD,HEADER,TRAILER>::debugInfo()const noexcep
     os << " *Found " << std::dec << getCards().size() << " cards." << std::endl;  
     
     for(auto const& card : getCards())
-	os << "Card " << ++idx << std::endl << card.debugInfo();
+        os << "Card " << ++idx << std::endl << card.debugInfo();
 
     os <<  ub_MarkedRawDataBlock<HEADER,TRAILER>::debugInfo();
     return os.str();

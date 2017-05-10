@@ -45,9 +45,9 @@ void ub_ChannelDataCreatorHelperClass<ub_TPC_SN_ChannelData_v6>::populateChannel
         ss << hex(4,next_header) << ", " <<hex(4,*(curr_rawData.begin()));
         ss << "); remaining data size=" << std::dec << curr_rawData.size();
         throw datatypes_exception(ss.str());
-      } else {
-        std::cout << "--Looked for " << hex(4,headerword) << " and got it." << std::endl;
-      }
+      } 
+      // std::cout << "--Looked for " << hex(4,headerword) << " and got it." << std::endl;
+
       next_header++;
 
       ub_RawData::const_iterator curr_position=curr_rawData.begin();
@@ -57,7 +57,7 @@ void ub_ChannelDataCreatorHelperClass<ub_TPC_SN_ChannelData_v6>::populateChannel
              (((*curr_position)&0xF000)!=0x1000) ){ 
             curr_position++;    
       };
-      std::cout << "End of card with word " << std::hex << "0x" << *curr_position <<  " pos: " << curr_position << " end: " << curr_rawData.end() << std::endl;
+      // std::cout << "End of card with word " << std::hex << "0x" << *curr_position <<  " pos: " << curr_position << " end: " << curr_rawData.end() << std::endl;
 
       ub_RawData data {curr_rawData.begin(),curr_position};                            
       retValue.push_back(data);
@@ -67,12 +67,12 @@ void ub_ChannelDataCreatorHelperClass<ub_TPC_SN_ChannelData_v6>::populateChannel
       curr_rawData=ub_RawData {curr_position,curr_rawData.end()};
                 
       if(curr_rawData.size()==0) { 
-        std::cout << "Unpack SN Card: Premature end of channel data.  Channel number " << std::dec << channel << std::endl;
+        // std::cout << "Unpack SN Card: Premature end of channel data.  Channel number " << std::dec << channel << std::endl;
         break;
       }
 
     }//end loop over n_channels
-    std::cout << "Got a total of " << std::dec << retValue.size() << " channels." << std::endl;;
+    // std::cout << "Got a total of " << std::dec << retValue.size() << " channels." << std::endl;;
     
     ganglia::Metric<ganglia::RATE,uint32_t>::named("TPC-missing-channel-trailer-rate","Count/sec")->publish(missing_trailer_counter);
     ganglia::Metric<ganglia::VALUE,uint32_t>::named("TPC-channel-per-event","Channels/event")->publish(channel_per_event_counter);
