@@ -22,10 +22,12 @@ fcldir      -
 
 #
 product		version		optional
+
 boost    v1_57_0    e7                       # daq build
 boost    v1_63_0a   e14                      # for larsoft build
 # cetbuildtools  v4_19_04  e14  only_for_build # larsoft
 cetbuildtools  v4_09_02  -  only_for_build  # daq build
+
 
 end_product_list
 
