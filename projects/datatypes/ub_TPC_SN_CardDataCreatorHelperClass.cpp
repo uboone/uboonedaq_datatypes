@@ -56,9 +56,13 @@ void ub_CardDataCreatorHelperClass<ub_TPC_SN_CardData_v6>::populateCardDataVecto
       
     }
     
-    if(  cardsize_appears_correct ) {
-      // std::cout << "Card header size is correct." << std::endl;
-    } else {
+    (void)cardsize_appears_correct;
+    
+    // Commented out because we can hit a rare case that it jumps forward correctly, but misses an intervening (usually empty) card
+    // if(  cardsize_appears_correct ) {
+    //   // std::cout << "Card header size is correct." << std::endl;
+    // }  else
+    {
       // OK, let's look by hand.
       // std::cout << "Card header has wrong size." << std::endl;
       mark = curr_rawData.begin() + size_of<ub_TPC_SN_CardData_v6::card_header_type>();

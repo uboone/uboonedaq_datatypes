@@ -166,7 +166,7 @@ public:
               // std::cout << "\n----\n";
               // std::cout << debugInfo();
               std::stringstream ss;
-              ss << "Huffman decompress unrecoginized bit pattern:" << hex(4,*it) << " on word number " << (it-raw.begin());
+              ss << "Huffman decompress unrecognized bit pattern:" << hex(4,*it) << " on word number " << (it-raw.begin());
                 throw datatypes_exception(ss.str());
             }
           }
