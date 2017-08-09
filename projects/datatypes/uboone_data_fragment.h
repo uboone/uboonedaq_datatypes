@@ -3,12 +3,21 @@
 
 #include <fstream>
 #include <vector>
-#include <openssl/md5.h>
 #include <algorithm>
 #include <iterator>
 
+
+
 #include "releaseInfo.h"
 #include "uboone_data_common.h"
+
+#if __APPLE__
+#define COMMON_DIGEST_FOR_OPENSSL
+#include <CommonCrypto/CommonDigest.h>
+#undef COMMON_DIGEST_FOR_OPENSSL
+#else
+#include <openssl/md5.h>
+#endif
 
 typedef uint16_t raw_data_type;
 

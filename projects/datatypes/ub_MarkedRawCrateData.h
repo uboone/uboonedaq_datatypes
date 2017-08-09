@@ -7,6 +7,7 @@
 #include "ub_CardDataCreatorHelperClass.h"
 #include "ub_LocalHostTime.h"
 #include <mutex>
+#include <type_traits> // std::is_same<>, std::decay<>
 
 namespace gov {
 namespace fnal {
@@ -166,8 +167,11 @@ void ub_MarkedRawCrateData<CARD,HEADER,TRAILER>::dissectCards() throw(data_size_
          auto n_fem=ganglia::VALUE<void>::preferred_type{0};                 
          auto n_chs=ganglia::VALUE<void>::preferred_type{0};                 
          for(auto & card: _markedRawCardsData){
-	   n_chs += card.getChannels().size();
-	   if(!card.isValid())	++fem_dissection_errors;
+         //  if ( std::string(CARD::typeName) != "TPCSN" ) {
+           if ( !std::is_same<typename std::decay<CARD>::type, gov::fnal::uboone::datatypes::ub_TPC_SN_CardData_v6>::value) {
+	     n_chs += card.getChannels().size();
+	     if(!card.isValid())	++fem_dissection_errors;
+           }
 	   n_fem++;
 	  }
 	 ganglia::Metric<ganglia::RATE>::named("FEM-card-dissection-errors","Errors/sec")->publish(fem_dissection_errors);
@@ -247,14 +251,13 @@ std::unique_ptr<typename CARD::ub_CrateHeader>& ub_MarkedRawCrateData<CARD,HEADE
          HasLocalHostTime().update().copyOut(crateHeader->local_host_time);
          crateHeader->updateCrateBits();
          for(auto const& card: getCards()){
-	  if(card.isValidChecksum())
-	    continue;
-	    
-	    crateHeader->data_transmission_header.flagChecksumAsInvalid();
-	    crateHeader->complete=false;
-	    
-	    break;
-	 }
+          if(card.isValidChecksum())
+            continue;
+            
+          crateHeader->data_transmission_header.flagChecksumAsInvalid();
+          crateHeader->complete=false;
+          break;
+         }
     } else {
          crateHeader.reset(new typename CARD::ub_CrateHeader());
     }
@@ -324,7 +327,7 @@ std::string ub_MarkedRawCrateData<CARD,HEADER,TRAILER>::debugInfo()const noexcep
     os << " *Found " << std::dec << getCards().size() << " cards." << std::endl;  
     
     for(auto const& card : getCards())
-	os << "Card " << ++idx << std::endl << card.debugInfo();
+        os << "Card " << ++idx << std::endl << card.debugInfo();
 
     os <<  ub_MarkedRawDataBlock<HEADER,TRAILER>::debugInfo();
     return os.str();
