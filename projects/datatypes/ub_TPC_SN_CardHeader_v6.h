@@ -21,10 +21,14 @@ struct ub_TPC_SN_CardHeader_v6 final
 {
     union {
         struct {
-            uint32_t mark 	:16;
-            uint32_t module	:5;
-            uint32_t id  	:7;
-            uint32_t  		:4;
+            uint32_t mark   :16;
+            uint32_t module :5;
+            uint32_t id     :3;
+            uint32_t        :1; // unused?
+            uint32_t test   :1;
+            uint32_t overflow:1;
+            uint32_t full    :1;
+            uint32_t mark2   :4;
         };
         uint32_t id_and_module =0xDEADBEEF;
     } ;
@@ -37,6 +41,9 @@ struct ub_TPC_SN_CardHeader_v6 final
     uint16_t getMark()const noexcept {
         return (uint16_t)mark;
     }
+    bool getTestBit() const noexcept { return (bool)test; }
+    bool getOverflowBit() const noexcept { return (bool)overflow; }
+    bool getFullBit() const noexcept { return (bool)full; }
 
     union {
         struct {
