@@ -3,6 +3,7 @@
 
 #include "uboone_data_utils.h"
 #include "uboone_data_internals.h"
+#include "ub_TPC_SN_CardData_v6.h"
 
 namespace gov {
 namespace fnal {
@@ -78,185 +79,187 @@ bool ub_CardDataCreatorHelperClass<MRCD>::word_at_position_is_FFFF(ub_RawData co
 template<typename MRCD>
 void ub_CardDataCreatorHelperClass<MRCD>::populateCardDataVector(std::vector<MRCD> & cardDataVector)
 {
-    std::vector<MRCD> retValue;
-    retValue.reserve(21);
+  std::vector<MRCD> retValue;
+  retValue.reserve(21);
     
-    ub_RawData curr_rawData {_rawData};
-    uint32_t card_raw_data_size;
+  ub_RawData curr_rawData {_rawData};
+  uint32_t card_raw_data_size;
     
-    int counter{0};
-    const int max_padding_words{8};
-    bool end_of_event{false};
-    try{
+  int counter{0};
+  const int max_padding_words{8};
+  bool end_of_event{false};
+  try{
     while ( curr_rawData.size() > MRCD::size_of_data_overhead() )
     {   
-        counter++;
+      counter++;
+      card_raw_data_size = MRCD::size_of_data_overhead() +
+        quick_cast<typename MRCD::card_header_type>(curr_rawData.begin()).getWordCount();
 
-        card_raw_data_size = MRCD::size_of_data_overhead() +
-                             quick_cast<typename MRCD::card_header_type>(curr_rawData.begin()).getWordCount();
+      if ( handle_missing_words<MRCD>() ){
 
-	if ( handle_missing_words<MRCD>() ){
+        if(! this->has_16bits_at_end(curr_rawData,card_raw_data_size)){
 
-	if(! this->has_16bits_at_end(curr_rawData,card_raw_data_size)){
+          if ( !(this->has_16bits_at_end(curr_rawData,card_raw_data_size-1))||
+            peek_at_next_event<MRCD>() )       //for reading circular buffer, or missing more than one word on end
+          {
+            this->throw_data_exception_Junk_Word_Count(card_raw_data_size-1,curr_rawData.size());
+          }
+          else{                                   //for reading from processed fragment
+            this->emplace_data(curr_rawData,card_raw_data_size-1,retValue);
+            curr_rawData=ub_RawData{curr_rawData.begin()+card_raw_data_size-1,curr_rawData.end()};
+            end_of_event = true;
+            break; //done. end of event. we hit the end of the fragment
+          }
 
-	  if ( !(this->has_16bits_at_end(curr_rawData,card_raw_data_size-1))||
-	       peek_at_next_event<MRCD>() )       //for reading circular buffer, or missing more than one word on end
-	    {
-	      this->throw_data_exception_Junk_Word_Count(card_raw_data_size-1,curr_rawData.size());
-	    }
-	  else{                                   //for reading from processed fragment
-	    this->emplace_data(curr_rawData,card_raw_data_size-1,retValue);
-	    curr_rawData=ub_RawData{curr_rawData.begin()+card_raw_data_size-1,curr_rawData.end()};
-	    end_of_event = true;
-	    break; //done. end of event. we hit the end of the fragment
-	  }
-
-	}
+        }
 
 	
-	int padding_words = 0;
-	while(padding_words < max_padding_words){
+        int padding_words = 0;
+        while(padding_words < max_padding_words){
 
-	  //check if we have data to read
-	  if( ! this->has_16bits_at_end(curr_rawData,card_raw_data_size+padding_words) ){
-	    if(peek_at_next_event<MRCD>() )
-	      this->throw_data_exception_Junk_Word_Count(card_raw_data_size+padding_words,curr_rawData.size());
-	    else{
-	      this->emplace_data(curr_rawData,card_raw_data_size,retValue); //don't add padding words to data...
-	      curr_rawData=ub_RawData{curr_rawData.begin()+card_raw_data_size+padding_words-1,curr_rawData.end()};
-	      end_of_event = true;
-	      break; //done. end of event. we hit the end of the fragment
-	    }
-	  }
-	  else if(! this->word_at_position_is_zero(curr_rawData,card_raw_data_size+padding_words-1))
-	    break;
+          //check if we have data to read
+          if( ! this->has_16bits_at_end(curr_rawData,card_raw_data_size+padding_words) ){
+            if(peek_at_next_event<MRCD>() )
+              this->throw_data_exception_Junk_Word_Count(card_raw_data_size+padding_words,curr_rawData.size());
+            else{
+              this->emplace_data(curr_rawData,card_raw_data_size,retValue); //don't add padding words to data...
+              curr_rawData=ub_RawData{curr_rawData.begin()+card_raw_data_size+padding_words-1,curr_rawData.end()};
+              end_of_event = true;
+              break; //done. end of event. we hit the end of the fragment
+            }
+          }
+          else if(! this->word_at_position_is_zero(curr_rawData,card_raw_data_size+padding_words-1))
+            break;
 
-	  padding_words++;
-	}
+          padding_words++;
+        }
 
-	if(end_of_event) break;
-	if(padding_words==max_padding_words)
-	  throw_padding_exception();
+        if(end_of_event) break;
+        if(padding_words==max_padding_words)
+          throw_padding_exception();
 
-	if( this->word_at_position_is_E000(curr_rawData,card_raw_data_size+padding_words-1) ){
-	  this->emplace_data(curr_rawData,card_raw_data_size-1,retValue);
-	  curr_rawData=ub_RawData{curr_rawData.begin()+card_raw_data_size+padding_words,curr_rawData.end()};
-	  end_of_event = true;
-	  break;
-	}
-	else if( this->word_at_position_is_FFFF(curr_rawData,card_raw_data_size+padding_words-1) ){
-	  this->emplace_data(curr_rawData,card_raw_data_size-1,retValue);
-	  curr_rawData=ub_RawData{curr_rawData.begin()+card_raw_data_size+padding_words-1,curr_rawData.end()};
+        if( this->word_at_position_is_E000(curr_rawData,card_raw_data_size+padding_words-1) ){
+          this->emplace_data(curr_rawData,card_raw_data_size-1,retValue);
+          curr_rawData=ub_RawData{curr_rawData.begin()+card_raw_data_size+padding_words,curr_rawData.end()};
+          end_of_event = true;
+          break;
+        }
+        else if( this->word_at_position_is_FFFF(curr_rawData,card_raw_data_size+padding_words-1) ){
+          this->emplace_data(curr_rawData,card_raw_data_size-1,retValue);
+          curr_rawData=ub_RawData{curr_rawData.begin()+card_raw_data_size+padding_words-1,curr_rawData.end()};
 
-	  if( ! this->has_16bits_at_end(curr_rawData,2) ){
-	    if(peek_at_next_event<MRCD>() )
-	      this->throw_data_exception_Junk_Word_Count(2,curr_rawData.size());
-	    else
-	      end_of_event = true;
-	  }
-	  else{
-	    if( this->word_at_position_is_FFFF(curr_rawData,1) )
-	      end_of_event = true;
-	  }
+          if( ! this->has_16bits_at_end(curr_rawData,2) ){
+            if(peek_at_next_event<MRCD>() )
+              this->throw_data_exception_Junk_Word_Count(2,curr_rawData.size());
+            else
+              end_of_event = true;
+          }
+          else{
+            if( this->word_at_position_is_FFFF(curr_rawData,1) )
+              end_of_event = true;
+          }
 
-	  if(end_of_event) break;
-	  else continue;
+          if(end_of_event) break;
+          else continue;
 
-	}
-	if(end_of_event) break;
+        }
+        if(end_of_event) break;
 
-	}//end if handle_missing_words<MRCD>()
+      }//end if handle_missing_words<MRCD>()
 
-	//this if is the normal check for the raw data size. This should remain even when above is moved out.
-	if(card_raw_data_size > curr_rawData.size())
-	  this->throw_data_exception_Junk_Word_Count(card_raw_data_size,curr_rawData.size());
+      //this if is the normal check for the raw data size. This should remain even when above is moved out.
+      if(card_raw_data_size > curr_rawData.size())
+        this->throw_data_exception_Junk_Word_Count(card_raw_data_size,curr_rawData.size());
 
-        ub_RawData data {curr_rawData.begin(),curr_rawData.begin()+card_raw_data_size};
-        retValue.emplace_back(data);
-        curr_rawData=ub_RawData {curr_rawData.begin()+card_raw_data_size,curr_rawData.end()};
+      ub_RawData data {curr_rawData.begin(),curr_rawData.begin()+card_raw_data_size};
+      MRCD card(data);
+      retValue.emplace_back(data);
+      curr_rawData=ub_RawData {curr_rawData.begin()+card_raw_data_size,curr_rawData.end()};
 
-	if( handle_missing_words<MRCD>() ){
+      if( handle_missing_words<MRCD>() ){
 
-	int padding_words = 0;
-	while(padding_words < max_padding_words){
+        int padding_words = 0;
+        while(padding_words < max_padding_words){
 
-	  //check if we have data to read
-	  if( ! this->has_16bits_at_end(curr_rawData,padding_words+1) ){
-	    if(peek_at_next_event<MRCD>() )
-	      this->throw_data_exception_Junk_Word_Count(padding_words+1,curr_rawData.size());
-	    else{
-	      curr_rawData=ub_RawData{curr_rawData.begin()+padding_words+1,curr_rawData.end()};
-	      end_of_event = true;
-	      break; //done. end of event. we hit the end of the fragment
-	    }
-	  }
-	  else if(! this->word_at_position_is_zero(curr_rawData,padding_words))
-	    break;
+          //check if we have data to read
+          if( ! this->has_16bits_at_end(curr_rawData,padding_words+1) ){
+            if(peek_at_next_event<MRCD>() )
+              this->throw_data_exception_Junk_Word_Count(padding_words+1,curr_rawData.size());
+            else{
+              curr_rawData=ub_RawData{curr_rawData.begin()+padding_words+1,curr_rawData.end()};
+              end_of_event = true;
+              break; //done. end of event. we hit the end of the fragment
+            }
+          }
+          else if(! this->word_at_position_is_zero(curr_rawData,padding_words))
+            break;
 
-	  padding_words++;
-	}
-	if(end_of_event) break;
-	if(padding_words==max_padding_words)
-	  throw_padding_exception();
+          padding_words++;
+        }
+        if(end_of_event) break;
+        if(padding_words==max_padding_words)
+          throw_padding_exception();
 
-	if( this->word_at_position_is_E000(curr_rawData,padding_words) ){
-	  curr_rawData=ub_RawData{curr_rawData.begin()+padding_words+1,curr_rawData.end()};
-	  end_of_event = true;
-	  break;
-	}
-	else if( this->word_at_position_is_FFFF(curr_rawData,padding_words) ){
-	  curr_rawData=ub_RawData{curr_rawData.begin()+padding_words,curr_rawData.end()};
+        if( this->word_at_position_is_E000(curr_rawData,padding_words) ){
+          curr_rawData=ub_RawData{curr_rawData.begin()+padding_words+1,curr_rawData.end()};
+          end_of_event = true;
+          break;
+        }
+        else if( this->word_at_position_is_FFFF(curr_rawData,padding_words) ){
+          curr_rawData=ub_RawData{curr_rawData.begin()+padding_words,curr_rawData.end()};
 
-	  if( ! this->has_16bits_at_end(curr_rawData,2) ){
-	    if(peek_at_next_event<MRCD>() )
-	      this->throw_data_exception_Junk_Word_Count(2,curr_rawData.size());
-	    else
-	      end_of_event = true;
-	  }
-	  else{
-	    if( this->word_at_position_is_FFFF(curr_rawData,1) )
-	      end_of_event = true;
-	  }
+          if( ! this->has_16bits_at_end(curr_rawData,2) ){
+            if(peek_at_next_event<MRCD>() )
+              this->throw_data_exception_Junk_Word_Count(2,curr_rawData.size());
+            else
+              end_of_event = true;
+          }
+          else{
+            if( this->word_at_position_is_FFFF(curr_rawData,1) )
+              end_of_event = true;
+          }
 	  
-	  if(end_of_event) break;
-	  else continue;
+          if(end_of_event) break;
+          else continue;
 
-	}
-	if(end_of_event) break;
+        }
+        if(end_of_event) break;
 
-	}
+      }
 
     }
     _dissectableDataSize=std::distance(_rawData.begin(),curr_rawData.begin());
         
     cardDataVector.swap(retValue);
-    }
-    catch(data_size_exception& e){
-	throw;
-    }
-    catch(std::exception& e){
-      std::ostringstream os; 
-      os <<  "Caught exception in ub_CardDataCreatorHelperClass::populateCardDataVector() Message: " <<e.what() << std::endl;
-      os <<  "Details: Card number" << counter << std::endl;
-      os <<  quick_cast<typename MRCD::card_header_type>(curr_rawData.begin()).debugInfo() << std::endl;
-      // std::cerr <<  debugInfoShort(curr_rawData) << std::endl;
-      std::cerr << os.str() << std::endl;	
-      std::cerr << "\n\nFullDataBlock!" << std::endl;
-      std::cerr << debugInfo(_rawData) << std::endl;
-      throw datatypes_exception(os.str());
-    }
-    catch(...){
-      std::ostringstream os; 
-      os <<  "Caught unknown exception in ub_CardDataCreatorHelperClass::populateCardDataVector() " << std::endl;
-      os <<  "Details: Card number" << counter << std::endl;
-      os <<  quick_cast<typename MRCD::card_header_type>(curr_rawData.begin()).debugInfo() << std::endl;
-      // std::cerr <<  debugInfoShort(curr_rawData) << std::endl;
-      std::cerr << os.str() << std::endl;
-      std::cerr << "\n\nFullDataBlock!" << std::endl;
-      std::cerr << debugInfo(_rawData) << std::endl;
-      throw datatypes_exception(os.str());
-    }    
- }
+  }
+  catch(data_size_exception& e){
+    throw;
+  }
+  catch(std::exception& e){
+    std::ostringstream os; 
+    os <<  "Caught exception in ub_CardDataCreatorHelperClass::populateCardDataVector() Message: " <<e.what() << std::endl;
+    os <<  "Details: Card number" << counter << std::endl;
+    os <<  quick_cast<typename MRCD::card_header_type>(curr_rawData.begin()).debugInfo() << std::endl;
+    // std::cerr <<  debugInfoShort(curr_rawData) << std::endl;
+    std::cerr << os.str() << std::endl;	
+    std::cerr << "\n\nFullDataBlock!" << std::endl;
+    std::cerr << debugInfo(_rawData) << std::endl;
+    throw datatypes_exception(os.str());
+  }
+  catch(...){
+    std::ostringstream os; 
+    os <<  "Caught unknown exception in ub_CardDataCreatorHelperClass::populateCardDataVector() " << std::endl;
+    os <<  "Details: Card number" << counter << std::endl;
+    os <<  quick_cast<typename MRCD::card_header_type>(curr_rawData.begin()).debugInfo() << std::endl;
+    // std::cerr <<  debugInfoShort(curr_rawData) << std::endl;
+    std::cerr << os.str() << std::endl;
+    std::cerr << "\n\nFullDataBlock!" << std::endl;
+    std::cerr << debugInfo(_rawData) << std::endl;
+    throw datatypes_exception(os.str());
+  }    
+}
+
+
  
 }  // end of namespace datatypes
 }  // end of namespace uboone

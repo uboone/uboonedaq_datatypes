@@ -5,6 +5,7 @@
 #include "constants.h"
 #include "boostSerialization.h"
 #include "ub_LocalHostTime.h"
+#include <iostream>
 
 namespace gov {
 namespace fnal {

@@ -3,6 +3,7 @@
 
 #include <fstream>
 #include <vector>
+
 #if __APPLE__
 #define COMMON_DIGEST_FOR_OPENSSL
 #include <CommonCrypto/CommonDigest.h>
@@ -15,6 +16,7 @@
 
 #include "releaseInfo.h"
 #include "uboone_data_common.h"
+
 
 typedef uint16_t raw_data_type;
 

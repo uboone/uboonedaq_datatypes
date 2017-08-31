@@ -41,6 +41,13 @@ public:
     typedef std::map<int,tpc_crate_data_tuple_t> tpc_seb_map_t;
 
     typedef std::map<int,tpc_crate_data_t const&> tpc_map_t;
+    
+    typedef std::tuple<raw_fragment_data_t,
+            std::unique_ptr<ub_RawData>,
+            std::unique_ptr<sn_crate_data_t>> tpc_sn_crate_data_tuple_t;
+    typedef std::map<int,tpc_sn_crate_data_tuple_t> tpc_sn_seb_map_t;
+
+    typedef std::map<int,tpc_sn_crate_data_t const&> tpc_sn_map_t;
 
     typedef std::tuple<raw_fragment_data_t,
             std::unique_ptr<ub_RawData>,
@@ -70,6 +77,7 @@ public:
     void addFragment(raw_fragment_data_t & fragment) throw(datatypes_exception,data_size_exception);
     void addFragment_TPC_or_LASER(raw_fragment_data_t & fragment) throw(datatypes_exception,data_size_exception);
     void addFragment_PMT_or_TRIG(raw_fragment_data_t & fragment) throw(datatypes_exception,data_size_exception);
+    void addFragment_SN(raw_fragment_data_t & fragment) throw(datatypes_exception,data_size_exception);
 
     trigger_counter_t const& getTriggerCounter() noexcept;
     void setTriggerCounter( trigger_counter_t const& ) noexcept;
@@ -86,10 +94,11 @@ public:
     bool compare(ub_EventRecord const& event_record, bool do_rethrow) const throw(datatypes_exception);
     void gps_sign_adjust (int&, int&);
     
-    const tpc_map_t  getTPCSEBMap() const noexcept;
-    const pmt_map_t  getPMTSEBMap() const noexcept;
-    const trig_map_t getTRIGSEBMap() const noexcept;
-    laser_map_t const& getLASERSEBMap() const noexcept;
+    const tpc_map_t     getTPCSEBMap() const noexcept;
+    const tpc_sn_map_t  getTpcSnSEBMap() const noexcept;
+    const pmt_map_t     getPMTSEBMap() const noexcept;
+    const trig_map_t    getTRIGSEBMap() const noexcept;
+    laser_map_t const&  getLASERSEBMap() const noexcept;
 
     std::size_t getFragmentCount() const noexcept;
     void updateDTHeader() throw (datatypes_exception);
@@ -129,6 +138,7 @@ private:
     trig_data_t        _trigger_data;
     trigger_counter_t  _trigger_counter;
     tpc_seb_map_t      _tpc_seb_map;
+    tpc_sn_seb_map_t   _tpc_sn_seb_map;
     pmt_seb_map_t      _pmt_seb_map;
     trig_seb_map_t     _trigger_seb_map;
     laser_map_t        _laser_seb_map;

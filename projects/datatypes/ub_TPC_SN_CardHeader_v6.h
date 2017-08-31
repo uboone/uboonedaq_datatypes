@@ -1,5 +1,5 @@
-#ifndef _UBOONE_TYPES_TPCCARDHEADER_V6_H
-#define _UBOONE_TYPES_TPCCARDHEADER_V6_H 1
+#ifndef _UBOONE_TYPES_TPCSNCARDHEADER_V6_H
+#define _UBOONE_TYPES_TPCSNCARDHEADER_V6_H 1
 
 #include "uboone_data_utils.h"
 
@@ -17,7 +17,7 @@ first word  {16'hffff,               4'h7,id[6:0],module[4:0]}
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
 
-struct ub_TPC_CardHeader_v6 final
+struct ub_TPC_SN_CardHeader_v6 final
 {
     union {
         struct {
@@ -41,14 +41,14 @@ struct ub_TPC_CardHeader_v6 final
     union {
         struct {
             uint32_t wc2  		:12;
-            uint32_t  			:4;
+            uint32_t  			  :4;
             uint32_t wc1  		:12;
             uint32_t       		:4;
         };
         uint32_t word_count=0xDEADBEEF;
     } ;
     uint32_t getWordCount()const noexcept {
-      return (wc2<<12) + wc1 + 1;
+      return (wc2<<12) + wc1 -2;
     }
 
     union {
@@ -112,7 +112,7 @@ struct ub_TPC_CardHeader_v6 final
 };
 #pragma GCC diagnostic pop
 
-static_assert (sizeof(ub_TPC_CardHeader_v6) == 24, "ub_CardHeader_v6 structure size is not correct.");
+static_assert (sizeof(ub_TPC_SN_CardHeader_v6) == 24, "ub_CardHeader_v6 structure size is not correct.");
 }  // end of namespace datatypes
 }  // end of namespace uboone
 }  // end of namespace fnal

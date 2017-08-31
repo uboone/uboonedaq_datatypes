@@ -6,6 +6,7 @@
 #include "ub_TriggerBoardClock.h"
 #include "ub_LocalHostTime.h"
 #include "ub_TPC_CardHeader_v6.h"
+#include "ub_TPC_SN_CardHeader_v6.h"
 #include "ub_PMT_CardHeaderTrailer_v6.h"
 #include "ub_Trigger_DataTypes_v6.h"
 #include "ub_LaserData.h"
@@ -55,6 +56,7 @@ struct ub_CrateHeader_v6 final
 
     ub_CrateHeader_v6();
     ub_CrateHeader_v6(ub_TPC_CardHeader_v6 const& cardHeader);
+    ub_CrateHeader_v6(ub_TPC_SN_CardHeader_v6 const& cardHeader);
     ub_CrateHeader_v6(ub_PMT_CardHeader_v6 const& cardHeader);
     ub_CrateHeader_v6(ub_Trigger_Header_v6 const& header);
     ub_CrateHeader_v6(ub_LaserData const& laserdata);

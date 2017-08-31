@@ -30,6 +30,19 @@ ub_CrateHeader_v6::ub_CrateHeader_v6(ub_TPC_CardHeader_v6 const& cardHeader):
                          trigger_board_time {0,0,0},
                          local_host_time {0,0}
 {}
+  
+ub_CrateHeader_v6::ub_CrateHeader_v6(ub_TPC_SN_CardHeader_v6 const& cardHeader):
+      data_transmission_header {},
+                           complete {0},crateBits {0},
+                           size {0},
+                           crate_number {cardHeader.getID()},
+                           card_count {0},
+                           event_number {cardHeader.getEvent()},
+                           frame_number {cardHeader.getFrame()},
+                           gps_time {0,0,0},
+                           trigger_board_time {0,0,0},
+                           local_host_time {0,0}
+  {}  
 
 ub_CrateHeader_v6::ub_CrateHeader_v6(ub_PMT_CardHeader_v6 const& cardHeader):
     data_transmission_header {},

@@ -17,7 +17,8 @@ enum  SystemDesignator {
     VETO_SYSTEM,
     TEST_SYSTEM,
     AUX_SYSTEM,
-    LASER_SYSTEM
+    LASER_SYSTEM,
+      TPC_SN_SYSTEM,
 };
 
 /* These strings are used to describe each crate type in
@@ -30,7 +31,9 @@ const std::map<int, std::string> systemDesignatorToString
    { SystemDesignator::VETO_SYSTEM, "VETO"},
    { SystemDesignator::TEST_SYSTEM, "TEST"},
    { SystemDesignator::AUX_SYSTEM, "AUX" },
-   { SystemDesignator::LASER_SYSTEM, "LASER" }};
+   { SystemDesignator::LASER_SYSTEM, "LASER" },
+   { SystemDesignator::TPC_SN_SYSTEM, "TPCSN" },
+ };
 
 const std::map<const std::string, SystemDesignator> stringToSystemDesignator
 = {{"TRIGGER", SystemDesignator::TRIGGER_SYSTEM },
@@ -39,7 +42,9 @@ const std::map<const std::string, SystemDesignator> stringToSystemDesignator
   { "VETO", SystemDesignator::VETO_SYSTEM},
   { "TEST", SystemDesignator::TEST_SYSTEM},
   { "AUX", SystemDesignator::AUX_SYSTEM },
-   { "LASER", SystemDesignator::LASER_SYSTEM }};
+  { "LASER", SystemDesignator::LASER_SYSTEM },
+  { "TPCSN", SystemDesignator::TPC_SN_SYSTEM },
+ };
 
 typedef SystemDesignator SystemDesignator_t;
 
