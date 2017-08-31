@@ -15,9 +15,9 @@ defaultqual        e14
 # The only recognized values of the second field are product_dir and fq_dir
 # The third field is not constrained
 # The examples here reflect the defaults
-incdir      product_dir include                                                                                                                                                                                                              
-libdir      fq_dir      lib                                                                                                                                                                                                                  
-bindir      fq_dir      bin                                                                                                                                                                                                                  
+incdir      product_dir include
+libdir      fq_dir      lib 
+bindir      fq_dir      bin 
 fcldir      -
 
 
@@ -25,7 +25,14 @@ fcldir      -
 #
 product		version		optional
 
-boost		v1_64_0
+boost    v1_57_0    e7                       # daq build
+boost    v1_57_0a   e9                       # for e9 larsoft build
+boost    v1_61_0    e10                      # for e10 larsoft build
+#boost    v1_63_0b   e14                      # for e14 larsoft build
+#cetbuildtools  v4_09_02  -  only_for_build  # daq build
+# cetbuildtools  v4_19_04  e14  only_for_build # larsoft
+
+boost		v1_64_0	  e14
 cetbuildtools	v4_14_02   -   only_for_build
 end_product_list
 
@@ -38,24 +45,16 @@ end_product_list
 # a "-" here means the dependent product is not required by the parent and will not be setup
 
 qualifier   boost
-<<<<<<< HEAD
-=======
+
 e14:debug   e14:debug
+e14:prof    e14:prof
+e14:opt     e14:opt
 e10:debug   e10:debug
 e10:prof    e10:prof
 e9:debug    e9:debug
 e9:prof     e9:prof
-e6:debug    e6:debug
-e6:prof     e6:prof
->>>>>>> master
 e7:debug    e7:debug
 e7:prof     e7:prof
-e9:prof     e9:prof
-e9:debug    e9:debug
-e10:prof     e10:prof
-e10:debug    e10:debug
-e14:prof     e14:prof
-e14:debug    e14:debug
 end_qualifier_list
 
 # Preserve tabs and formatting in emacs and vi / vim:

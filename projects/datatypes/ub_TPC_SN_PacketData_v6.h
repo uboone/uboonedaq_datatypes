@@ -108,8 +108,8 @@ public:
           uncompressed.push_back((T)(last_uncompressed_word));
           if((word&0xF000) == 0x3000) {
             if(it!=raw.end()-1) {
-              std::cout << "Packet trailer found before end-of-packet. Current data word:" << std::hex << "0x" << word << "  next word: 0x" << (*(it+1)) << std::dec << std::endl;
-              // std::cout << debugInfo() << std::endl;
+              std::cerr << "Packet trailer found before end-of-packet. Current data word:" << std::hex << "0x" << word << "  next word: 0x" << (*(it+1)) << std::dec << std::endl;
+              // std::cerr << debugInfo() << std::endl;
             }
           }
           
@@ -166,7 +166,7 @@ public:
               // std::cout << "\n----\n";
               // std::cout << debugInfo();
               std::stringstream ss;
-              ss << "Huffman decompress unrecoginized bit pattern:" << hex(4,*it) << " on word number " << (it-raw.begin());
+              ss << "Huffman decompress unrecognized bit pattern:" << hex(4,*it) << " on word number " << (it-raw.begin());
                 throw datatypes_exception(ss.str());
             }
           }

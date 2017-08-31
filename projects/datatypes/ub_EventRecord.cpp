@@ -1,17 +1,17 @@
 #include "ub_EventRecord.h"
 #include <memory>
 
-#ifdef __clang__
-// Only the most recent GCC compiler has this defined in the standard library. 
-// I wish you guys wouldn't always use bleeding-edge syntactic sugar.  --Nathaniel
-namespace std {
-  template<typename T, typename ...Args>
-  std::unique_ptr<T> make_unique( Args&& ...args )
-  {
-      return std::unique_ptr<T>( new T( std::forward<Args>(args)... ) );
-  }
-}
-#endif
+// #ifdef __clang__
+// // Only the most recent GCC compiler has this defined in the standard library.
+// // I wish you guys wouldn't always use bleeding-edge syntactic sugar.  --Nathaniel
+// namespace std {
+//   template<typename T, typename ...Args>
+//   std::unique_ptr<T> make_unique( Args&& ...args )
+//   {
+//       return std::unique_ptr<T>( new T( std::forward<Args>(args)... ) );
+//   }
+// }
+// #endif
 
 using namespace gov::fnal::uboone::datatypes;
 
