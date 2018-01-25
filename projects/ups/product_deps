@@ -2,7 +2,7 @@
 # This line defines the product name and version
 
 
-parent uboonedaq_datatypes   v6_19_03_e14
+parent uboonedaq_datatypes   v6_20_00_e14
 
 
 defaultqual        e14
@@ -31,7 +31,7 @@ boost    v1_61_0    e10                      # for e10 larsoft build
 #boost    v1_63_0b   e14                      # for e14 larsoft build
 #cetbuildtools  v4_09_02  -  only_for_build  # daq build
 #cetbuildtools  v4_19_04  e14  only_for_build # larsoft
-boost		v1_64_0	  e14
+boost		v1_65_1	  e14
 cetbuildtools	v4_14_02   -   only_for_build
 
 end_product_list
