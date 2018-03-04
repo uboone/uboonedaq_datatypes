@@ -225,7 +225,7 @@ void ub_EventRecord::addFragment(raw_fragment_data_t& fragment) throw(datatypes_
 		int  div    = hdr.get16MHzRemainderNumber();
 		//		std::cout << "\n ub_EVENT_RECORD___TMP:: Trigger Clock OF THIS EVENT (" << crate_header.event_number << "): (frame,sample,div) " << (int) frame << ", " << (int) sample << ", " << (int) div << std::endl;  	
 		//     getGlobalHeader().setTriggerBoardEVTClock(ub_TriggerBoardClock(frame,sample,div));
-		gps_adj = ((frame-framePPSMap)*1600. + (sample-samplePPSMap)*0.5 + (div-divPPSMap)*0.00624)*1.0E-6;   // musec->sec
+		gps_adj = ((frame-framePPSMap)*1600. + (sample-samplePPSMap)*0.5 + (div-divPPSMap)*0.0625)*1.0E-6;   // musec->sec, EC 0.00624 -> 0.0625, 3-Mar-2018
 	      }
 	  }
         if(crate_header.gps_time.wasSet())
