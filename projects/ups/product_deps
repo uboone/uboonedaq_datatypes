@@ -35,7 +35,7 @@ boost		v1_65_1	  e14
 boost		v1_66_0	  e15
 boost		v1_66_0	  c2
 #cetbuildtools	v4_14_02   -   only_for_build
-cetbuildtools	v6_01_01   -   only_for_build
+cetbuildtools	v7_02_01   -   only_for_build
 
 end_product_list
 

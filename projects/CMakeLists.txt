@@ -32,7 +32,7 @@ cet_cmake_env()
 
 cet_set_compiler_flags(DIAGS VIGILANT WERROR NO_UNDEFINED EXTRA_FLAGS -pedantic -Wno-deprecated-declarations ) ## EC, 3-Feb-2017
 
-cet_add_compiler_flags(CXX -std=c++1y -D_GLIBCXX_USE_NANOSLEEP -Wno-non-virtual-dtor)
+cet_add_compiler_flags(CXX -std=c++1y -D_GLIBCXX_USE_NANOSLEEP -Wno-non-virtual-dtor -Wno-return-type-c-linkage -Wno-undefined-var-template -Wno-unknown-warning-option )
 
 
 
