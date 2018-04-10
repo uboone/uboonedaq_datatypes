@@ -48,12 +48,16 @@ int main(int argc, char **argv)
     std::cout << eventRecord.getGlobalHeader().debugInfo() << "\n";
   
     auto stream_sync=[](std::ofstream& os){  
+#ifndef __clang__
       std::filebuf* filebuf =os.rdbuf();  
       class my_filebuf : public std::filebuf{
         public:
           int handle() { return _M_file.fd(); }};
+#endif
       os.flush();
+#ifndef __clang__
       fsync(static_cast<my_filebuf*>(filebuf)->handle());
+#endif
    };
    
     for(auto const& seb: eventRecord.getTPCSEBMap()){    
