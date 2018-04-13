@@ -12,8 +12,17 @@ set_source_files_properties( uboone_data_utils_openmp.cpp PROPERTIES COMPILE_FLA
 
 add_library( ${LIB_NAME} SHARED ${LIB_SOURCES}  ${COMMON_PROJECT_LIBS})
 
-target_link_libraries (${LIB_NAME} -lcrypto -lgomp)
+#target_link_libraries (${LIB_NAME} -lcrypto -lgomp)
 #target_link_libraries (${LIB_NAME} -lgomp)
++if( ${qualifier} MATCHES "^c" )
+
++  target_link_libraries (${LIB_NAME} -lcrypto)
+
++else()
+
++  target_link_libraries (${LIB_NAME} -lcrypto -lgomp)
+
++endif()
 
 install_headers()
 
