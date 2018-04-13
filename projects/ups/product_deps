@@ -31,7 +31,7 @@ boost    v1_61_0    e10                      # for e10 larsoft build
 #boost    v1_63_0b   e14                      # for e14 larsoft build
 #cetbuildtools  v4_09_02  -  only_for_build  # daq build
 #cetbuildtools  v4_19_04  e14  only_for_build # larsoft
-#boost		v1_65_1	  e14
+boost		v1_65_1	  e14
 boost		v1_66_0	  e15
 boost		v1_66_0	  c2
 #cetbuildtools	v4_14_02   -   only_for_build
@@ -50,6 +50,9 @@ end_product_list
 # a "-" here means the dependent product is not required by the parent and will not be setup
 
 qualifier   boost
+c2:debug    c2:debug
+c2:prof     c2:prof
+c2:opt      c2:opt
 e15:debug   e15:debug
 e15:prof    e15:prof
 e15:opt     e15:opt
