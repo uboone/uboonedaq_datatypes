@@ -48,7 +48,7 @@ private:
     DissectorMap_t _dissectors={};
 };
 
-//extern "C" 
+extern "C" 
    DissectorFactory& getDissectorFactory();
 
     
