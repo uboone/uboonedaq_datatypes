@@ -47,15 +47,19 @@ int main(int argc, char **argv)
     std::cout << "+++++ Exporting Event: " << eventRecord.getGlobalHeader().getEventNumber() << "\n";
     std::cout << eventRecord.getGlobalHeader().debugInfo() << "\n";
   
-    auto stream_sync=[](std::ofstream& os){  
-      std::filebuf* filebuf =os.rdbuf();  
+    auto stream_sync=[](std::ofstream& os){
+#ifndef __clang__
+      std::filebuf* filebuf =os.rdbuf();
       class my_filebuf : public std::filebuf{
-        public:
-          int handle() { return _M_file.fd(); }};
+      public:
+   int handle() { return _M_file.fd(); }};
+#endif
       os.flush();
+#ifndef __clang__
       fsync(static_cast<my_filebuf*>(filebuf)->handle());
-   };
-   
+#endif
+    };   
+    
     for(auto const& seb: eventRecord.getTPCSEBMap()){    
         std::ofstream os ( 
             std::string(fileName).
@@ -64,7 +68,7 @@ int main(int argc, char **argv)
             std::ios::binary | std::ios::out);
             
         os.write((char*) &*seb.second.rawdata().begin(),seb.second.rawdata().size_bytes());        
-        stream_sync(os);        
+        stream_sync(os);
         os.close();
     }
     
@@ -76,7 +80,7 @@ int main(int argc, char **argv)
             std::ios::binary | std::ios::out);
             
         os.write((char*) &*seb.second.rawdata().begin(),seb.second.rawdata().size_bytes());
-        stream_sync(os);        
+        stream_sync(os);
         os.close();
     }
     

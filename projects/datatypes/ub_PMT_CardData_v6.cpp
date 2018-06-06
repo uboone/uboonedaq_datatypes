@@ -11,8 +11,8 @@ namespace datatypes {
 
 std::once_flag flagpmtcs;
 
-template<>
-bool ub_MarkedRawCardData<ub_PMT_ChannelData_v6,ub_PMT_CardHeader_v6,ub_PMT_CardTrailer_v6>::_do_dissect=true;
+// template<>
+// bool ub_MarkedRawCardData<ub_PMT_ChannelData_v6,ub_PMT_CardHeader_v6,ub_PMT_CardTrailer_v6>::_do_dissect=true;
 
 template<>
 bool ub_MarkedRawCardData<ub_PMT_ChannelData_v6,ub_PMT_CardHeader_v6,ub_PMT_CardTrailer_v6>::isValid() noexcept

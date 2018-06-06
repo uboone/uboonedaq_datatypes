@@ -86,6 +86,7 @@ struct quantity_impl {
 
 struct destructable {
     virtual void destruct() noexcept=0;
+    virtual ~destructable() {};
 };
 
 class MetricDestructor {

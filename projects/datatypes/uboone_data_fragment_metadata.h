@@ -49,7 +49,6 @@ private:
 };
 
 extern "C"  DissectorFactory& getDissectorFactory();
-
     
 }  // end of namespace datatypes
 }  // end of namespace uboone

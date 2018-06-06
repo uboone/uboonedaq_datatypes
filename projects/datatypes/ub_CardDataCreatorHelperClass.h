@@ -176,6 +176,14 @@ void ub_CardDataCreatorHelperClass<MRCD>::populateCardDataVector(std::vector<MRC
       retValue.emplace_back(data);
       curr_rawData=ub_RawData {curr_rawData.begin()+card_raw_data_size,curr_rawData.end()};
 
+      // NJT -- fix for SN PMT stream May 2018. Zero padding words appearing between cards. Cards always start with 0xffff so this should be safe.
+      int padding_words = 0;
+      while((curr_rawData.size()>0) && (*(curr_rawData.begin())==0x000)) {
+        padding_words++;
+        curr_rawData=ub_RawData {curr_rawData.begin()+1,curr_rawData.end()};        
+      }
+      
+
       if( handle_missing_words<MRCD>() ){
 
         int padding_words = 0;
