@@ -47,14 +47,15 @@ int main(int argc, char **argv)
     std::cout << "+++++ Exporting Event: " << eventRecord.getGlobalHeader().getEventNumber() << "\n";
     std::cout << eventRecord.getGlobalHeader().debugInfo() << "\n";
   
-    auto stream_sync=[](std::ofstream& os){  
-      std::filebuf* filebuf =os.rdbuf();  
-      class my_filebuf : public std::filebuf{
-        public:
-          int handle() { return _M_file.fd(); }};
-      os.flush();
-      fsync(static_cast<my_filebuf*>(filebuf)->handle());
-   };
+    // This hack is not cross-system comptaible
+    // auto stream_sync=[](std::ofstream& os){
+    //   std::filebuf* filebuf =os.rdbuf();
+    //   class my_filebuf : public std::filebuf{
+    //     public:
+    //       int handle() { return _M_file.fd(); }};
+    //  os.flush();
+      // fsync(static_cast<my_filebuf*>(filebuf)->handle());
+   // };
    
     for(auto const& seb: eventRecord.getTPCSEBMap()){    
         std::ofstream os ( 
@@ -64,7 +65,8 @@ int main(int argc, char **argv)
             std::ios::binary | std::ios::out);
             
         os.write((char*) &*seb.second.rawdata().begin(),seb.second.rawdata().size_bytes());        
-        stream_sync(os);        
+        os.flush();
+        // stream_sync(os);
         os.close();
     }
     
@@ -76,7 +78,8 @@ int main(int argc, char **argv)
             std::ios::binary | std::ios::out);
             
         os.write((char*) &*seb.second.rawdata().begin(),seb.second.rawdata().size_bytes());
-        stream_sync(os);        
+        //stream_sync(os);        
+        os.flush();
         os.close();
     }
     

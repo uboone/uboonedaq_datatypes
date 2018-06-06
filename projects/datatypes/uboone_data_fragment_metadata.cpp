@@ -4,7 +4,8 @@
 using namespace gov::fnal::uboone::datatypes;
 
 
-extern "C"  DissectorFactory& getDissectorFactory()
+//extern "C"  
+  DissectorFactory& getDissectorFactory()
 {
      static DissectorFactory theDissectorFactory;
      return theDissectorFactory;

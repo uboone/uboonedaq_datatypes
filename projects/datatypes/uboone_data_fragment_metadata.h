@@ -48,7 +48,8 @@ private:
     DissectorMap_t _dissectors={};
 };
 
-extern "C"  DissectorFactory& getDissectorFactory();
+//extern "C" 
+   DissectorFactory& getDissectorFactory();
 
     
 }  // end of namespace datatypes
