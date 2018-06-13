@@ -68,7 +68,7 @@ int main(int argc, char **argv)
             std::ios::binary | std::ios::out);
             
         os.write((char*) &*seb.second.rawdata().begin(),seb.second.rawdata().size_bytes());        
-        stream_sync(os);        
+        stream_sync(os);
         os.close();
     }
     
@@ -80,7 +80,7 @@ int main(int argc, char **argv)
             std::ios::binary | std::ios::out);
             
         os.write((char*) &*seb.second.rawdata().begin(),seb.second.rawdata().size_bytes());
-        stream_sync(os);        
+        stream_sync(os);
         os.close();
     }
     

@@ -1,9 +1,7 @@
 # The parent line must be the first non-comment line in the file
 # This line defines the product name and version
 
-
-parent uboonedaq_datatypes   v6_20_02a
-
+parent uboonedaq_datatypes   v6_22_03_offline
 
 defaultqual        e15
 
@@ -29,12 +27,9 @@ boost    v1_57_0    e7                       # daq build
 boost    v1_57_0a   e9                       # for e9 larsoft build
 boost    v1_61_0    e10                      # for e10 larsoft build
 #boost    v1_63_0b   e14                      # for e14 larsoft build
-#cetbuildtools  v4_09_02  -  only_for_build  # daq build
-#cetbuildtools  v4_19_04  e14  only_for_build # larsoft
 boost		v1_65_1	  e14
 boost		v1_66_0a  e15
 boost		v1_66_0a  c2
-#cetbuildtools	v4_14_02   -   only_for_build
 cetbuildtools	v7_02_01   -   only_for_build
 
 end_product_list

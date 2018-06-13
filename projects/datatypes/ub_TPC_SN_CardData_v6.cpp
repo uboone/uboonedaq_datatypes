@@ -9,8 +9,8 @@ namespace datatypes {
 
   extern std::once_flag flagtpccs,flagtpccsd;
 
-template<>
-bool ub_MarkedRawCardData<ub_TPC_SN_ChannelData_v6,ub_TPC_SN_CardHeader_v6,empty_trailer>::_do_dissect=true;
+// template<>
+// bool ub_MarkedRawCardData<ub_TPC_SN_ChannelData_v6,ub_TPC_SN_CardHeader_v6,empty_trailer>::_do_dissect=true;
 
 template<>
 bool ub_MarkedRawCardData<ub_TPC_SN_ChannelData_v6,ub_TPC_SN_CardHeader_v6,empty_trailer>::isValid() noexcept

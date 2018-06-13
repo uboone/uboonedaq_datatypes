@@ -222,6 +222,9 @@ void ub_MarkedRawCardData<CHANN, HEADER,TRAILER>::rethrowDissectionException() c
     throw _dissection_exception;
 }
 
+template <typename CHANN, typename HEADER,typename TRAILER> bool ub_MarkedRawCardData<CHANN,HEADER,TRAILER>::_do_dissect = true;
+
+
 }  // end of namespace datatypes
 }  // end of namespace uboone
 }  // end of namespace fnal
