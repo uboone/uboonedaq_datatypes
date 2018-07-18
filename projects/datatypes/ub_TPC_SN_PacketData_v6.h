@@ -16,22 +16,30 @@ struct ub_TPC_SN_PacketHeader final
 {
   uint16_t header_word;    
 
-    bool isCarryOverFromLastFrame() const noexcept { 
-      return ((header_word&0xc000) != 0x4000); 
-    }
+  bool isCarryOverFromLastFrame() const noexcept { 
+    return ((header_word&0xc000) != 0x4000); 
+  }
 
-    uint16_t getSampleNumber() const noexcept{
-      // Special case: if it's the first sample, it might not have a header. 
-      // The first sample's header is the same as the frame header, which begins with 0x4???
-      if(isCarryOverFromLastFrame()) return 0;
-      return header_word&0x3FFF;
-    }
-    uint16_t getHeaderWord() const noexcept{
-        return header_word;
-    }
-    std::string debugInfo() const noexcept { 
-      return std::string("Sample ") + std::to_string(getSampleNumber()) + "(" + std::to_string(header_word) + ")";
-    };
+  int32_t getSampleNumber() const noexcept{
+    // Return the TDC tick of the first sample in the packet.
+    // Note that that is NOT what is recorded in the packet header - the packet header records the TDC tick of the
+    // time the waveform passed threshold. Then there are 7 leader samples prepended to it. 
+    // Special case: if it's the first sample, it might not have a header. 
+    // The first sample's header is the same as the frame header, which begins with 0x4???
+    // NOTE THAT THIS VALUE CAN BE NEGATIVE! SMALL AS -6
+    if(isCarryOverFromLastFrame()) return 0;
+    return (header_word&0x3FFF)-sLeaderWords;
+  }
+  uint16_t getHeaderWord() const noexcept{
+      return header_word;
+  }
+  std::string debugInfo() const noexcept { 
+    return std::string("Sample ") + std::to_string(getSampleNumber()) + "(" + std::to_string(header_word) + ")";
+  };
+  
+  // This value is configurable in the run config, and cannot be known by the dissection software. 
+  // Needs to be set by hand in any job. However, all data taken to date (summer 2018) has been taken with default value of 7.
+  static uint16_t sLeaderWords; // = 7
 };
 
 
@@ -92,7 +100,8 @@ public:
       auto end_point = data().end(); // last word is special
       const ub_RawData& raw{data().begin(),end_point};
       ub_RawData::const_iterator it;
-      uint16_t last_uncompressed_word = 0;
+      bool     seen_non_huffman = false;
+      uint16_t last_uncompressed_word = 0xFF0; // Assign to an unreasonable value, in case first huffman word bad.
 
       for(it = raw.begin(); it!= raw.end(); it++) {
         uint16_t word = *it;
@@ -101,6 +110,7 @@ public:
         // Check top nibble for uncompressed word. A '1' in the MSB indicates a huffman word.
         if( (word & 0x8000)==0 ) {
           last_uncompressed_word = word&0xfff;
+          seen_non_huffman = true;
           // explicit conversion to templated type. Use push_back if size to small, otherwise [] is faster.
           // if(outpos >= uncompressed.size()) uncompressed.push_back((T)(last_uncompressed_word));
           // else uncompressed[outpos] = (  (T)(last_uncompressed_word)  );
@@ -136,6 +146,8 @@ public:
           //      ---- < bit pattern 0001
           // 10001000
           //     ----  < look for bit pattern 1000 instead
+          if(!seen_non_huffman) { std::cerr << "Packet has no non-huffman starting word!" << std::endl;}
+          
       
           if     ((word & 0x1   ) == 0x1    ) { word = word>>1; }
           else if((word & 0x3   ) == 0x2    ) { word = word>>2; }

@@ -123,6 +123,9 @@ private:
     bool _isFullyDissected;        
 };
 
+template<typename CARD,typename HEADER,typename TRAILER> bool ub_MarkedRawCrateData<CARD,HEADER,TRAILER>::_do_dissect = true;
+
+
 template <typename CARD, typename HEADER, typename TRAILER>
 std::vector<CARD> const&  ub_MarkedRawCrateData<CARD,HEADER,TRAILER>::getCards() throw(data_size_exception,datatypes_exception)
 {
