@@ -1,7 +1,7 @@
 # The parent line must be the first non-comment line in the file
 # This line defines the product name and version
 
-parent uboonedaq_datatypes   v6_22_05_offline
+parent uboonedaq_datatypes   v6_22_05
 
 defaultqual        e15
 
@@ -44,22 +44,28 @@ end_product_list
 # -nq- here means there is no qualifier
 # a "-" here means the dependent product is not required by the parent and will not be setup
 
-qualifier   boost
-c2:debug    c2:debug
-c2:prof     c2:prof
-c2:opt      c2:opt
-e15:debug   e15:debug
-e15:prof    e15:prof
-e15:opt     e15:opt
-e14:debug   e14:debug
-e14:prof    e14:prof
-e14:opt     e14:opt
-e10:debug   e10:debug
-e10:prof    e10:prof
-e9:debug    e9:debug
-e9:prof     e9:prof
-e7:debug    e7:debug
-e7:prof     e7:prof
+qualifier           boost
+c2:debug            c2:debug
+c2:prof             c2:prof
+c2:opt              c2:opt
+c2:debug:offline    c2:debug
+c2:prof:offline     c2:prof
+c2:opt:offline      c2:opt
+e15:debug           e15:debug
+e15:prof            e15:prof
+e15:opt             e15:opt
+e15:debug:offline   e15:debug
+e15:prof:offline    e15:prof
+e15:opt:offline     e15:opt
+e14:debug           e14:debug
+e14:prof            e14:prof
+e14:opt             e14:opt
+e10:debug           e10:debug
+e10:prof            e10:prof
+e9:debug            e9:debug
+e9:prof             e9:prof
+e7:debug            e7:debug
+e7:prof             e7:prof
 end_qualifier_list
 
 # Preserve tabs and formatting in emacs and vi / vim:
