@@ -123,6 +123,9 @@ private:
     bool _isFullyDissected;        
 };
 
+template<typename CARD,typename HEADER,typename TRAILER> bool ub_MarkedRawCrateData<CARD,HEADER,TRAILER>::_do_dissect = true;
+
+
 template <typename CARD, typename HEADER, typename TRAILER>
 std::vector<CARD> const&  ub_MarkedRawCrateData<CARD,HEADER,TRAILER>::getCards() throw(data_size_exception,datatypes_exception)
 {
@@ -251,13 +254,15 @@ std::unique_ptr<typename CARD::ub_CrateHeader>& ub_MarkedRawCrateData<CARD,HEADE
          HasLocalHostTime().update().copyOut(crateHeader->local_host_time);
          crateHeader->updateCrateBits();
          for(auto const& card: getCards()){
-          if(card.isValidChecksum())
-            continue;
-            
-          crateHeader->data_transmission_header.flagChecksumAsInvalid();
-          crateHeader->complete=false;
-          break;
-         }
+
+	  if(card.isValidChecksum())
+	    continue;
+	    
+	  crateHeader->data_transmission_header.flagChecksumAsInvalid();
+	  crateHeader->complete=false;
+	    
+	  break;
+	 }
     } else {
          crateHeader.reset(new typename CARD::ub_CrateHeader());
     }

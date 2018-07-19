@@ -48,6 +48,7 @@ private:
     DissectorMap_t _dissectors={};
 };
 
+// Omit from Larsoft build.
 extern "C"  DissectorFactory& getDissectorFactory();
     
 }  // end of namespace datatypes

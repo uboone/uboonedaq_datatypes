@@ -14,6 +14,7 @@ namespace datatypes {
     return true;
   }
 
+uint16_t ub_TPC_SN_PacketHeader::sLeaderWords = 7;
      
 }  // end of namespace datatypes
 }  // end of namespace uboone
@@ -23,5 +24,7 @@ namespace datatypes {
 ub_TPC_SN_PacketData_v6::ub_TPC_SN_PacketData_v6(ub_RawData const& rawdata)
 : ub_MarkedRawChannelData(rawdata){
 }
+
+
 
 

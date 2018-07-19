@@ -102,18 +102,21 @@ bool ub_fragment_header::compare(ub_fragment_header const& header, bool do_rethr
 void ub_fragment_header::calculateMD5hash(unsigned char const* addr, std::size_t bytes) noexcept {
     assert(addr!=NULL);
 
-#ifdef __APPLE__
-         CC_MD5(addr, bytes , md5hash);
+    
+#ifdef __APPLE__    
+    CC_MD5(addr, bytes , md5hash);
 #else
-         MD5(addr, bytes , md5hash);
+    MD5(addr, bytes , md5hash);
 #endif
+
 }
 
 bool ub_fragment_header::verifyMD5hash(unsigned char const* addr, std::size_t bytes) const noexcept {
     assert(addr!=NULL);
 
     unsigned char md5hash_[MD5_DIGEST_LENGTH];
-#ifdef __APPLE__
+
+#ifdef __APPLE__ 
     CC_MD5(addr, bytes , md5hash_);
 #else
     MD5(addr, bytes , md5hash_);

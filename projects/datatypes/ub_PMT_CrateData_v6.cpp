@@ -14,8 +14,6 @@ bool  ub_MarkedRawCrateData<ub_PMT_CardData_v6,ub_XMITEventHeader,ub_XMITEventTr
     return true;
 }
 
-template<>
-bool  ub_MarkedRawCrateData<ub_PMT_CardData_v6,ub_XMITEventHeader,ub_XMITEventTrailer>::_do_dissect=true;  //default value is true
 
 
 bool ub_PMT_CrateData_v6::compare(ub_PMT_CrateData_v6 const & crate_data, bool do_rethrow) const throw(datatypes_exception)

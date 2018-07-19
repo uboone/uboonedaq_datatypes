@@ -33,6 +33,7 @@ public:
     static constexpr auto typeName="TPCSN";
 };
 
+
 }  // end of namespace datatypes
 }  // end of namespace uboone
 }  // end of namespace fnal

@@ -1,6 +1,7 @@
 #ifndef _UBOONETYPES_LASERDATA_H
 #define _UBOONETYPES_LASERDATA_H
 
+#include <iostream>
 #include "constants.h"
 #include "boostSerialization.h"
 #include "ub_LocalHostTime.h"
