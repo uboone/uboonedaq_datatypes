@@ -64,7 +64,7 @@ public:
     }
 
     template<typename T>
-    void decompress_into(std::vector<T>& uncompressed, bool at_timestamp=true) const throw(datatypes_exception)
+    void decompress_into(std::vector<T>& uncompressed, bool at_timestamp=true) const
     {
       /// 
       /// Huffman decompression.

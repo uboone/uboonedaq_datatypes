@@ -18,7 +18,7 @@ public:
     typedef ub_PMT_CardData_v6::ub_CrateHeader ub_CrateHeader_t;
     
     ub_PMT_CrateData_v6(ub_RawData const& rawdata, bool initializeHeaderFromRawData=false);
-    bool compare(ub_PMT_CrateData_v6 const & crate_data, bool do_rethrow=false) const throw(datatypes_exception);
+    bool compare(ub_PMT_CrateData_v6 const & crate_data, bool do_rethrow=false) const;
 
     ub_PMT_CrateData_v6 ( ub_PMT_CrateData_v6  && ) = default;
    

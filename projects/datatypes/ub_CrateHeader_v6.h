@@ -63,12 +63,12 @@ struct ub_CrateHeader_v6 final
 
     std::string debugInfo()const noexcept;
 
-    void updateDTHeader(ub_RawData const& data)  throw(datatypes_exception);
+    void updateDTHeader(ub_RawData const& data);
     void updateCrateBits() noexcept;
 
     uint64_t sequenceID() const noexcept;
-    bool compare(ub_CrateHeader_v6 const&,bool do_rethrow=false) const throw(datatypes_exception);
-    static ub_CrateHeader_v6 const& getHeaderFromFragment(ub_RawData const& data) throw(datatypes_exception);
+    bool compare(ub_CrateHeader_v6 const&,bool do_rethrow=false) const;
+    static ub_CrateHeader_v6 const& getHeaderFromFragment(ub_RawData const& data);
     
     void copyIn(ub_CrateHeader_v6 const& source)  noexcept;
     void copyOut(ub_CrateHeader_v6&  target)  noexcept;

@@ -19,7 +19,7 @@ public:
     typedef ub_TPC_SN_CardData_v6::ub_CrateHeader ub_CrateHeader_t;
     
     ub_TPC_SN_CrateData_v6(ub_RawData const& rawdata, bool initializeHeaderFromRawData=false);
-    bool compare(ub_TPC_SN_CrateData_v6 const&,bool do_rethrow=false) const throw(datatypes_exception);
+    bool compare(ub_TPC_SN_CrateData_v6 const&,bool do_rethrow=false) const;
     
     ub_TPC_SN_CrateData_v6 ( ub_TPC_SN_CrateData_v6  && ) = default;
     

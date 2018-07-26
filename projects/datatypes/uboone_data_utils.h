@@ -50,7 +50,7 @@ public:
         return std::distance(begin(), end())*sizeof(TYPE);
     }
     
-    bool compare(ub_RawDataBlock const&,bool do_rethrow=false) const throw(datatypes_exception);
+    bool compare(ub_RawDataBlock const&,bool do_rethrow=false) const;
     
 private:
     ub_RawDataBlock::const_iterator _begin;
@@ -58,7 +58,7 @@ private:
 };
 
 template< template<class, class> class CONTAINER, typename TYPE>
-bool ub_RawDataBlock< CONTAINER,  TYPE>::compare(ub_RawDataBlock const& data_block,bool do_rethrow) const throw(datatypes_exception)
+bool ub_RawDataBlock< CONTAINER,  TYPE>::compare(ub_RawDataBlock const& data_block,bool do_rethrow) const
 {
     try {
         if(size()!=data_block.size())

@@ -16,7 +16,7 @@ public:
     typedef ub_CrateHeader_v6 ub_CrateHeader;
 
     ub_Trigger_CardData_v6(ub_RawData const& rawdata);
-    bool compare(ub_Trigger_CardData_v6 const&,bool do_rethrow=false) const throw(datatypes_exception);
+    bool compare(ub_Trigger_CardData_v6 const&,bool do_rethrow=false) const;
     bool operator==(ub_Trigger_CardData_v6 const& card_data) const;
 
     uint32_t const& getCardTrigFrameAndSampleWord() const noexcept;
@@ -25,7 +25,7 @@ public:
     uint16_t getSample() const noexcept;
     uint16_t getRemainder() const noexcept;
 
-    ub_Trigger_Data_v6 const& getTriggerData() const throw(datatypes_exception);
+    ub_Trigger_Data_v6 const& getTriggerData() const;
 
     ub_Trigger_CardData_v6 ( ub_Trigger_CardData_v6  && ) = default;
     

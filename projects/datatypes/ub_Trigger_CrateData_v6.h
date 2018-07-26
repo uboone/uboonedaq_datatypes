@@ -21,7 +21,7 @@ public:
     typedef ub_Trigger_CardData_v6::ub_CrateHeader ub_CrateHeader_t;
     
     ub_Trigger_CrateData_v6(ub_RawData const& rawdata, bool initializeHeaderFromRawData=false);
-    bool compare(ub_Trigger_CrateData_v6 const&,bool do_rethrow=false) const throw(datatypes_exception);
+    bool compare(ub_Trigger_CrateData_v6 const&,bool do_rethrow=false) const;
     
     ub_Trigger_CrateData_v6 ( ub_Trigger_CrateData_v6  && ) = default;
     
@@ -29,13 +29,13 @@ public:
       return trailer().getTrailerWord();
     }
 
-    ub_Trigger_CardData_v6 const& getTriggerCardData() const throw(datatypes_exception);
-    ub_Trigger_Header_v6 const&   getTriggerHeader()   const throw(datatypes_exception);
-    ub_Trigger_Data_v6 const&     getTriggerData()     const throw(datatypes_exception);
+    ub_Trigger_CardData_v6 const& getTriggerCardData() const;
+    ub_Trigger_Header_v6 const&   getTriggerHeader()   const;
+    ub_Trigger_Data_v6 const&     getTriggerData()     const;
 
     static constexpr auto typeName="TRIGGER";
 private:
-    //ub_Trigger_CardData_v6 & getTriggerCardData() throw(datatypes_exception);
+    //ub_Trigger_CardData_v6 & getTriggerCardData();
 
 };
 

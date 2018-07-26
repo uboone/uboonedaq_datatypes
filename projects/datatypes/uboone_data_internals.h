@@ -66,7 +66,7 @@ public:
     }
 
     std::string debugInfo()const noexcept;
-    bool compare(ub_MarkedRawDataBlock const&,bool do_rethrow=false) const throw(datatypes_exception);
+    bool compare(ub_MarkedRawDataBlock const&,bool do_rethrow=false) const;
 
     size_t minsize()const {
         return  size_of<HEADER>()+size_of<TRAILER>();
@@ -105,7 +105,7 @@ std::string ub_MarkedRawDataBlock< HEADER,  TRAILER>::debugInfo()const noexcept
 }
 
 template <typename HEADER, typename TRAILER>
-bool ub_MarkedRawDataBlock< HEADER,  TRAILER>::compare(ub_MarkedRawDataBlock const& data_block,bool do_rethrow) const throw(datatypes_exception)
+bool ub_MarkedRawDataBlock< HEADER,  TRAILER>::compare(ub_MarkedRawDataBlock const& data_block,bool do_rethrow) const
 {
     try {
         if(rawdata().compare(data_block.rawdata()))

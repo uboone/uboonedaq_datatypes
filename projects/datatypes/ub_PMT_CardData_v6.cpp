@@ -51,7 +51,7 @@ uint32_t ub_PMT_CardData_v6::getTrigFrame() const noexcept
     return option1; // if within 8 ticks, this solution is fine.
 }
 
-bool ub_PMT_CardData_v6::compare(ub_PMT_CardData_v6 const& card_data,bool do_rethrow ) const throw(datatypes_exception)
+bool ub_PMT_CardData_v6::compare(ub_PMT_CardData_v6 const& card_data,bool do_rethrow ) const
 {
     try {
         return ub_MarkedRawCardData<ub_PMT_ChannelData_v6,ub_PMT_CardHeader_v6,ub_PMT_CardTrailer_v6>::compare(card_data,do_rethrow);

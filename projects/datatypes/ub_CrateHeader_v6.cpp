@@ -141,7 +141,7 @@ std::string ub_CrateHeader_v6::debugInfo()const noexcept
     return os.str();
 }
 
-void ub_CrateHeader_v6::updateDTHeader(ub_RawData const& data)  throw(datatypes_exception)
+void ub_CrateHeader_v6::updateDTHeader(ub_RawData const& data)
 {
     assert(artdaq_fragment_header::num_words()<data.size());
     
@@ -174,7 +174,7 @@ void ub_CrateHeader_v6::updateDTHeader(ub_RawData const& data)  throw(datatypes_
   
 }
 
-ub_CrateHeader_v6 const& ub_CrateHeader_v6::getHeaderFromFragment(ub_RawData const& data)  throw(datatypes_exception)
+ub_CrateHeader_v6 const& ub_CrateHeader_v6::getHeaderFromFragment(ub_RawData const& data)
 {
   try
   {
@@ -209,7 +209,7 @@ ub_CrateHeader_v6 const& ub_CrateHeader_v6::getHeaderFromFragment(ub_RawData con
 }
 
 
-bool ub_CrateHeader_v6::compare(ub_CrateHeader_v6 const& crate_header,bool do_rethrow) const throw(datatypes_exception)
+bool ub_CrateHeader_v6::compare(ub_CrateHeader_v6 const& crate_header,bool do_rethrow) const
 {
     try
     {

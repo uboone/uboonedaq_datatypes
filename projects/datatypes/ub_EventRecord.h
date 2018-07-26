@@ -74,10 +74,10 @@ public:
     global_header_t& getGlobalHeader() noexcept;
     void setGlobalHeader (global_header_t const& header) noexcept;
 
-    void addFragment(raw_fragment_data_t & fragment) throw(datatypes_exception,data_size_exception);
-    void addFragment_TPC_or_LASER(raw_fragment_data_t & fragment) throw(datatypes_exception,data_size_exception);
-    void addFragment_PMT_or_TRIG(raw_fragment_data_t & fragment) throw(datatypes_exception,data_size_exception);
-    void addFragment_SN(raw_fragment_data_t & fragment) throw(datatypes_exception,data_size_exception);
+    void addFragment(raw_fragment_data_t & fragment);
+    void addFragment_TPC_or_LASER(raw_fragment_data_t & fragment);
+    void addFragment_PMT_or_TRIG(raw_fragment_data_t & fragment);
+    void addFragment_SN(raw_fragment_data_t & fragment);
 
     trigger_counter_t const& getTriggerCounter() noexcept;
     void setTriggerCounter( trigger_counter_t const& ) noexcept;
@@ -91,7 +91,7 @@ public:
     std::string debugInfo()const noexcept;
     
 
-    bool compare(ub_EventRecord const& event_record, bool do_rethrow) const throw(datatypes_exception);
+    bool compare(ub_EventRecord const& event_record, bool do_rethrow) const;
     void gps_sign_adjust (int&, int&);
     
     const tpc_map_t     getTPCSEBMap() const noexcept;
@@ -101,7 +101,7 @@ public:
     laser_map_t const&  getLASERSEBMap() const noexcept;
 
     std::size_t getFragmentCount() const noexcept;
-    void updateDTHeader() throw (datatypes_exception);
+    void updateDTHeader();
     
     void setGPSTime(ub_GPS_Time const& gps_time) noexcept;
     void setTriggerBoardClock(ub_TriggerBoardClock const& trigger_board_time) noexcept;
@@ -122,7 +122,7 @@ public:
     ub_BeamRecord& beamRecord() noexcept;
 
     void markAsIncompleteEvent() noexcept;
-    void setCrateSerializationMask(uint16_t mask) throw (datatypes_exception);
+    void setCrateSerializationMask(uint16_t mask);
     
     //do your custom out-of-class specialization if needed
     template <typename EVENTFRAGMENTPTR_TYPE>

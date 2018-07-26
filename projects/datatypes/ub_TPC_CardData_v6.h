@@ -16,7 +16,7 @@ public:
     typedef ub_CrateHeader_v6 ub_CrateHeader;
 
     ub_TPC_CardData_v6(ub_RawData const& rawdata);
-    bool compare(ub_TPC_CardData_v6 const&,bool do_rethrow=false) const throw(datatypes_exception);
+    bool compare(ub_TPC_CardData_v6 const&,bool do_rethrow=false) const;
     bool operator==(ub_TPC_CardData_v6 const& card_data) const;
 
     uint32_t const& getCardTrigFrameAndSampleWord() const noexcept;

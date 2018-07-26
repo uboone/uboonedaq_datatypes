@@ -21,13 +21,13 @@ public:
 
     /// Huffman decompression. Available as T= uint_16, int16, uint_32, int32, float, and double. 
     template<typename T>
-     void decompress(std::vector<T>& uncompressed) const throw(datatypes_exception);  
+     void decompress(std::vector<T>& uncompressed) const;  
 
 };
 
 
 template<typename T>
-void ub_TPC_ChannelData_v6::decompress(std::vector<T>& uncompressed) const throw(datatypes_exception)
+void ub_TPC_ChannelData_v6::decompress(std::vector<T>& uncompressed) const
 {
   /// 
   /// Huffman decompression.

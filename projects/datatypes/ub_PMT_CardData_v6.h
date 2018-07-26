@@ -21,7 +21,7 @@ public:
 
     ub_PMT_CardData_v6(ub_RawData const& rawdata);
 
-    bool compare(ub_PMT_CardData_v6 const& card_data,bool do_rethrow=false) const throw(datatypes_exception);
+    bool compare(ub_PMT_CardData_v6 const& card_data,bool do_rethrow=false) const;
     bool operator==(ub_PMT_CardData_v6 const& card_data) const;
 
     uint32_t getCardTrigFrameAndSampleWord() const noexcept;

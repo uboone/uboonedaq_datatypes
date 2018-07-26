@@ -39,10 +39,10 @@ uint16_t ub_TPC_ChannelData_v6::getChannelTrailerWord() const noexcept {
 
 
 
-template void ub_TPC_ChannelData_v6::decompress<uint16_t>(std::vector<uint16_t>&) const throw(datatypes_exception);
-template void ub_TPC_ChannelData_v6::decompress< int16_t>(std::vector< int16_t>&) const throw(datatypes_exception);
-template void ub_TPC_ChannelData_v6::decompress<uint32_t>(std::vector<uint32_t>&) const throw(datatypes_exception);
-template void ub_TPC_ChannelData_v6::decompress< int32_t>(std::vector< int32_t>&) const throw(datatypes_exception);
-template void ub_TPC_ChannelData_v6::decompress< float  >(std::vector< float  >&) const throw(datatypes_exception);
-template void ub_TPC_ChannelData_v6::decompress< double >(std::vector< double >&) const throw(datatypes_exception);
+template void ub_TPC_ChannelData_v6::decompress<uint16_t>(std::vector<uint16_t>&) const;
+template void ub_TPC_ChannelData_v6::decompress< int16_t>(std::vector< int16_t>&) const;
+template void ub_TPC_ChannelData_v6::decompress<uint32_t>(std::vector<uint32_t>&) const;
+template void ub_TPC_ChannelData_v6::decompress< int32_t>(std::vector< int32_t>&) const;
+template void ub_TPC_ChannelData_v6::decompress< float  >(std::vector< float  >&) const;
+template void ub_TPC_ChannelData_v6::decompress< double >(std::vector< double >&) const;
 

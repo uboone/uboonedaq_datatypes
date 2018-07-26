@@ -165,7 +165,7 @@ struct ub_fragment_header final
     
     bool verifyMD5hash(unsigned char const* addr, std::size_t bytes) const noexcept;
 
-    bool compare(ub_fragment_header const&, bool do_rethrow=false) const throw(datatypes_exception);
+    bool compare(ub_fragment_header const&, bool do_rethrow=false) const;
     
     void flagChecksumAsInvalid() noexcept;
 
@@ -200,7 +200,7 @@ struct ub_event_header final
     event_global_header_word_offset {0},
     reserved {0xDEADBEEF,0xDEADBEEF,0xCAFECAFE,0xCAFECAFE} {}
 
-    //bool compare(ub_event_header const&, bool do_rethrow=false) const throw(datatypes_exception){return true;};
+    //bool compare(ub_event_header const&, bool do_rethrow=false) const {return true;};
 
 };
 constexpr std::size_t ub_event_header_size = sizeof(ub_event_header);

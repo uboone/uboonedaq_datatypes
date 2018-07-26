@@ -19,20 +19,20 @@ public:
     ub_TPC_SN_ChannelData_v6 ( ub_TPC_SN_ChannelData_v6 && ) = default;
 
 
-    void dissectPackets() throw(datatypes_exception);    
+    void dissectPackets();    
     std::vector<ub_TPC_SN_PacketData_v6> packets_;
 
     /// Huffman decompression. Available as T= uint_16, int16, uint_32, int32, float, and double. 
     /// This creates a single waveform for the whole 3200-word window. Wasteful, but compatable with
     /// The regular TPC calls.
     template<typename T>
-     void decompress(std::vector<T>& uncompressed) const throw(datatypes_exception);  
+     void decompress(std::vector<T>& uncompressed) const;  
 
 };
 
 
 template<typename T>
-void ub_TPC_SN_ChannelData_v6::decompress(std::vector<T>& uncompressed) const throw(datatypes_exception)
+void ub_TPC_SN_ChannelData_v6::decompress(std::vector<T>& uncompressed) const
 {
   const size_t kMaxBufferSize = 3200;
   

@@ -41,7 +41,7 @@ public:
     std::string debugInfo()const noexcept;
     bool        wasDissected() const { return _isFullyDissected; }
 
-    void rethrowDissectionException() const throw(data_size_exception, datatypes_exception);    
+    void rethrowDissectionException() const;    
     bool isValid() noexcept;
 private:
     bool canFullyDissect() noexcept;
@@ -81,7 +81,7 @@ std::string ub_MarkedRawChannelData<HEADER,TRAILER>::debugInfo()const noexcept
 }
 
 template <typename HEADER,typename TRAILER>
-void ub_MarkedRawChannelData<HEADER,TRAILER>::rethrowDissectionException() const throw(data_size_exception,datatypes_exception)
+void ub_MarkedRawChannelData<HEADER,TRAILER>::rethrowDissectionException() const
 {
  /* if(!_isValid)      
     throw _dissection_exception;

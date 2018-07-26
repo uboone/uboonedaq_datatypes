@@ -21,7 +21,7 @@ bool ub_MarkedRawCardData<ub_Trigger_ChannelData_v6,ub_Trigger_Header_v6,empty_t
 }  // end of namespace fnal
 }
 
-bool ub_Trigger_CardData_v6::compare(ub_Trigger_CardData_v6 const& card_data,bool do_rethrow ) const throw(datatypes_exception)
+bool ub_Trigger_CardData_v6::compare(ub_Trigger_CardData_v6 const& card_data,bool do_rethrow ) const
 {
     try {
         return ub_MarkedRawCardData<ub_Trigger_ChannelData_v6,ub_Trigger_Header_v6,empty_trailer>::compare(card_data,do_rethrow);
@@ -64,7 +64,7 @@ uint16_t ub_Trigger_CardData_v6::getRemainder() const noexcept {
     return header().get16MHzRemainderNumber();
 }
 
-ub_Trigger_Data_v6 const& ub_Trigger_CardData_v6::getTriggerData() const throw(datatypes_exception)
+ub_Trigger_Data_v6 const& ub_Trigger_CardData_v6::getTriggerData() const
 {
   if( getChannels().size() != 1)
     throw datatypes_exception("Exception in ub_Trigger_CardData_v6::getTriggerData(): getChannels() data size not 1.");

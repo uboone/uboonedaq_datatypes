@@ -32,7 +32,7 @@ ub_EventRecord::ub_EventRecord()
 {
 }
 
-void ub_EventRecord::setCrateSerializationMask(uint16_t mask) throw (datatypes_exception)
+void ub_EventRecord::setCrateSerializationMask(uint16_t mask)
 {
     _crate_serialization_mask.store(mask);
     updateDTHeader();
@@ -156,7 +156,7 @@ std::size_t ub_EventRecord::getFragmentCount() const noexcept{
   return _pmt_seb_map.size()+_tpc_seb_map.size()+_tpc_sn_seb_map.size()+_trigger_seb_map.size();
 }
 
-void ub_EventRecord::addFragment(raw_fragment_data_t& fragment) throw(datatypes_exception,data_size_exception)
+void ub_EventRecord::addFragment(raw_fragment_data_t& fragment)
 {
     try {
 
@@ -369,7 +369,7 @@ void ub_EventRecord::addFragment(raw_fragment_data_t& fragment) throw(datatypes_
     }    
 }
 
-void ub_EventRecord::addFragment_PMT_or_TRIG(raw_fragment_data_t& fragment) throw(datatypes_exception,data_size_exception)
+void ub_EventRecord::addFragment_PMT_or_TRIG(raw_fragment_data_t& fragment)
 {
     try {
 
@@ -512,7 +512,7 @@ void ub_EventRecord::addFragment_PMT_or_TRIG(raw_fragment_data_t& fragment) thro
     }    
 }
 
-void ub_EventRecord::addFragment_SN(raw_fragment_data_t& fragment) throw(datatypes_exception,data_size_exception)
+void ub_EventRecord::addFragment_SN(raw_fragment_data_t& fragment)
 {
   try {
 
@@ -573,7 +573,7 @@ void ub_EventRecord::addFragment_SN(raw_fragment_data_t& fragment) throw(datatyp
 }
 
 
-void ub_EventRecord::addFragment_TPC_or_LASER(raw_fragment_data_t& fragment) throw(datatypes_exception,data_size_exception)
+void ub_EventRecord::addFragment_TPC_or_LASER(raw_fragment_data_t& fragment)
 {
     try {
 
@@ -733,7 +733,7 @@ void ub_EventRecord::markAsIncompleteEvent() noexcept
 }
 
 
-void ub_EventRecord::updateDTHeader() throw (datatypes_exception)
+void ub_EventRecord::updateDTHeader()
 {
     try
     {
@@ -766,7 +766,7 @@ void ub_EventRecord::updateDTHeader() throw (datatypes_exception)
     }
 }
 
-bool ub_EventRecord::compare(ub_EventRecord const& event_record, bool do_rethrow=false) const throw(datatypes_exception)
+bool ub_EventRecord::compare(ub_EventRecord const& event_record, bool do_rethrow=false) const
 {
     try
     {

@@ -58,7 +58,7 @@ data_size_exception::~data_size_exception() noexcept
 // }
 
 
-bool ub_fragment_header::compare(ub_fragment_header const& header, bool do_rethrow) const throw(datatypes_exception)
+bool ub_fragment_header::compare(ub_fragment_header const& header, bool do_rethrow) const
 {
     try {
         if(total_fragment_wordcount!=header.total_fragment_wordcount)

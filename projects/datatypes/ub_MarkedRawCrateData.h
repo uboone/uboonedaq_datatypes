@@ -65,7 +65,7 @@ public:
 	     throw datatypes_exception("Caught unknown exception ub_MarkedRawCrateData::ctor()");
        }
         
-    std::vector<CARD> const&  getCards() throw(data_size_exception,datatypes_exception);
+    std::vector<CARD> const&  getCards();
     std::vector<CARD> const&  getCards() const noexcept{
         return _markedRawCardsData;
     }
@@ -85,7 +85,7 @@ public:
         return ub_MarkedRawDataBlock<HEADER,TRAILER>::rawdata().size();
     };
 
-    void dissectCards() throw(data_size_exception,datatypes_exception);
+    void dissectCards();
     std::string debugInfo()const noexcept;
 
     size_t getSizeOfDissectableCrateData() const noexcept{
@@ -93,19 +93,19 @@ public:
         return _dissectableDataSize;
     };
 
-    std::unique_ptr<typename CARD::ub_CrateHeader>& crateHeader() throw(data_size_exception,datatypes_exception);
+    std::unique_ptr<typename CARD::ub_CrateHeader>& crateHeader();
     std::unique_ptr<typename CARD::ub_CrateHeader> const& crateHeader()const noexcept{
         assert(_crateHeader);
         return _crateHeader;
     };
 
-    bool compare(ub_MarkedRawCrateData const&,bool do_rethrow=false) const throw(datatypes_exception);
+    bool compare(ub_MarkedRawCrateData const&,bool do_rethrow=false) const;
     
     static void         doDissect(bool dod)          { _do_dissect = dod ; } // Allow user to turn off unpacking.
     bool                wasDissected() const { return _isFullyDissected; }
     datatypes_exception dissectionException() const { return _dissection_exception; }
 
-    void rethrowDissectionException() const throw(data_size_exception,datatypes_exception);
+    void rethrowDissectionException() const;
     
 private:
     bool isValid() noexcept;
@@ -127,7 +127,7 @@ template<typename CARD,typename HEADER,typename TRAILER> bool ub_MarkedRawCrateD
 
 
 template <typename CARD, typename HEADER, typename TRAILER>
-std::vector<CARD> const&  ub_MarkedRawCrateData<CARD,HEADER,TRAILER>::getCards() throw(data_size_exception,datatypes_exception)
+std::vector<CARD> const&  ub_MarkedRawCrateData<CARD,HEADER,TRAILER>::getCards()
 {
     if(!_isFullyDissected && _isValid)
         dissectCards();
@@ -136,7 +136,7 @@ std::vector<CARD> const&  ub_MarkedRawCrateData<CARD,HEADER,TRAILER>::getCards()
 }
 
 template <typename CARD, typename HEADER, typename TRAILER>
-void ub_MarkedRawCrateData<CARD,HEADER,TRAILER>::dissectCards() throw(data_size_exception,datatypes_exception)
+void ub_MarkedRawCrateData<CARD,HEADER,TRAILER>::dissectCards()
 {
   std::call_once(flagfemcarderr, [](){ganglia::Metric<ganglia::RATE>::named("FEM-card-dissection-errors","Errors/sec")->publish(0);});
   std::call_once(flagfemcardn, [](){ganglia::Metric<ganglia::VALUE>::named("FEM-cards-per-crate","Cards/crate")->publish(0);});
@@ -237,7 +237,7 @@ bool ub_MarkedRawCrateData<CARD,HEADER,TRAILER>::canFullyDissect() noexcept
 }
 
 template <typename CARD, typename HEADER, typename TRAILER>
-std::unique_ptr<typename CARD::ub_CrateHeader>& ub_MarkedRawCrateData<CARD,HEADER,TRAILER>::crateHeader() throw(data_size_exception,datatypes_exception)
+std::unique_ptr<typename CARD::ub_CrateHeader>& ub_MarkedRawCrateData<CARD,HEADER,TRAILER>::crateHeader()
 {
   try{
     if(_crateHeader)
@@ -285,7 +285,7 @@ std::unique_ptr<typename CARD::ub_CrateHeader>& ub_MarkedRawCrateData<CARD,HEADE
 
 template <typename CARD, typename HEADER, typename TRAILER>
 bool ub_MarkedRawCrateData<CARD,HEADER,TRAILER>::compare(ub_MarkedRawCrateData<CARD,HEADER,TRAILER> const& marked_data,bool do_rethrow) 
-  const throw(datatypes_exception)
+  const
 {
     try
     {
@@ -339,7 +339,7 @@ std::string ub_MarkedRawCrateData<CARD,HEADER,TRAILER>::debugInfo()const noexcep
 }
 
 template <typename CARD, typename HEADER, typename TRAILER>
-void ub_MarkedRawCrateData<CARD,HEADER,TRAILER>::rethrowDissectionException() const throw(data_size_exception,datatypes_exception)
+void ub_MarkedRawCrateData<CARD,HEADER,TRAILER>::rethrowDissectionException() const
 {
   if(!_isValid)      
     throw _dissection_exception;
