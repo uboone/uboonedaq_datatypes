@@ -25,9 +25,12 @@ int main(int argc, char **argv)
   switch(argc-1)
   {
   case 2:
-    eventNumber=atoi(argv[2]);    
+    eventNumber=atoi(argv[2]);
+    fileName=(argv[1]);
+    break;
   case 1:
-    fileName=(argv[1]);    
+    fileName=(argv[1]);
+    break;
   default:
     ;
   }
