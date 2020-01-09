@@ -1,9 +1,9 @@
 # The parent line must be the first non-comment line in the file
 # This line defines the product name and version
 
-parent uboonedaq_datatypes   v6_22_05c
+parent uboonedaq_datatypes   v6_22_05d
 
-defaultqual        e17
+defaultqual        e19
 
 # These optional lines define the installed directories where
 # headers, libraries, and executables will be found
@@ -30,7 +30,9 @@ boost    v1_61_0    e10                      # for e10 larsoft build
 boost		v1_65_1	  e14
 boost		v1_66_0a  e15
 boost		v1_70_0   e17
+boost		v1_70_0   e19
 boost		v1_70_0   c2
+boost		v1_70_0   c7
 cetbuildtools	v7_14_00   -   only_for_build
 
 end_product_list
@@ -53,6 +55,12 @@ c2:opt              c2:opt
 c2:debug:offline    c2:debug
 c2:prof:offline     c2:prof
 c2:opt:offline      c2:opt
+c7:debug            c7:debug
+c7:prof             c7:prof
+c7:opt              c7:opt
+c7:debug:offline    c7:debug
+c7:prof:offline     c7:prof
+c7:opt:offline      c7:opt
 e15:debug           e15:debug
 e15:prof            e15:prof
 e15:opt             e15:opt
@@ -65,6 +73,12 @@ e17:opt             e17:opt
 e17:debug:offline   e17:debug
 e17:prof:offline    e17:prof
 e17:opt:offline     e17:opt
+e19:debug           e19:debug
+e19:prof            e19:prof
+e19:opt             e19:opt
+e19:debug:offline   e19:debug
+e19:prof:offline    e19:prof
+e19:opt:offline     e19:opt
 e14:debug           e14:debug
 e14:prof            e14:prof
 e14:opt             e14:opt
