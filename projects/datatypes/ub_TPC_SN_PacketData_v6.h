@@ -98,7 +98,7 @@ public:
         uncompressed.resize(0); // Set start.
 
       auto end_point = data().end(); // last word is special
-      const ub_RawData& raw{data().begin(),end_point};
+      const ub_RawData& raw(ub_RawData(data().begin(),end_point));
       ub_RawData::const_iterator it;
       bool     seen_non_huffman = false;
       uint16_t last_uncompressed_word = 0xFF0; // Assign to an unreasonable value, in case first huffman word bad.
