@@ -35,6 +35,10 @@ boost		v1_70_0   c7
 boost           v1_73_0   e19
 boost           v1_75_0   e20
 boost           v1_75_0   c7
+boost           v1_80_0   c7
+boost           v1_80_0   c14
+boost           v1_80_0   e20
+boost           v1_80_0   e26
 cetbuildtools	v7_17_01   -   only_for_build
 
 end_product_list
@@ -63,6 +67,12 @@ c7:opt              c7:opt
 c7:debug:offline    c7:debug
 c7:prof:offline     c7:prof
 c7:opt:offline      c7:opt
+c14:debug           c14:debug
+c14:prof            c14:prof
+c14:opt             c14:opt
+c14:debug:offline   c14:debug
+c14:prof:offline    c14:prof
+c14:opt:offline     c14:opt
 e15:debug           e15:debug
 e15:prof            e15:prof
 e15:opt             e15:opt
@@ -87,6 +97,12 @@ e20:opt             e20:opt
 e20:debug:offline   e20:debug
 e20:prof:offline    e20:prof
 e20:opt:offline     e20:opt
+e26:debug           e26:debug
+e26:prof            e26:prof
+e26:opt             e26:opt
+e26:debug:offline   e26:debug
+e26:prof:offline    e26:prof
+e26:opt:offline     e26:opt
 e14:debug           e14:debug
 e14:prof            e14:prof
 e14:opt             e14:opt
