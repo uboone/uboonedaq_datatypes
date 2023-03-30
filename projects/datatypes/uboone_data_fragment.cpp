@@ -76,8 +76,9 @@ bool ub_fragment_header::compare(ub_fragment_header const& header, bool do_rethr
         if(raw_fragment_beginning_word_offset!=header.raw_fragment_beginning_word_offset)
             throw datatypes_exception(make_compare_message("data_transmission_header", "raw_fragment_beginning_word_offset", raw_fragment_beginning_word_offset,header.raw_fragment_beginning_word_offset));
 
-        if(md5hash!=header.md5hash)
-            throw datatypes_exception(make_compare_message("data_transmission_header", "md5hash", md5hash,header.md5hash));
+        // HBG - this array comparison makes no sense.
+        //if(md5hash!=header.md5hash)
+        //    throw datatypes_exception(make_compare_message("data_transmission_header", "md5hash", md5hash,header.md5hash));
             
         if(extra_flags!=header.extra_flags)
             throw datatypes_exception(make_compare_message("data_transmission_header", "extra_flags", extra_flags,header.extra_flags));

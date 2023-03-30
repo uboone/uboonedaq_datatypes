@@ -23,7 +23,7 @@ public:
     ub_Trigger_CrateData_v6(ub_RawData const& rawdata, bool initializeHeaderFromRawData=false);
     bool compare(ub_Trigger_CrateData_v6 const&,bool do_rethrow=false) const;
     
-    ub_Trigger_CrateData_v6 ( ub_Trigger_CrateData_v6  && ) = default;
+    ub_Trigger_CrateData_v6 ( ub_Trigger_CrateData_v6  && ) = delete;
     
     uint32_t getTrailerWord() const noexcept{
       return trailer().getTrailerWord();

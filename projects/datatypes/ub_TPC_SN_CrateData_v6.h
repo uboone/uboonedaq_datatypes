@@ -21,7 +21,7 @@ public:
     ub_TPC_SN_CrateData_v6(ub_RawData const& rawdata, bool initializeHeaderFromRawData=false);
     bool compare(ub_TPC_SN_CrateData_v6 const&,bool do_rethrow=false) const;
     
-    ub_TPC_SN_CrateData_v6 ( ub_TPC_SN_CrateData_v6  && ) = default;
+    ub_TPC_SN_CrateData_v6 ( ub_TPC_SN_CrateData_v6  && ) = delete;
     
     uint32_t const& getHeaderWord() const noexcept{
         return header().raw_data;

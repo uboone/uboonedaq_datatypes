@@ -20,7 +20,7 @@ public:
     ub_PMT_CrateData_v6(ub_RawData const& rawdata, bool initializeHeaderFromRawData=false);
     bool compare(ub_PMT_CrateData_v6 const & crate_data, bool do_rethrow=false) const;
 
-    ub_PMT_CrateData_v6 ( ub_PMT_CrateData_v6  && ) = default;
+    ub_PMT_CrateData_v6 ( ub_PMT_CrateData_v6  && ) = delete;
    
     uint32_t const& getHeaderWord() const noexcept{
         return header().raw_data;

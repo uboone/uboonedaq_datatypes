@@ -4,6 +4,7 @@
 #include <map>
 #include <cstring>
 #include <string>
+#include <typeinfo>
 #include <sys/time.h>
 
 #include "constants.h"
