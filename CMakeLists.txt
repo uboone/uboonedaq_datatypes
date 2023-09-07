@@ -1,67 +1,37 @@
 # ======================================================================
-# Create build and install directories which are outside the source code directory
-# Declare the install path from the cmake command line using either a relative or full path
+#  uboonedaq_datatypes main build file
 #
-#   cd .../path/to/build/directory
-#   source .../path/to/uboonedaq/ups/setup_for_development [-d]
-#   cmake [-DCMAKE_INSTALL_PREFIX=.../path/to/install/directory] $uboonedaq_SOURCE
-#   make
-#   make test
-#   make install
-#   make package
+#  cd .../path/to/build/directory
+#  source .../path/to/lardataobj/ups/setup_for_development <-d|-p>
+#  buildtool [-I /install/path] -bt[i] -jN
 # ======================================================================
-# use cmake 2.8 or later
-cmake_minimum_required (VERSION 2.8)
 
-PROJECT(uboonedaq-datatypes)
+cmake_minimum_required (VERSION 3.20 FATAL_ERROR)
 
-# cetbuildtools contains our cmake modules
-SET ( CETBUILDTOOLS_VERSION $ENV{CETBUILDTOOLS_VERSION} )
-IF (NOT CETBUILDTOOLS_VERSION)
-    MESSAGE (FATAL_ERROR "ERROR: setup cetbuildtools to get the cmake modules")
-ENDIF()
-
-set(CMAKE_MODULE_PATH
-  ${CMAKE_CURRENT_SOURCE_DIR}/Modules
-  $ENV{CETBUILDTOOLS_DIR}/Modules
-  ${CMAKE_MODULE_PATH}
-  )
+find_package(cetmodules REQUIRED)
+project(uboonedaq_datatypes VERSION 6.22.06 LANGUAGES CXX)
 
 include(CetCMakeEnv)
 cet_cmake_env()
 
-cet_set_compiler_flags(DIAGS VIGILANT WERROR NO_UNDEFINED EXTRA_FLAGS -pedantic -Wno-deprecated-declarations -std=c++17 ) ## EC, 3-Feb-2017
+cet_set_compiler_flags(DIAGS CAUTIOUS
+  WERROR
+  NO_UNDEFINED
+  EXTRA_FLAGS -pedantic -Wno-unused-local-typedefs -D_GLIBCXX_USE_NANOSLEEP
+)
 
-cet_add_compiler_flags(CXX -D_GLIBCXX_USE_NANOSLEEP -Wno-non-virtual-dtor -Wno-return-type-c-linkage -Wno-undefined-var-template -Wno-unknown-warning-option )
+cet_report_compiler_flags(REPORT_THRESHOLD VERBOSE)
 
-cet_report_compiler_flags()
+find_package(Boost COMPONENTS serialization REQUIRED EXPORT)
+find_package(OpenSSL REQUIRED)
+find_package(OpenMP REQUIRED)
 
-# these are minimum required versions, not the actual product versions
-find_ups_product( cetbuildtools v4_09_02 )
-
-find_ups_boost( v1_57_0  serialization )
-
-
-
-# Debug streamer.
-string(TOUPPER ${CMAKE_BUILD_TYPE} BTYPE_UC)
-if(BTYPE_UC STREQUAL DEBUG)
-  add_definitions(-DDEBUGME)
-endif()
-
-message(STATUS "Project is ${product} ${version} ${qualifier}")
-
-set (COMMON_PROJECT_LIBS 
-  ${Boost_SERIALIZATION_LIBRARY}
-  )
+include(ArtMake)
 
 # source
 add_subdirectory(share)
 add_subdirectory(datatypes)
 add_subdirectory(datatypes_utilities)
 
-# ups - table and config files
-add_subdirectory(ups)
-
 # packaging utility
-include(UseCPack)
+cet_cmake_config()

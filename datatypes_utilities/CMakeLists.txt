@@ -1,61 +1,54 @@
-# project name
-project(udata_utilities)
-
 #this is just so we have a nice sample code
 set_source_files_properties(eventReader.cc PROPERTIES COMPILE_FLAGS "-Wno-unused-variable -Wno-unused-but-set-variable")
 
-add_executable(dumpEvents dumpEvents.cc)
-add_executable(dumpEventHeaders dumpEventHeaders.cc)
 
-add_executable(fragmentReader fragmentReader.cc)
+cet_make_exec(NAME dumpEvents
+              LIBRARIES
+              PRIVATE
+              uboonedaq_datatypes::datatypes
+              Boost::serialization
+             )
 
-add_executable(eventReader eventReader.cc)
+cet_make_exec(NAME dumpEventHeaders
+              LIBRARIES
+              PRIVATE
+              uboonedaq_datatypes::datatypes
+              Boost::serialization
+             )
 
-add_executable(exportRawFragments exportRawFragments.cc)
+cet_make_exec(NAME fragmentReader
+              LIBRARIES
+              PRIVATE
+              uboonedaq_datatypes::datatypes
+              Boost::serialization
+             )
 
-add_executable(dumpRawPMTCrateFrame dumpRawPMTCrateFrame.cc)
+cet_make_exec(NAME eventReader
+              LIBRARIES
+              PRIVATE
+              uboonedaq_datatypes::datatypes
+              Boost::serialization
+             )
 
-add_executable(dumpRawTPCCrateFrame dumpRawTPCCrateFrame.cc)
+cet_make_exec(NAME exportRawFragments
+              LIBRARIES
+              PRIVATE
+              uboonedaq_datatypes::datatypes
+              Boost::serialization
+             )
 
+cet_make_exec(NAME dumpRawPMTCrateFrame
+              LIBRARIES
+              PRIVATE
+              uboonedaq_datatypes::datatypes
+              Boost::serialization
+             )
 
-target_link_libraries(fragmentReader
-    ${COMMON_PROJECT_LIBS}
-    ubdata_types
-    )
-    
-target_link_libraries(dumpEvents
-    ${COMMON_PROJECT_LIBS}
-    ubdata_types
-    )
-
-target_link_libraries(dumpEventHeaders
-    ${COMMON_PROJECT_LIBS}
-    ubdata_types
-    )
-
-target_link_libraries(eventReader
-    ${COMMON_PROJECT_LIBS}
-    ubdata_types
-    )
-
-target_link_libraries(exportRawFragments
-    ${COMMON_PROJECT_LIBS}
-    ubdata_types
-    )
-
-target_link_libraries(dumpRawPMTCrateFrame
-    ${COMMON_PROJECT_LIBS}
-    ubdata_types
-    )
-
-target_link_libraries(dumpRawTPCCrateFrame
-    ${COMMON_PROJECT_LIBS}
-    ubdata_types
-    )
-        
-install_headers()
+cet_make_exec(NAME dumpRawTPCCrateFrame
+              LIBRARIES
+              PRIVATE
+              uboonedaq_datatypes::datatypes
+              Boost::serialization
+             )
 
 install_source()
-
-install( TARGETS dumpEvents dumpEventHeaders fragmentReader eventReader exportRawFragments dumpRawPMTCrateFrame dumpRawTPCCrateFrame
-         DESTINATION ${flavorqual_dir}/bin )

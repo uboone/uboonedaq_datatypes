@@ -1,27 +1,62 @@
-# project name
-
-project(datatypes)
-
-set( LIB_NAME ubdata_types)
-
-FILE(GLOB_RECURSE LIB_SOURCES *.cpp )
-
-set_source_files_properties( uboone_data_utils_openmp.cpp PROPERTIES COMPILE_FLAGS " -fopenmp")
-
-#set(CMAKE_SHARED_LINKER_FLAGS  -unresolved-symbols=ignore-in-shared-libs)
-
-add_library( ${LIB_NAME} SHARED ${LIB_SOURCES}  ${COMMON_PROJECT_LIBS})
-
-if( ${qualifier} MATCHES "^c" )
-  target_link_libraries (${LIB_NAME} -lcrypto)
-else()
-  target_link_libraries (${LIB_NAME} -lcrypto -lgomp)
-endif()
+cet_make_library(
+  SOURCE
+  binary_file_reader.cpp
+  empty_header.cpp
+  empty_trailer.cpp
+  evttypes.cpp
+  ub_BeamData.cpp
+  ub_BeamHeader.cpp
+  ub_BeamRecord.cpp
+  ub_CrateHeader_v6.cpp
+  ub_EventHeaderTrailer_v0.cpp
+  ub_EventRecord.cpp
+  ub_FEMBeamTriggerOutput.cpp
+  ub_GPS_DataTypes.cpp
+  ub_GlobalHeader.cpp
+  ub_LaserData.cpp
+  ub_LocalHostTime.cpp
+  ub_MarkedRawCardData.cpp
+  ub_MarkedRawChannelData.cpp
+  ub_MarkedRawCrateData.cpp
+  ub_PMT_CardData_v6.cpp
+  ub_PMT_CardHeaderTrailer_v6.cpp
+  ub_PMT_CrateData_v6.cpp
+  ub_PMT_WindowDataCreatorHelperClass.cpp
+  ub_PMT_WindowData_v6.cpp
+  ub_PMT_WindowHeader_v6.cpp
+  ub_TPC_CardData_v6.cpp
+  ub_TPC_CardHeader_v6.cpp
+  ub_TPC_ChannelDataCreatorHelperClass.cpp
+  ub_TPC_ChannelData_v6.cpp
+  ub_TPC_ChannelHeaderTrailer_v0.cpp
+  ub_TPC_CrateData_v6.cpp
+  ub_TPC_SN_CardDataCreatorHelperClass.cpp
+  ub_TPC_SN_CardData_v6.cpp
+  ub_TPC_SN_CardHeader_v6.cpp
+  ub_TPC_SN_ChannelDataCreatorHelperClass.cpp
+  ub_TPC_SN_ChannelData_v6.cpp
+  ub_TPC_SN_ChannelHeaderTrailer_v0.cpp
+  ub_TPC_SN_CrateData_v6.cpp
+  ub_TPC_SN_PacketData_v6.cpp
+  ub_TriggerBoardClock.cpp
+  ub_TriggerCounter.cpp
+  ub_Trigger_CardData_v6.cpp
+  ub_Trigger_ChannelDataCreatorHelperClass.cpp
+  ub_Trigger_ChannelData_v6.cpp
+  ub_Trigger_CrateData_v6.cpp
+  ub_Trigger_DataTypes_v6.cpp
+  ub_XMITEventHeaderTrailer_v0.cpp
+  uboone_data_fragment.cpp
+  uboone_data_fragment_metadata.cpp
+  uboone_data_internals.cpp
+  uboone_data_utils.cpp
+  uboone_data_utils_openmp.cpp
+  LIBRARIES
+  PUBLIC
+  OpenSSL::Crypto
+  OpenMP::OpenMP_CXX
+)
 
 install_headers()
-
 install_source()
-
-install( TARGETS ${LIB_NAME}
-         DESTINATION ${flavorqual_dir}/lib )
 
