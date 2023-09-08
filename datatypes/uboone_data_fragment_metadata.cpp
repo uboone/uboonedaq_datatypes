@@ -4,11 +4,11 @@
 using namespace gov::fnal::uboone::datatypes;
 
 
-extern "C"  DissectorFactory& getDissectorFactory()
-{
-     static DissectorFactory theDissectorFactory;
-     return theDissectorFactory;
-}
+//extern "C"  DissectorFactory& getDissectorFactory()
+//{
+//     static DissectorFactory theDissectorFactory;
+//     return theDissectorFactory;/
+//}
 
 
 typedef  DissectorAdapter<ub_PMT_CrateData_v6> ub_PMT_CrateData_v6_dissector_t;

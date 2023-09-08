@@ -1,5 +1,5 @@
 #this is just so we have a nice sample code
-set_source_files_properties(eventReader.cc PROPERTIES COMPILE_FLAGS "-Wno-unused-variable -Wno-unused-but-set-variable")
+set_source_files_properties(eventReader.cc PROPERTIES COMPILE_FLAGS "-Wno-unused-variable $<$<CXX_COMPILER_ID:GNU>:-Wno-unused-but-set-variable>")
 
 
 cet_make_exec(NAME dumpEvents
