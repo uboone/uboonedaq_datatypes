@@ -53,6 +53,7 @@ cet_make_library(
   uboone_data_utils_openmp.cpp
   LIBRARIES
   PUBLIC
+  Boost::serialization
   OpenSSL::Crypto
   OpenMP::OpenMP_CXX
 )
