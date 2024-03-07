@@ -256,9 +256,9 @@ boost		v1_66_0a	e15
 boost		v1_70_0		c2
 boost		v1_70_0		e17
 boost		v1_73_0		e19
-boost		v1_80_0		e26
+boost		v1_82_0		e26
 boost		v1_80_0		e20
-boost		v1_80_0		c14
+boost		v1_82_0		c14
 boost		v1_80_0		c7
 cetmodules	v3_21_01	-	only_for_build
 end_product_list

@@ -9,7 +9,7 @@
 cmake_minimum_required (VERSION 3.20 FATAL_ERROR)
 
 find_package(cetmodules REQUIRED)
-project(uboonedaq_datatypes VERSION 6.22.06 LANGUAGES CXX)
+project(uboonedaq_datatypes VERSION 6.22.07 LANGUAGES CXX)
 
 include(CetCMakeEnv)
 cet_cmake_env()
